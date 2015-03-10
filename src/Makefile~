@@ -1,0 +1,17 @@
+# Makefile
+CC = g++
+CFLAGS = -Wall
+LIBS = -lGL -lGLU -lglut -lm -lpthread
+
+# files to be compiled
+FILES = src/main.cpp src/gameView.cpp src/gameModel.cpp src/gameController.cpp 
+
+# output file
+OUTPUT = game
+
+# target which compiles executable
+all : $(FILES)
+	$(CC) $(CFLAGS) $(FILES) $(LIBS) -o $(OUTPUT)
+
+clean :
+	rm -f $(OUTPUT)
