@@ -78,11 +78,12 @@ void TileMap::loadTexture(GLuint texture, const char* filename)
 
    }
    stbi_image_free(data);
+
 }
 
 void TileMap::render()
 {
-   initTexture();
+   
    int tile;
    for (int y = 0 ; y < y_size; y++)
    {
@@ -93,9 +94,9 @@ void TileMap::render()
         glBindTexture(GL_TEXTURE_2D, texturesID[tile]);
         glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x), float(y), 0.0f);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x + 2), float(y), 0.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x + 2), float(y + 2), 0.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x), float(y + 2), 0.0f);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x + 1), float(y), 0.0f);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x + 1), float(y + 1), 0.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x), float(y + 1), 0.0f);
         glEnd();
      }
      

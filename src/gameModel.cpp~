@@ -163,6 +163,7 @@ void GameModel::initCamera(){
 
 void GameModel::gameSetUp(){
     initCamera();
+    tile->initTexture();
     
 }
 
@@ -191,5 +192,11 @@ void GameModel::drawSnowMan() {
 // Draw Nose
 	glColor3f(1.0f, 0.5f , 0.5f);
 	glutSolidCone(0.08f,0.5f,10,2);
+}
+
+
+void GameModel::drawTile()
+{
+   tile->render();
 }
 

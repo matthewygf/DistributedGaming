@@ -163,7 +163,7 @@ void GameModel::initCamera(){
 
 void GameModel::gameSetUp(){
     initCamera();
-    
+    tile->initTexture();
 }
 
 

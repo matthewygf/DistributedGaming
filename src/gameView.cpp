@@ -50,6 +50,7 @@ void GameView::init()
    initLights();
    glEnable(GL_LIGHTING);
    theGameModel->gameSetUp();
+   
   
 }
 
@@ -158,6 +159,10 @@ void GameView::keyboardWrapper(unsigned char key, int x, int y) {
 
 void GameView::specialInputWrapper(int key, int x, int y) {
   instanceController->specialInput(key, x, y);
+}
+
+void GameView::upFunctionInputWrapper(int key, int x, int y){
+  instanceController->specialFunctionInput(key,x,y);
 }
 
 void GameView::update() {

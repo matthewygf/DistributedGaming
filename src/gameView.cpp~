@@ -50,6 +50,7 @@ void GameView::init()
    initLights();
    glEnable(GL_LIGHTING);
    theGameModel->gameSetUp();
+   
   
 }
 
@@ -63,24 +64,19 @@ void GameView::display()
    glLoadIdentity();
     //updateTheGameSetting
    update();
-   gluLookAt(10.0f, 8.0f, 20.0f, 10.0f, 8.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+   //gluLookAt(10.0f, 8.0f, 20.0f, 10.0f, 8.0f, 0.0f, 0.0f, 1.0f, 0.0f);
    //camera lookAt
-   //gluLookAt(pos_x, pos_y, pos_z,
-	//    pos_x + theGameModel->getLPosition_x(),
-	  //  theGameModel->getLPosition_y(),
-	   // pos_z+theGameModel->getLPosition_z(),
-	    //0.0, 1.0,  0.0);
+   gluLookAt(pos_x, pos_y, pos_z,
+	    pos_x + theGameModel->getLPosition_x(),
+	    theGameModel->getLPosition_y(),
+	    pos_z+theGameModel->getLPosition_z(),
+	    0.0, 1.0,  0.0);
 	    
    glRotatef(theGameModel->getAngle(),0.0,1.0,0.0); //camera angle
    
    
 	//glColor3f(0.9f, 0.9f, 0.9f);
-	//glBegin(GL_QUADS);
-	//	glVertex3f(-100.0f, 0.0f, -100.0f);
-	//	glVertex3f(-100.0f, 0.0f,  100.0f);
-	//	glVertex3f( 100.0f, 0.0f,  100.0f);
-	//	glVertex3f( 100.0f, 0.0f, -100.0f);
-	//glEnd();
+	
         theGameModel->drawTile();
         
 
@@ -163,6 +159,10 @@ void GameView::keyboardWrapper(unsigned char key, int x, int y) {
 
 void GameView::specialInputWrapper(int key, int x, int y) {
   instanceController->specialInput(key, x, y);
+}
+
+void GameView::upFunctionInputWrapper(int key, int x, int y){
+  instance Controller->specialFunctionInput(key,x,y);
 }
 
 void GameView::update() {

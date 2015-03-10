@@ -2,11 +2,19 @@
 #include <stdio.h>
 #include <iostream>
 #include <cmath>
+using namespace std;
 GameController::GameController(GameModel *newGameModel)
 {
     theGameModel = newGameModel;
     cout<<"controllerInitialised"<<endl;
 }
+
+GameController::~GameController()
+{
+  delete theGameModel;
+  cout<<"deleting Model within Controller"<<endl;
+}
+
 void GameController::getModelCameraSetting(){
     x = theGameModel->getPosition_x();
     y = theGameModel->getPosition_y();

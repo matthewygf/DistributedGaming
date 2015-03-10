@@ -44,7 +44,8 @@ void GameController::keyboard(unsigned char key, int x, int y){
     }
 }
 
-
+void GameController::specialFunctionInput(int key, int xx, int yy) {
+}
 
 void GameController::specialInput(int key, int xx, int yy) {
         float step = 0.1;

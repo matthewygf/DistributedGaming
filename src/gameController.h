@@ -16,6 +16,7 @@ class GameController
       //virtual void mouse(int button, int state, int x, int y);
       virtual void keyboard(unsigned char key, int x, int y);
       virtual void specialInput(int key, int x, int y);
+      virtual void specialFunctionInput(int key, int x, int y);
    //select bots;
    void getModelCameraSetting();
       

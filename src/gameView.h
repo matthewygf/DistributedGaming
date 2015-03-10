@@ -32,6 +32,7 @@ class GameView
     //static void mouseFuncWrapper(int button,int state, int x, int y);
     static void keyboardWrapper(unsigned char key, int x, int y);
     static void specialInputWrapper(int key, int x, int y);
+    static void upFunctionInputWrapper(int key, int x, int y);
     
     private:
     static GameView *instanceView;

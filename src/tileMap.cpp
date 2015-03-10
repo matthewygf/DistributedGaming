@@ -78,11 +78,12 @@ void TileMap::loadTexture(GLuint texture, const char* filename)
 
    }
    stbi_image_free(data);
+
 }
 
 void TileMap::render()
 {
-   initTexture();
+   
    int tile;
    for (int y = 0 ; y < y_size; y++)
    {

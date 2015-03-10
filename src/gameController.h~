@@ -11,6 +11,7 @@ class GameController
 {
    public:
       GameController(GameModel *newGameModel);
+      ~GameController();
       
       //virtual void mouse(int button, int state, int x, int y);
       virtual void keyboard(unsigned char key, int x, int y);
