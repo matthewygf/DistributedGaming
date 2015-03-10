@@ -21,7 +21,7 @@
 // angle of rotation for the camera direction
 float ang=0.0;
 // actual vector representing the camera's lookat direction
-float lx=0.0f,ly=1.2,lz=-1.0f;
+float lx=0.0f,ly=1.1,lz=-1.0f;
 // XYZ position of the camera
 float px=5.0f,py=1.0f,pz=14.0f;
 
@@ -44,6 +44,8 @@ const char *texture_two = "data/wood.jpeg";
 
 int main(int argc, char **argv)
 {
+   
+
    TileMap *tmap = new TileMap(MAP_SIZEY,MAP_SIZEX,map,texture_one,texture_two);
    
    Camera *camera = new Camera(px,py,pz+5,lx,ly,lz,ang);

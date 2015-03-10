@@ -17,6 +17,7 @@ class TileMap
    void initTexture();
    void loadTexture(GLuint texture, const char* filename);
    void render();
+   void drawBox();
 
    private:
    int x_size;

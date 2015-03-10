@@ -30,6 +30,9 @@ TileMap::~TileMap()
   delete textureTwo;
 }
 
+
+
+
 void TileMap::setMap()
 {
    int count = 0;
@@ -90,25 +93,31 @@ void TileMap::render()
      for(int x = 0; x < x_size; x++)
      {
         tile = m[y][x];
+        //if(tile==1){
+          //glPushMatrix();
+          //glColor3f(1,0.5,0.5);
+          //glTranslatef(x+0.5,y-2.5,0.0);
+          //glEnable(GL_TEXTURE_2D);
+          //glBindTexture(GL_TEXTURE_2D, texturesID[1]);
+          //drawBox();
+          //glPopMatrix();
+        //} else{
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, texturesID[tile]);
         glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x), float(y), 0.0f);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x + 1), float(y), 0.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x + 1), float(y + 1), 0.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x), float(y + 1), 0.0f);
+        //each tile have a x n y coordinate of 1 apart
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x), float(y-3), 0.0f);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x + 1), float(y-3), 0.0f);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x + 1), float(y -2), 0.0f);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x), float(y -2), 0.0f);
         glEnd();
-     }
+        }
+     //}
      
    }
    
    glDisable(GL_TEXTURE_2D);
 }
-//glBegin(GL_QUADS);
-	//	glVertex3f(-100.0f, 0.0f, -100.0f);
-	//	glVertex3f(-100.0f, 0.0f,  100.0f);
-	//	glVertex3f( 100.0f, 0.0f,  100.0f);
-	//	glVertex3f( 100.0f, 0.0f, -100.0f);
-	//glEnd();
+
 
 

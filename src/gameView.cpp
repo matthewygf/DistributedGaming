@@ -81,13 +81,13 @@ void GameView::display()
         
 
          //Draw 36 SnowMen
-	for(int i = -3; i < 3; i++)
-		for(int j=-3; j < 3; j++) {
-			glPushMatrix();
-			glTranslatef(i*10.0,0,j * 10.0);
-			theGameModel->drawSnowMan();
-			glPopMatrix();
-		}
+	//for(int i = -3; i < 3; i++)
+	//	for(int j=-3; j < 3; j++) {
+	//		glPushMatrix();
+	//		glTranslatef(i*5.0,0,j * 5.0);
+	//		theGameModel->drawSnowMan();
+	//		glPopMatrix();
+	//	}
    
    
     glutSwapBuffers();    
@@ -193,7 +193,7 @@ int GameView::render(int argc, char *argv[])
   //glutMouseFunc(mouseWrapper);
   glutKeyboardFunc(keyboardWrapper);
   glutSpecialFunc(specialInputWrapper);
-
+  glutSpecialUpFunc(upFunctionInputWrapper);
   glutMainLoop();
 
   return 0;

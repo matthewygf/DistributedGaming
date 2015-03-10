@@ -45,6 +45,15 @@ void GameController::keyboard(unsigned char key, int x, int y){
 }
 
 void GameController::specialFunctionInput(int key, int xx, int yy) {
+   float step=0.01;
+   getModelCameraSetting();
+   switch(key){
+      case GLUT_KEY_F1:
+          cout<<"moving up camera"<<endl;
+          cout<<y<<endl;
+          //theGameModel->setPosition_y(y);
+          break;
+   }
 }
 
 void GameController::specialInput(int key, int xx, int yy) {

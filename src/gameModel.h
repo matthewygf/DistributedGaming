@@ -56,6 +56,7 @@ class GameModel
    void gameSetUp();
    void drawSnowMan();
    void drawTile();
+
    private:
    int width, height;
    float position_x, position_y, position_z; //for the camera

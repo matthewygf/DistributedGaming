@@ -76,18 +76,18 @@ void GameView::display()
    
    
 	//glColor3f(0.9f, 0.9f, 0.9f);
-	
+	glutSolidCube(1);
         theGameModel->drawTile();
         
 
          //Draw 36 SnowMen
-	for(int i = -3; i < 3; i++)
-		for(int j=-3; j < 3; j++) {
-			glPushMatrix();
-			glTranslatef(i*10.0,0,j * 10.0);
-			theGameModel->drawSnowMan();
-			glPopMatrix();
-		}
+	//for(int i = -3; i < 3; i++)
+	//	for(int j=-3; j < 3; j++) {
+	//		glPushMatrix();
+	//		glTranslatef(i*5.0,0,j * 5.0);
+	//		theGameModel->drawSnowMan();
+	//		glPopMatrix();
+	//	}
    
    
     glutSwapBuffers();    
@@ -162,7 +162,7 @@ void GameView::specialInputWrapper(int key, int x, int y) {
 }
 
 void GameView::upFunctionInputWrapper(int key, int x, int y){
-  instance Controller->specialFunctionInput(key,x,y);
+  instanceController->specialFunctionInput(key,x,y);
 }
 
 void GameView::update() {
@@ -193,7 +193,7 @@ int GameView::render(int argc, char *argv[])
   //glutMouseFunc(mouseWrapper);
   glutKeyboardFunc(keyboardWrapper);
   glutSpecialFunc(specialInputWrapper);
-
+  glutSpecialUpFunc(upFunctionInputWrapper);
   glutMainLoop();
 
   return 0;
