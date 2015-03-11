@@ -1,8 +1,9 @@
 #ifndef GAMEMODEL_H
 #define GAMEMODEL_H
+
 #include <GL/glut.h>
-#include "camera.h"
-#include "tileMap.h"
+#include "camera/camera.h"
+#include "tileMap/tileMap.h"
 using namespace std;
 
 class GameModel
@@ -50,12 +51,12 @@ class GameModel
    void setCameraAngle(float newAngle);
   
    //gameSetting
-   //void setTile();
    //void setBots();
    void initCamera();
    void gameSetUp();
    void drawSnowMan();
    void drawTile();
+
 
    private:
    int width, height;

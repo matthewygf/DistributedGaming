@@ -1,9 +1,9 @@
-
+#include "../supports/glew.h"
 #include "gameModel.h"
 #include "gameView.h"
 #include "gameController.h"
-#include "camera.h"
-#include "tileMap.h"
+#include "camera/camera.h"
+#include "tileMap/tileMap.h"
 #include <pthread.h>
 #include <iostream>
 #ifdef __APPLE__
@@ -11,6 +11,7 @@
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
+//#include <../supports/glew.h>
 #endif
 #define MAP_SIZEX 10
 #define MAP_SIZEY 10
@@ -42,6 +43,15 @@ const char *texture_one = "data/grass.jpeg";
 const char *texture_two = "data/wood.jpeg";
 
 
+
+
+void GameLoop(GameView *view,int argc, char *argv[]){
+       view->render(argc, argv);
+}
+
+
+
+
 int main(int argc, char **argv)
 {
    
@@ -59,7 +69,7 @@ int main(int argc, char **argv)
    //View 
    GameView *view = new GameView(controller,model);
    
-   view->render(argc, argv);
+   GameLoop(view,argc,argv); // will also contain physics, AI
    
    delete camera;
    delete model;

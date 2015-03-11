@@ -1,6 +1,8 @@
 #include "gameModel.h"
 #include <stdio.h>
 #include <iostream>
+
+
 using namespace std;
 
 
@@ -19,6 +21,7 @@ GameModel::~GameModel()
 {
    delete theCamera;
    delete tile;
+
    cout<<"deleting things in model"<<endl;
 }
 
@@ -169,6 +172,10 @@ void GameModel::gameSetUp(){
 
 void GameModel::drawSnowMan() {
 
+        GLuint VertexArrayID;
+glGenVertexArrays(1, &VertexArrayID);
+glBindVertexArray(VertexArrayID);
+
 	glColor3f(1.0f, 1.0f, 1.0f);
 
 // Draw Body
@@ -192,6 +199,7 @@ void GameModel::drawSnowMan() {
 	glColor3f(1.0f, 0.5f , 0.5f);
 	glutSolidCone(0.08f,0.5f,10,2);
 }
+
 
 
 void GameModel::drawTile()
