@@ -60,7 +60,7 @@ class GameModel
    void gameSetUp();
    void drawSnowMan();
    void drawTile();
-
+   
 
    private:
    int width, height;

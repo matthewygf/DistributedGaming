@@ -70,7 +70,6 @@ void GameController::computeDir(float newDeltaAngle)
 
 
 void GameController::specialFunctionInput(int key, int xx, int yy) {
-   float step=0.01;
    getModelCameraSetting();
 
       switch (key) {
@@ -83,7 +82,6 @@ void GameController::specialFunctionInput(int key, int xx, int yy) {
 }
 
 void GameController::specialInput(int key, int xx, int yy) {
-        float step = 0.1;
         getModelCameraSetting();
 	switch (key) {
 		case GLUT_KEY_LEFT : theGameModel->setDeltaAngle(-0.01f); break;

@@ -1,5 +1,4 @@
 
-#define GL_GLEXT_PROTOTYPES
 
 #include "gameView.h"
 #include <GL/glut.h>
@@ -9,7 +8,7 @@
 #include <pthread.h>
 #include <iomanip>
 #include <cstdlib>
-#include "../supports/glext.h"
+
 
 using namespace std;
 
@@ -151,9 +150,6 @@ void GameView::timerWrapper(int t) {
   //instanceController->menu(item);
 //}
 
-//void GameView::mouseWrapper(int button, int state, int x, int y) {
- // instanceController->mouse(button, state, x, y);
-//}
 
 void GameView::keyboardWrapper(unsigned char key, int x, int y) {
   instanceController->keyboard(key, x, y);
@@ -192,11 +188,11 @@ int GameView::render(int argc, char *argv[])
   glutTimerFunc(16,timerWrapper,0);
   
   //add keyboard/mouse listener
-  //glutMouseFunc(mouseWrapper);
-  //glutKeyboardFunc(keyboardWrapper);
+  glutIgnoreKeyRepeat(1);
+  glutKeyboardFunc(keyboardWrapper);
   glutSpecialFunc(specialInputWrapper);
-    glutIgnoreKeyRepeat(1);
   glutSpecialUpFunc(upFunctionInputWrapper);
+
 
   glutMainLoop();
 

@@ -35,7 +35,6 @@ class GameView
     static void displayWrapper();
     static void reshapeWrapper(int w, int h);
     static void timerWrapper (int t);
-    //static void mouseFuncWrapper(int button,int state, int x, int y);
     static void keyboardWrapper(unsigned char key, int x, int y);
     static void specialInputWrapper(int key, int x, int y);
     static void upFunctionInputWrapper(int key, int x, int y);
