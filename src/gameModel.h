@@ -22,6 +22,8 @@ class GameModel
    float getLPosition_y();
    float getLPosition_z();
    float getAngle();
+   float getDeltaAngle();
+   float getDeltaMove();
    //get Camera variables to store in private
    float getCameraPos_x();
    float getCameraPos_y();
@@ -49,6 +51,8 @@ class GameModel
    void setCameraPos(float new_x, float new_y, float new_z);
    void setCameraLookAtPos(float newLookAt_x, float newLookAt_y, float newLookAt_z);
    void setCameraAngle(float newAngle);
+   void setDeltaAngle(float dAngle);
+   void setDeltaMove (float move);
   
    //gameSetting
    //void setBots();
@@ -56,13 +60,14 @@ class GameModel
    void gameSetUp();
    void drawSnowMan();
    void drawTile();
-
+   
 
    private:
    int width, height;
    float position_x, position_y, position_z; //for the camera
    float lposition_x, lposition_y, lposition_z; //for the camera lookAt
    float angle;//for camera angle
+   float deltaAngle,deltaMove;
    Camera *theCamera;
    TileMap *tile;
    //Bots bots;

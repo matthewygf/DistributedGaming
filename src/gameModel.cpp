@@ -52,6 +52,15 @@ float GameModel::getAngle(){
  return angle;
 }
 
+float GameModel::getDeltaAngle()
+{
+   return deltaAngle;
+}
+
+float GameModel::getDeltaMove()
+{
+   return deltaMove;
+}
 
 int GameModel::getWindowWidth() {
   return width;
@@ -136,6 +145,13 @@ void GameModel::setAngle(float newAngle){
  angle=newAngle;
 }
 
+void GameModel::setDeltaAngle(float dAngle){
+   deltaAngle = dAngle;
+}
+
+void GameModel::setDeltaMove(float move){
+    deltaMove = move;
+}
 
 void GameModel::setWindowResolution(int new_width, int new_height) {
   width = new_width;

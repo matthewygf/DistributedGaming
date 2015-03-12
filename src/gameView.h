@@ -16,6 +16,10 @@ class GameView
     //initialise glut for graphics window
     int render(int argc, char *argv[]);
     
+    //check positions
+    void checkPos();
+    
+    
     //setters
     void setInstanceObject();
     void setWindowResolution(int w, int h);
@@ -32,7 +36,6 @@ class GameView
     static void displayWrapper();
     static void reshapeWrapper(int w, int h);
     static void timerWrapper (int t);
-    //static void mouseFuncWrapper(int button,int state, int x, int y);
     static void keyboardWrapper(unsigned char key, int x, int y);
     static void specialInputWrapper(int key, int x, int y);
     static void upFunctionInputWrapper(int key, int x, int y);

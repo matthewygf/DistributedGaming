@@ -23,6 +23,8 @@ void GameController::getModelCameraSetting(){
     ly = theGameModel->getLPosition_y();
     lz = theGameModel->getLPosition_z();
     angle = theGameModel->getAngle();
+    deltaAngle = theGameModel->getDeltaAngle();
+    deltaMove = theGameModel ->getDeltaMove();
 }
 
 
@@ -44,54 +46,47 @@ void GameController::keyboard(unsigned char key, int x, int y){
     }
 }
 
+void GameController::computePos(float newDeltaMove)
+{
+        getModelCameraSetting();
+        x+=deltaMove*lx*0.1;
+        z+=deltaMove*lz*0.1;
+        theGameModel->setPosition_x(x);
+        theGameModel->setPosition_z(z);
+}
+
+void GameController::computeDir(float newDeltaAngle)
+{
+        getModelCameraSetting();
+        angle += deltaAngle;
+	lx = sin(angle);
+	lz = -cos(angle);
+	theGameModel->setAngle(angle);
+	theGameModel->setLPosition_x(lx);
+	theGameModel->setLPosition_z(lz);
+	
+}
+
+
+
 void GameController::specialFunctionInput(int key, int xx, int yy) {
-   float step=0.01;
    getModelCameraSetting();
-   switch(key){
-      case GLUT_KEY_F1:
-          cout<<"moving up camera"<<endl;
-          cout<<y<<endl;
-          //theGameModel->setPosition_y(y);
-          break;
-   }
+
+      switch (key) {
+		case GLUT_KEY_LEFT :
+		case GLUT_KEY_RIGHT : theGameModel->setDeltaAngle(0);break;
+		case GLUT_KEY_UP :
+		case GLUT_KEY_DOWN : theGameModel->setDeltaMove(0);break;
+	}
+   
 }
 
 void GameController::specialInput(int key, int xx, int yy) {
-        float step = 0.1;
         getModelCameraSetting();
 	switch (key) {
-		case GLUT_KEY_LEFT :
-		        cout<<"LEFT"<<endl;
-			angle -= 0.01f;
-			lx = sin(angle);
-			lz = -cos(angle);
-			theGameModel->setAngle(angle);
-			theGameModel->setLPosition_x(lx);
-			theGameModel->setLPosition_z(lz);
-			
-			break;
-		case GLUT_KEY_RIGHT :
-		        cout<<"RIGHT"<<endl;
-			angle += 0.01f;
-			lx = sin(angle);
-			lz = -cos(angle);
-			theGameModel->setAngle(angle);
-			theGameModel->setLPosition_x(lx);
-			theGameModel->setLPosition_z(lz);
-			break;
-		case GLUT_KEY_UP :
-		        cout<<"UP"<<endl;
-			x += lx * step;
-	                z += lz * step;
-	                theGameModel->setPosition_x(x);
-      	                theGameModel->setPosition_z(z);
-			break;
-		case GLUT_KEY_DOWN :
-		        cout<<"DOWN"<<endl;
-		        x -= lx * step;
-			z -= lz * step;
-			theGameModel->setPosition_x(x);
-      	                theGameModel->setPosition_z(z);
-			break;
+		case GLUT_KEY_LEFT : theGameModel->setDeltaAngle(-0.01f); break;
+		case GLUT_KEY_RIGHT : theGameModel->setDeltaAngle(0.01f); break;
+		case GLUT_KEY_UP : theGameModel->setDeltaMove(0.5); break;
+		case GLUT_KEY_DOWN : theGameModel->setDeltaMove(-0.5); break;
 	}
 }

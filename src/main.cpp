@@ -1,4 +1,4 @@
-#include <GL/glew.h>
+
 #include "gameModel.h"
 #include "gameView.h"
 #include "gameController.h"
@@ -11,8 +11,11 @@
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
-//#include <../supports/glew.h>
+
 #endif
+
+
+
 #define MAP_SIZEX 10
 #define MAP_SIZEY 10
 
@@ -54,7 +57,7 @@ void GameLoop(GameView *view,int argc, char *argv[]){
 
 int main(int argc, char **argv)
 {
-   
+
 
    TileMap *tmap = new TileMap(MAP_SIZEY,MAP_SIZEX,map,texture_one,texture_two);
    

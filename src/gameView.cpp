@@ -1,9 +1,15 @@
-#include "gameView.h"
 
+
+#include "gameView.h"
 #include <GL/glut.h>
+
 #include <stdio.h>
 #include <iostream>
 #include <pthread.h>
+#include <iomanip>
+#include <cstdlib>
+
+
 using namespace std;
 
 GameView::GameView(GameController *newGameController, GameModel *newGameModel)
@@ -25,6 +31,14 @@ GameView::~GameView()
   delete theGameModel;
   delete winTitle;
   cout<<"deleting everything within View"<<endl;
+}
+
+void GameView::checkPos()
+{
+   if(theGameModel->getDeltaMove())
+        theGameController->computePos(theGameModel->getDeltaMove());
+   if(theGameModel->getDeltaAngle())
+        theGameController->computeDir(theGameModel->getDeltaAngle());
 }
 
 
@@ -50,12 +64,12 @@ void GameView::init()
    initLights();
    glEnable(GL_LIGHTING);
    theGameModel->gameSetUp();
-   
-  
+
 }
 
 void GameView::display()
 {
+   checkPos();
  
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glFlush();
@@ -74,12 +88,11 @@ void GameView::display()
 	    0.0, 1.0,  0.0);
 	    
    glRotatef(theGameModel->getAngle(),0.0,1.0,0.0); //camera angle
+   	
+   theGameModel->drawTile();
    
-	
-        theGameModel->drawTile();
    
-   
-    glutSwapBuffers();    
+   glutSwapBuffers();    
 }
 
 
@@ -138,9 +151,6 @@ void GameView::timerWrapper(int t) {
   //instanceController->menu(item);
 //}
 
-//void GameView::mouseWrapper(int button, int state, int x, int y) {
- // instanceController->mouse(button, state, x, y);
-//}
 
 void GameView::keyboardWrapper(unsigned char key, int x, int y) {
   instanceController->keyboard(key, x, y);
@@ -179,10 +189,12 @@ int GameView::render(int argc, char *argv[])
   glutTimerFunc(16,timerWrapper,0);
   
   //add keyboard/mouse listener
-  //glutMouseFunc(mouseWrapper);
+  glutIgnoreKeyRepeat(1);
   glutKeyboardFunc(keyboardWrapper);
   glutSpecialFunc(specialInputWrapper);
   glutSpecialUpFunc(upFunctionInputWrapper);
+
+
   glutMainLoop();
 
   return 0;
