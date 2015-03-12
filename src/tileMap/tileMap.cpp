@@ -98,11 +98,9 @@ void TileMap::render()
           glPushMatrix();
           glEnable(GL_TEXTURE_2D);
           glBindTexture(GL_TEXTURE_2D, texturesID[1]);
-<<<<<<< HEAD
+
           glTranslatef(x+0.5,y-2.5,0.5);
-=======
-          glTranslatef(x+0.5,y-2.5,1.0);
->>>>>>> 9852c9abd3ab8a9c8887e383d54efba095de248a
+
           glBegin(GL_TRIANGLES);
          glTexCoord2f(0.0,1.0);    glVertex3f(-1.0/2,-1.0/2,-1.0/2); // triangle 1 : begin
          glTexCoord2f(1.0,0.0);    glVertex3f(-1.0/2,-1.0/2, 1.0/2);

@@ -9,11 +9,9 @@ class GameView
     public:
     //constructor
     GameView(GameController *newGameController, GameModel *newGameModel);
-<<<<<<< HEAD
+
     virtual~GameView();
-=======
-    ~GameView();
->>>>>>> 9852c9abd3ab8a9c8887e383d54efba095de248a
+
     
     //initialise glut for graphics window
     int render(int argc, char *argv[]);

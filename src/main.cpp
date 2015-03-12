@@ -1,4 +1,4 @@
-
+#include <GL/glew.h>
 #include "gameModel.h"
 #include "gameView.h"
 #include "gameController.h"

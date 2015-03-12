@@ -64,7 +64,7 @@ void GameView::display()
    glLoadIdentity();
     //updateTheGameSetting
    update();
-   //gluLookAt(10.0f, 8.0f, 20.0f, 10.0f, 8.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+ 
    //camera lookAt
    gluLookAt(pos_x, pos_y, pos_z,
 	    pos_x + theGameModel->getLPosition_x(),
@@ -74,20 +74,8 @@ void GameView::display()
 	    
    glRotatef(theGameModel->getAngle(),0.0,1.0,0.0); //camera angle
    
-   
-	//glColor3f(0.9f, 0.9f, 0.9f);
 	
         theGameModel->drawTile();
-        
-
-         //Draw 36 SnowMen
-	//for(int i = -3; i < 3; i++)
-	//	for(int j=-3; j < 3; j++) {
-	//		glPushMatrix();
-	//		glTranslatef(i*5.0,0,j * 5.0);
-	//		theGameModel->drawSnowMan();
-	//		glPopMatrix();
-	//	}
    
    
     glutSwapBuffers();    

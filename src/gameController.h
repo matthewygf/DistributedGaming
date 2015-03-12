@@ -11,12 +11,9 @@ class GameController
 {
    public:
       GameController(GameModel *newGameModel);
-<<<<<<< HEAD
+
       virtual~GameController();
-=======
-      ~GameController();
->>>>>>> 9852c9abd3ab8a9c8887e383d54efba095de248a
-      
+
       //virtual void mouse(int button, int state, int x, int y);
       virtual void keyboard(unsigned char key, int x, int y);
       virtual void specialInput(int key, int x, int y);
