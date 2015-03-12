@@ -1,9 +1,16 @@
-#include "gameView.h"
 
+#define GL_GLEXT_PROTOTYPES
+
+#include "gameView.h"
 #include <GL/glut.h>
+
 #include <stdio.h>
 #include <iostream>
 #include <pthread.h>
+#include <iomanip>
+#include <cstdlib>
+#include "../supports/glext.h"
+
 using namespace std;
 
 GameView::GameView(GameController *newGameController, GameModel *newGameModel)
@@ -25,6 +32,14 @@ GameView::~GameView()
   delete theGameModel;
   delete winTitle;
   cout<<"deleting everything within View"<<endl;
+}
+
+void GameView::checkPos()
+{
+   if(theGameModel->getDeltaMove())
+        theGameController->computePos(theGameModel->getDeltaMove());
+   if(theGameModel->getDeltaAngle())
+        theGameController->computeDir(theGameModel->getDeltaAngle());
 }
 
 
@@ -50,12 +65,12 @@ void GameView::init()
    initLights();
    glEnable(GL_LIGHTING);
    theGameModel->gameSetUp();
-   
-  
+
 }
 
 void GameView::display()
 {
+   checkPos();
  
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glFlush();
@@ -73,12 +88,11 @@ void GameView::display()
 	    0.0, 1.0,  0.0);
 	    
    glRotatef(theGameModel->getAngle(),0.0,1.0,0.0); //camera angle
+   	
+   theGameModel->drawTile();
    
-	
-        theGameModel->drawTile();
    
-   
-    glutSwapBuffers();    
+   glutSwapBuffers();    
 }
 
 
@@ -179,9 +193,11 @@ int GameView::render(int argc, char *argv[])
   
   //add keyboard/mouse listener
   //glutMouseFunc(mouseWrapper);
-  glutKeyboardFunc(keyboardWrapper);
+  //glutKeyboardFunc(keyboardWrapper);
   glutSpecialFunc(specialInputWrapper);
+    glutIgnoreKeyRepeat(1);
   glutSpecialUpFunc(upFunctionInputWrapper);
+
   glutMainLoop();
 
   return 0;

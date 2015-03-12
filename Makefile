@@ -1,18 +1,24 @@
 # Makefile
-CC = g++
+CC = gcc
+CPP = g++
+F77 = f77
+F9X = gfortran
+LD = g++
 CFLAGS = -Wall
-LIBS = -lGL -lGLU -lglut -lGLEW -lm -lpthread
+LIBS = -lGL -lGLU -lglut -lm -lpthread
+
+
 
 
 # files to be compiled
-FILES = src/main.cpp src/tileMap/tileMap.cpp src/gameModel.cpp src/gameController.cpp src/gameView.cpp src/camera/camera.cpp supports/stb_image.h  
+FILES = src/main.cpp src/tileMap/tileMap.cpp src/gameModel.cpp src/gameController.cpp src/gameView.cpp src/camera/camera.cpp supports/stb_image.h #supports/vbo/src/glInfo.cpp
 AUXFILES := 
 # output file
 OUTPUT = game
 
 # target which compiles executable
 all : $(FILES)
-	$(CC) $(AUXFILES) $(CFLAGS) $(FILES) $(LIBS) -o $(OUTPUT)
+	$(CPP) $(AUXFILES) $(CFLAGS) $(FILES) $(LIBS) -o $(OUTPUT)
 
 clean :
 	rm -f $(OUTPUT)

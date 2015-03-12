@@ -16,6 +16,10 @@ class GameView
     //initialise glut for graphics window
     int render(int argc, char *argv[]);
     
+    //check positions
+    void checkPos();
+    
+    
     //setters
     void setInstanceObject();
     void setWindowResolution(int w, int h);

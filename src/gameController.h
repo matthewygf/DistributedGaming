@@ -18,8 +18,11 @@ class GameController
       virtual void keyboard(unsigned char key, int x, int y);
       virtual void specialInput(int key, int x, int y);
       virtual void specialFunctionInput(int key, int x, int y);
+   
    //select bots;
    void getModelCameraSetting();
+   void computePos(float newDeltaMove);
+   void computeDir(float newDeltaAngle);
       
    private:
    GameModel *theGameModel;
@@ -27,7 +30,7 @@ class GameController
    //camera variables
    float x, y, z,
          lx, ly, lz,
-          angle;
+          angle, deltaAngle, deltaMove;
    
 
 
