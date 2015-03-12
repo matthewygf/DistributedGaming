@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 
-=======
-#include "../supports/glew.h"
->>>>>>> 9852c9abd3ab8a9c8887e383d54efba095de248a
 #include "gameModel.h"
 #include "gameView.h"
 #include "gameController.h"
