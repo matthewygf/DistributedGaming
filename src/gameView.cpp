@@ -66,6 +66,7 @@ void GameView::display()
    update();
  
    //camera lookAt
+
    gluLookAt(pos_x, pos_y, pos_z,
 	    pos_x + theGameModel->getLPosition_x(),
 	    theGameModel->getLPosition_y(),

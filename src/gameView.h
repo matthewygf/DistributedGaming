@@ -20,6 +20,7 @@ class GameView
     void setInstanceObject();
     void setWindowResolution(int w, int h);
     void setWindowTitle(const char* title);
+
     
     
     //glut methods
@@ -51,6 +52,8 @@ class GameView
     float pos_x, pos_y, pos_z;
     float lpos_x,lpos_y,lpos_z;
     float ang;
+    float deltaAngle;
+    float deltaMove;
     
     void init();
     void initLights();
