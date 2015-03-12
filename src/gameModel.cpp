@@ -1,7 +1,11 @@
 #include "gameModel.h"
 #include <stdio.h>
 #include <iostream>
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 9852c9abd3ab8a9c8887e383d54efba095de248a
 
 using namespace std;
 
@@ -172,6 +176,12 @@ void GameModel::gameSetUp(){
 
 void GameModel::drawSnowMan() {
 
+<<<<<<< HEAD
+=======
+        GLuint VertexArrayID;
+glGenVertexArrays(1, &VertexArrayID);
+glBindVertexArray(VertexArrayID);
+>>>>>>> 9852c9abd3ab8a9c8887e383d54efba095de248a
 
 	glColor3f(1.0f, 1.0f, 1.0f);
 
