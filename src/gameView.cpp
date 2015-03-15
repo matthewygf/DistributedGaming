@@ -1,14 +1,17 @@
 
-
+#define GL_GLEXT_PROTOTYPES
 #include "gameView.h"
 #include <GL/glut.h>
-
+#include "../supports/glext.h"
+#include "rawModel/rawModel.h"
 #include <stdio.h>
 #include <iostream>
 #include <pthread.h>
 #include <iomanip>
 #include <cstdlib>
-
+#include <vector>
+#include "rawModel/loader.h"
+#define N_ELEMENTS(array) (sizeof(array)/sizeof((array)[0])) 
 
 using namespace std;
 
@@ -88,9 +91,22 @@ void GameView::display()
 	    0.0, 1.0,  0.0);
 	    
    glRotatef(theGameModel->getAngle(),0.0,1.0,0.0); //camera angle
-   	
-   theGameModel->drawTile();
+   float vert[] = {-0.5f,0.5f,0.0f, 
+                   -0.5f, -0.5f, 0.0f,
+                   0.5f, -0.5f, 0.0f,
+                   0.5f, -0.5f, 0.0f,
+                   0.5f, 0.5f, 0.0f,
+                   -0.5f, 0.5f, 0.0f};
+   vector<float> vertices (vert,vert+sizeof(vert)/sizeof(float));
    
+   Loader loader;
+   RawModel rm =loader.loadToVao(vertices);	
+   glBindVertexArray(rm.getVaoID());
+   glEnableVertexAttribArray(0);
+   glDrawArrays(GL_TRIANGLES, 0, rm.getVertexCount());
+   glDisableVertexAttribArray(0);
+   //theGameModel->drawTile();
+
    
    glutSwapBuffers();    
 }
@@ -196,7 +212,7 @@ int GameView::render(int argc, char *argv[])
 
 
   glutMainLoop();
-
+  
   return 0;
 }
 

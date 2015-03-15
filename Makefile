@@ -11,7 +11,7 @@ LIBS = -lGL -lGLU -lglut -lm -lpthread
 
 
 # files to be compiled
-FILES = src/main.cpp src/tileMap/tileMap.cpp src/gameModel.cpp src/gameController.cpp src/gameView.cpp src/camera/camera.cpp supports/stb_image.h src/rawModel/rawModel.cpp
+FILES = src/main.cpp src/tileMap/tileMap.cpp src/gameModel.cpp src/gameController.cpp src/gameView.cpp src/camera/camera.cpp supports/stb_image.h src/rawModel/rawModel.cpp src/rawModel/loader.cpp 
 AUXFILES := 
 # output file
 OUTPUT = game
