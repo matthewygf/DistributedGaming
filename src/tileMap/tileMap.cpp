@@ -4,14 +4,14 @@
 #include <iostream>
 using namespace std;
 
-TileMap::TileMap(int mapSize_x,int mapSize_y, const int data[],
+TileMap::TileMap(int mapSize_x,int mapSize_y,
                   const char *texture_one,const char *texture_two)
 {
 
     x_size = mapSize_x;
     y_size = mapSize_y;
    //set to private
-    mdata = data;
+
     setMap();
     textureOne = texture_one;
     textureTwo = texture_two;
@@ -35,17 +35,20 @@ TileMap::~TileMap()
 
 void TileMap::setMap()
 {
-   int count = 0;
-   m = new int*[y_size];
-   for(int i = 0; i<y_size; i++){
-     m[i] = new int[x_size];
-     for(int j=0; j<x_size; j++){
-       m[i][j]=mdata[count];
-       count++;
-       cout<<m[i][j]<<" ";
-     }
-     cout<<endl;
-   }
+    m = new int*[y_size];
+    for (int i = 0; i<y_size; i++){
+       m[i] = new int[x_size];
+        for (int j = 0; j<x_size; j++) {
+            if (i == 0 || i == y_size-1 || j== 0 || j == x_size -1)         {
+                m[i][j]= 1;
+
+            } else {
+                m[i][j]=0;
+
+            }
+        }
+    }
+
 }
 
  void TileMap::initTexture()

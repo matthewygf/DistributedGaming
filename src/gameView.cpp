@@ -99,13 +99,13 @@ void GameView::display()
                    -0.5f, 0.5f, 0.0f};
    vector<float> vertices (vert,vert+sizeof(vert)/sizeof(float));
    
-   Loader loader;
-   RawModel rm =loader.loadToVao(vertices);	
-   glBindVertexArray(rm.getVaoID());
-   glEnableVertexAttribArray(0);
-   glDrawArrays(GL_TRIANGLES, 0, rm.getVertexCount());
-   glDisableVertexAttribArray(0);
-   //theGameModel->drawTile();
+   //Loader loader;
+   //RawModel rm =loader.loadToVao(vertices);	
+   //glBindVertexArray(rm.getVaoID());
+   //glEnableVertexAttribArray(0);
+   //glDrawArrays(GL_TRIANGLES, 0, rm.getVertexCount());
+   //glDisableVertexAttribArray(0);
+   theGameModel->drawTile();
 
    
    glutSwapBuffers();    

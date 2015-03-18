@@ -8,7 +8,7 @@
 class TileMap
 {
    public:
-   TileMap(int mapSize_x, int mapSize_y, const int data[],
+   TileMap(int mapSize_x, int mapSize_y,
                  const char *texture_one, const char *texture_two);
    ~TileMap();
  
