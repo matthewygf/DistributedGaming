@@ -14,10 +14,14 @@ class TileMap
  
    //return the map array to theGameModel.
    void setMap();
+   void setWalls();
+   int  getWidth();
+   int  getHeight();
    void initTexture();
    void loadTexture(GLuint texture, const char* filename);
    void render();
    void drawBox();
+   int generateRandom(int start, int end);
 
    private:
    int x_size;

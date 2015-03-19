@@ -11,6 +11,10 @@
 #include <cstdlib>
 #include <vector>
 #include "rawModel/loader.h"
+#include "bots/animal.h"
+#include "bots/cat.h"
+#include "bots/mouse.h"
+
 #define N_ELEMENTS(array) (sizeof(array)/sizeof((array)[0])) 
 
 using namespace std;
@@ -91,7 +95,8 @@ void GameView::display()
 	    0.0, 1.0,  0.0);
 	    
    glRotatef(theGameModel->getAngle(),0.0,1.0,0.0); //camera angle
-   float vert[] = {-0.5f,0.5f,0.0f, 
+   
+float vert[] = {-0.5f,0.5f,0.0f, 
                    -0.5f, -0.5f, 0.0f,
                    0.5f, -0.5f, 0.0f,
                    0.5f, -0.5f, 0.0f,
@@ -106,8 +111,8 @@ void GameView::display()
    //glDrawArrays(GL_TRIANGLES, 0, rm.getVertexCount());
    //glDisableVertexAttribArray(0);
    theGameModel->drawTile();
-
-   
+   glTranslatef(1.5,0,0);
+   theGameModel->drawBots();
    glutSwapBuffers();    
 }
 

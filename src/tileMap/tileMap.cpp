@@ -2,6 +2,7 @@
 #include "../../supports/stb_image.h"
 #include <stdio.h>
 #include <iostream>
+#include <random>
 using namespace std;
 
 TileMap::TileMap(int mapSize_x,int mapSize_y,
@@ -13,6 +14,7 @@ TileMap::TileMap(int mapSize_x,int mapSize_y,
    //set to private
 
     setMap();
+    setWalls();
     textureOne = texture_one;
     textureTwo = texture_two;
 }
@@ -30,7 +32,27 @@ TileMap::~TileMap()
   delete textureTwo;
 }
 
+int TileMap::getWidth()
+{
+   return y_size;
+}
 
+int TileMap::getHeight()
+{
+   return x_size;
+}
+
+int TileMap::generateRandom(int start, int end)
+{
+
+    random_device                  rand_dev;
+    mt19937                        generator(rand_dev());
+    uniform_int_distribution<int>  distr(start, end);
+    
+    int result = distr(generator);
+    return result;
+    
+}
 
 
 void TileMap::setMap()
@@ -43,11 +65,23 @@ void TileMap::setMap()
                 m[i][j]= 1;
 
             } else {
+		
                 m[i][j]=0;
-
             }
         }
     }
+
+}
+
+void TileMap::setWalls()
+{
+   for(int i = 0; i<y_size*2 ; i++){
+        int y = generateRandom(0 , y_size);
+   	int x = generateRandom(0 , x_size);   
+        if(m[y][x] != 1){
+   	m[y][x] = 1;
+	}
+   }
 
 }
 

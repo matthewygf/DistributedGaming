@@ -4,6 +4,11 @@
 #include <GL/glut.h>
 #include "camera/camera.h"
 #include "tileMap/tileMap.h"
+#include "bots/animal.h"
+#include "bots/cat.h"
+#include "bots/mouse.h"
+#include <stdlib.h>
+#include <unistd.h>
 using namespace std;
 
 class GameModel
@@ -58,8 +63,10 @@ class GameModel
    //void setBots();
    void initCamera();
    void gameSetUp();
-   void drawSnowMan();
    void drawTile();
+   void drawBots();
+   void drawCats();
+   void drawMouse();
    
 
    private:
@@ -70,6 +77,8 @@ class GameModel
    float deltaAngle,deltaMove;
    Camera *theCamera;
    TileMap *tile;
+   Cat c;
+   Mouse m;
    //Bots bots;
    
 };
