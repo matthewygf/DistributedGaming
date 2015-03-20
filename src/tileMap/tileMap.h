@@ -4,6 +4,9 @@
 #define STBI_ASSERT(x)
 #include <GL/glut.h>
 #include <iostream>
+#include <vector>
+#include "../../supports/matrix/src/Vectors.h"
+#include "box.h"
 
 class TileMap
 {
@@ -22,6 +25,7 @@ class TileMap
    void render();
    void drawBox();
    int generateRandom(int start, int end);
+   
 
    private:
    int x_size;
@@ -31,6 +35,8 @@ class TileMap
    int **m;
    const int *mdata;
    const static GLsizei textureSize = 2;
+   
+
    GLuint texturesID[textureSize]; //only 2 textures
    
 

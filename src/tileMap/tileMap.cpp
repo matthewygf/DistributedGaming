@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <random>
+#include <vector>
+#include "../../supports/matrix/src/Vectors.h"
 using namespace std;
 
 TileMap::TileMap(int mapSize_x,int mapSize_y,
@@ -73,6 +75,15 @@ void TileMap::setMap()
 
 }
 
+int TileMap::isWall(int i, int j)
+{
+   if (m[i][j] == 1){
+      return 1;
+   } else {
+      return 0;
+   }
+}
+
 void TileMap::setWalls()
 {
    for(int i = 0; i<y_size*2 ; i++){
@@ -121,10 +132,14 @@ void TileMap::loadTexture(GLuint texture, const char* filename)
 
 }
 
+
+
+
 void TileMap::render()
 {
    
    int tile;
+   vector <Vector3> wallsPos;
    for (int y = 0 ; y < y_size; y++)
    {
      for(int x = 0; x < x_size; x++)
@@ -135,6 +150,8 @@ void TileMap::render()
           glPushMatrix();
           glEnable(GL_TEXTURE_2D);
           glBindTexture(GL_TEXTURE_2D, texturesID[1]);
+          Vector3 wallPos(x+0.5,y-2.5,0.5);
+          wallsPos.push_back(wallPos);
 
           glTranslatef(x+0.5,y-2.5,0.5);
 
@@ -199,7 +216,6 @@ void TileMap::render()
         glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x), float(y -2), 0.0f);
         glEnd();
         }
-     //}
      
    }
    
