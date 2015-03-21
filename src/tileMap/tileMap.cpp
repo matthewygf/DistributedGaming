@@ -14,11 +14,11 @@ TileMap::TileMap(int mapSize_x,int mapSize_y,
     x_size = mapSize_x;
     y_size = mapSize_y;
    //set to private
-
     setMap();
     setWalls();
     textureOne = texture_one;
     textureTwo = texture_two;
+    
 }
 
 TileMap::~TileMap()
@@ -75,14 +75,7 @@ void TileMap::setMap()
 
 }
 
-int TileMap::isWall(int i, int j)
-{
-   if (m[i][j] == 1){
-      return 1;
-   } else {
-      return 0;
-   }
-}
+
 
 void TileMap::setWalls()
 {
@@ -132,14 +125,33 @@ void TileMap::loadTexture(GLuint texture, const char* filename)
 
 }
 
+void TileMap::calculateWallsPos()
+{
+ int tile;
+ for (int y = 0 ; y < y_size; y++)
+   {
+     for(int x = 0; x < x_size; x++)
+     {
+       tile = m[y][x];
+        if(tile==1){
+       Vector3 wallPos(x+0.5,y-2.5,0.5);
+       wallsPos.push_back(wallPos);
+       }
+     }
+   }
+}
 
+vector <Vector3> TileMap::getWallsPos()
+{
+  return wallsPos;
+}
 
 
 void TileMap::render()
 {
    
    int tile;
-   vector <Vector3> wallsPos;
+   //vector <Vector3> wallsPos;
    for (int y = 0 ; y < y_size; y++)
    {
      for(int x = 0; x < x_size; x++)
@@ -150,8 +162,8 @@ void TileMap::render()
           glPushMatrix();
           glEnable(GL_TEXTURE_2D);
           glBindTexture(GL_TEXTURE_2D, texturesID[1]);
-          Vector3 wallPos(x+0.5,y-2.5,0.5);
-          wallsPos.push_back(wallPos);
+          //Vector3 wallPos(x+0.5,y-2.5,0.5);
+          //wallsPos.push_back(wallPos);
 
           glTranslatef(x+0.5,y-2.5,0.5);
 
@@ -206,8 +218,8 @@ void TileMap::render()
         glEnd();
         glPopMatrix();
         }
-       glEnable(GL_TEXTURE_2D);
-       glBindTexture(GL_TEXTURE_2D, texturesID[0]);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, texturesID[0]);
         glBegin(GL_QUADS);
         //each tile have a x n y coordinate of 1 apart
         glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x), float(y-3), 0.0f);

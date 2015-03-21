@@ -25,7 +25,12 @@ class TileMap
    void render();
    void drawBox();
    int generateRandom(int start, int end);
-   
+   void calculateWallsPos();
+   vector <Vector3> getWallsPos();
+   //need to make a method for storing walls information
+   //calculateWallsPosi & store walls vertices for collision
+   //return the vector for the world
+   //getwallsPos;
 
    private:
    int x_size;
@@ -35,7 +40,7 @@ class TileMap
    int **m;
    const int *mdata;
    const static GLsizei textureSize = 2;
-   
+   vector <Vector3> wallsPos;
 
    GLuint texturesID[textureSize]; //only 2 textures
    

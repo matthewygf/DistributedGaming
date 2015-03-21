@@ -1,15 +1,14 @@
 #ifndef ANIMAL_H
 #define ANIMAL_H
 #include <GL/glut.h>
-
+#include <vector>
+#include "../../supports/matrix/src/Vectors.h"
 //baseclass for the animal
 
 class Animal
 {
    protected:
-      float pos_x;
-      float pos_y;
-      float pos_z;
+      Vector3 pos;
     
    public:
       Animal();

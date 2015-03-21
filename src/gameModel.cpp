@@ -10,11 +10,9 @@ using namespace std;
 
 GameModel::GameModel(Camera *newCamera, TileMap * newTileMap)
 {
-  //Map;
+  //WorldMap;
   theCamera = newCamera;
   tile = newTileMap;
-  c.setPosition(10,0,0);
-  //bots;
   cout<<"modelInitialised"<<endl;
   
 }
@@ -119,6 +117,11 @@ float GameModel::getCameraAngle(){
   return angle;
 }
 
+void GameModel::getWallsPos(){
+  tile->calculateWallsPos();
+  wallsPos = tile->getWallsPos();
+}
+
 // setter
 
 void GameModel::setPosition_x(float new_x){
@@ -182,9 +185,18 @@ void GameModel::initCamera(){
     getCameraAngle();
 }
 
+void GameModel::initAnimals()
+{
+  animals.push_back(c);
+  animals.push_back(m);
+}
+
 void GameModel::gameSetUp(){
     initCamera();
     tile->initTexture();
+    initAnimals();
+    getWallsPos();
+    
 }
 
 
@@ -217,4 +229,10 @@ void GameModel::drawBots()
   drawCats();
   drawMouse();
 }
+
+//void GameModel::testForCollision(vector<Vector3> walls)
+//{
+
+//}
+
 

@@ -71,7 +71,6 @@ void GameView::init()
    initLights();
    glEnable(GL_LIGHTING);
    theGameModel->gameSetUp();
-
 }
 
 void GameView::display()
@@ -110,6 +109,8 @@ float vert[] = {-0.5f,0.5f,0.0f,
    //glEnableVertexAttribArray(0);
    //glDrawArrays(GL_TRIANGLES, 0, rm.getVertexCount());
    //glDisableVertexAttribArray(0);
+
+   //worlds objects
    theGameModel->drawTile();
    glTranslatef(1.5,0,0);
    theGameModel->drawBots();

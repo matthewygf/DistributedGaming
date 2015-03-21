@@ -4,6 +4,8 @@
 #include <GL/glut.h>
 #include "camera/camera.h"
 #include "tileMap/tileMap.h"
+#include <vector>
+#include "../supports/matrix/src/Vectors.h"
 #include "bots/animal.h"
 #include "bots/cat.h"
 #include "bots/mouse.h"
@@ -39,6 +41,7 @@ class GameModel
    float getCameraLookAtPos_z();
    void getCameraLookAtPos();
    float getCameraAngle();
+   void getWallsPos();
    
    
    //float getBotsPos();
@@ -62,11 +65,13 @@ class GameModel
    //gameSetting
    //void setBots();
    void initCamera();
+   void initAnimals();
    void gameSetUp();
    void drawTile();
    void drawBots();
    void drawCats();
    void drawMouse();
+   //void testForCollision(vector<Vector3>& walls);
    
 
    private:
@@ -77,6 +82,8 @@ class GameModel
    float deltaAngle,deltaMove;
    Camera *theCamera;
    TileMap *tile;
+   vector <Vector3> wallsPos;
+   vector <Animal>  animals;
    Cat c;
    Mouse m;
    //Bots bots;

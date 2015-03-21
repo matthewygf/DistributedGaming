@@ -9,5 +9,8 @@ class Mouse:public Animal
    Mouse();
    ~Mouse();
    virtual void render();
+   int getId();
+  private:
+   int id;
 };
 #endif

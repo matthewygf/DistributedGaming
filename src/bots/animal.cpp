@@ -14,32 +14,32 @@ Animal::~Animal()
 
 float Animal::getPositionX()
 {
-  return pos_x;
+  return pos.x;
 }
 
 float Animal::getPositionY()
 {
-  return pos_y;
+  return pos.y;
 }
 
 float Animal::getPositionZ()
 {
-  return pos_z;
+  return pos.z;
 }
 
 void Animal::setPositionX(float new_pos_x)
 {
-  pos_x = new_pos_x;
+  pos.x = new_pos_x;
 }
 
 void Animal::setPositionY(float new_pos_y)
 {
-  pos_y = new_pos_y;
+  pos.y = new_pos_y;
 }
 
 void Animal::setPositionZ(float new_pos_z)
 {
-  pos_z = new_pos_z;
+  pos.z = new_pos_z;
 }
 
 void Animal::setPosition(float new_pos_x, float new_pos_y, float new_pos_z)
