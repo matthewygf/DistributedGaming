@@ -27,6 +27,11 @@ float Animal::getPositionZ()
   return pos.z;
 }
 
+int Animal::getId()
+{
+  return id;
+}
+
 void Animal::setPositionX(float new_pos_x)
 {
   pos.x = new_pos_x;

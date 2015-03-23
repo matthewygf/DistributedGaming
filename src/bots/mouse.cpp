@@ -18,7 +18,4 @@ void Mouse::render()
    drawBox();
 }
 
-int Mouse::getId()
-{
-  return id;
-}
+

@@ -17,7 +17,4 @@ void Cat::render()
   drawBox();
 }
 
-int Cat::getId()
-{
-  return id;
-}
+

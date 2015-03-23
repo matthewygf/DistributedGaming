@@ -208,6 +208,7 @@ void GameModel::drawTile()
 void GameModel::drawCats()
 {
   glPushMatrix();
+  cout<<"animals ID = " << animals[1].getId()<<endl;
   c.moveRight();
   c.render();
   glPopMatrix();

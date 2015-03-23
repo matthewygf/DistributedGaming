@@ -9,13 +9,14 @@ class Animal
 {
    protected:
       Vector3 pos;
-    
+      int id;
    public:
       Animal();
       ~Animal();
       float getPositionX();
       float getPositionY();
       float getPositionZ();
+      int getId();
       void  setPositionX(float new_pos_x);
       void  setPositionY(float new_pos_y);
       void  setPositionZ(float new_pos_z);
@@ -27,6 +28,7 @@ class Animal
       void  moveUp();
       void  moveDown();
       virtual void render(){};
+      
 
 };
 
