@@ -4,7 +4,7 @@ CPP = g++
 F77 = f77
 F9X = gfortran
 LD = g++
-CFLAGS =  -Wall -std=c++11
+CFLAGS =  -Wall -g -std=c++11
 LIBS = -lGL -lGLU -lglut -lm -lpthread
 
 

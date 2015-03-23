@@ -76,13 +76,12 @@ void TileMap::setMap()
 }
 
 
-
 void TileMap::setWalls()
 {
-   for(int i = 0; i<y_size*2 ; i++){
-        int y = generateRandom(0 , y_size);
-   	int x = generateRandom(0 , x_size);   
-        if(m[y][x] != 1){
+   for(int i = 0; i<y_size ; i++){
+        int y = generateRandom(0 , y_size-1);
+   	int x = generateRandom(0 , x_size-1);   
+        if(m[y][x] == 0){
    	m[y][x] = 1;
 	}
    }

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
-
+#include <random>
 
 using namespace std;
 
@@ -188,10 +188,16 @@ void GameModel::initCamera(){
 void GameModel::initAnimals()
 {
   //random generate some animals
-  int r = randomGenerate(0,1);
+  for(int i = 0 ; i<10; i++){
+  int r = generateRandom(0,1);
   Animal a(r);
-  animals.push_back(c);
-  animals.push_back(m);
+  animals.push_back(a);
+  int x = animals[i].getId();
+  cout<<"animal id is = " << x<<endl;
+  }
+  
+  
+
 }
 
 void GameModel::gameSetUp(){
@@ -211,7 +217,6 @@ void GameModel::drawTile()
 void GameModel::drawCats()
 {
   glPushMatrix();
-  cout<<"animals ID = " << animals[1].getId()<<endl;
   c.moveRight();
   c.render();
   glPopMatrix();

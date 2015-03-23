@@ -7,6 +7,7 @@ class Mouse:public Animal
 {
   public:
    Mouse();
+   Mouse(int i);
    ~Mouse();
    virtual void render();
    int getId();

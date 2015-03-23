@@ -12,6 +12,7 @@ class Animal
       int id;
    public:
       Animal();
+      Animal(int i);
       ~Animal();
       float getPositionX();
       float getPositionY();

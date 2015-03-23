@@ -7,6 +7,7 @@ class Cat:public Animal
 {
   public:
     Cat();
+    Cat(int i);
     ~Cat();
     virtual void render();
 };

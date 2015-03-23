@@ -6,7 +6,11 @@ using namespace std;
 
 Animal::Animal()
 {
+}
 
+Animal::Animal(int i)
+{
+ id = i;
 }
 
 Animal::~Animal()

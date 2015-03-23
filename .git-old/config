@@ -1,0 +1,11 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "cloudGame"]
+	url = https://github.com/matthewygf/cloudGame.git
+
+[branch "master"]
+	remote = https://github.com/matthewygf/cloudGame.git
+	merge = refs/heads/master
