@@ -42,10 +42,9 @@ class GameModel
    void getCameraLookAtPos();
    float getCameraAngle();
    void getWallsPos();
+   int  generateRandom(int start, int end);
    
-   
-   //float getBotsPos();
-   //float getTile();
+
    
    // setters
    void setPosition_x(float new_x);

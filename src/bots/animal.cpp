@@ -6,6 +6,7 @@ using namespace std;
 
 Animal::Animal()
 {
+
 }
 
 Animal::~Animal()

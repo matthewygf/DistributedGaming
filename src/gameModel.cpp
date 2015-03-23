@@ -187,6 +187,9 @@ void GameModel::initCamera(){
 
 void GameModel::initAnimals()
 {
+  //random generate some animals
+  int r = randomGenerate(0,1);
+  Animal a(r);
   animals.push_back(c);
   animals.push_back(m);
 }
@@ -229,6 +232,18 @@ void GameModel::drawBots()
   //thinkMove();
   drawCats();
   drawMouse();
+}
+
+int GameModel::generateRandom(int start, int end)
+{
+
+    random_device                  rand_dev;
+    mt19937                        generator(rand_dev());
+    uniform_int_distribution<int>  distr(start, end);
+    
+    int result = distr(generator);
+    return result;
+    
 }
 
 //void GameModel::testForCollision(vector<Vector3> walls)

@@ -5,7 +5,6 @@ using namespace std;
 
 Mouse::Mouse()
 {
-  id = 0;
 }
 
 Mouse::~Mouse()

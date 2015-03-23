@@ -4,7 +4,6 @@ using namespace std;
 
 Cat::Cat()
 {
-  id = 1;
 }
 
 Cat::~Cat()
