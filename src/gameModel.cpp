@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <random>
+#include <cmath>
 
 using namespace std;
 
@@ -192,22 +193,52 @@ void GameModel::initAnimals()
   int r = generateRandom(0,1);
   Animal a(r);
   animals.push_back(a);
-  int x = animals[i].getId();
-  cout<<"animal id is = " << x<<endl;
   }
-  
-  
+  initCnM();
 
 }
+
+void GameModel::initCnM()
+{
+  for (unsigned int i = 0; i<animals.size();i++)
+  {
+
+    if(animals[i].getId()==0){
+      Cat c;
+      float x = generateRandom(2,tileWidth-3);
+      float y = generateRandom(2,tileHeight-3);
+      c.setPosition(x,y,0);
+      cats.push_back(c);
+    }else{
+      Mouse m;
+      float x = generateRandom(2,tileWidth-3);
+      float y = generateRandom(2,tileHeight-3);
+      m.setPosition(x,y,0);
+      //cout<<x<<" "<<y<< " "<<endl;
+      mice.push_back(m);
+   }
+  }
+  cout<<cats.size()<<endl;
+  cout<<mice.size()<<endl;
+}
+
+
 
 void GameModel::gameSetUp(){
     initCamera();
     tile->initTexture();
-    initAnimals();
+    getTileSettings();
     getWallsPos();
-    
+    initAnimals();
+    //test once. later test every frames
+    catCollideWalls(wallsPos, cats);
+    mouseCollideWalls(wallsPos, mice);
 }
 
+void GameModel::getTileSettings(){
+  tileWidth = tile->getWidth();
+  tileHeight= tile->getHeight();
+}
 
 void GameModel::drawTile()
 {
@@ -216,44 +247,82 @@ void GameModel::drawTile()
 
 void GameModel::drawCats()
 {
-  glPushMatrix();
-  c.moveRight();
-  c.render();
-  glPopMatrix();
+    for (unsigned int i = 0; i<cats.size();i++){   
+    glPushMatrix();
+    glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),0.5);
+    cats[i].render();
+    glPopMatrix();
+  }
 }
 
 void GameModel::drawMouse()
 {
-  glTranslatef(15,7,0);
-  glPushMatrix();
-  m.moveLeft();
-  m.render();
-  glPopMatrix();
+ for (unsigned int i = 0; i<mice.size();i++){ 
+    glPushMatrix();
+    glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),0.5);
+    mice[i].render();
+    glPopMatrix();
+  }
 }
 
 void GameModel::drawBots()
 {
-  //float w = tile->getWidth() - 3.5;
-  //thinkMove();
   drawCats();
   drawMouse();
 }
 
 int GameModel::generateRandom(int start, int end)
 {
-
     random_device                  rand_dev;
     mt19937                        generator(rand_dev());
     uniform_int_distribution<int>  distr(start, end);
-    
     int result = distr(generator);
     return result;
     
 }
 
-//void GameModel::testForCollision(vector<Vector3> walls)
-//{
+void GameModel::catCollideWalls(vector<Vector3>& walls, vector<Cat>& cats)
+{
+  //vector3 is a position
+  //getThePosition of the Cat and test against walls
+  //for each cat, test against each walls
+  for(unsigned int i=0;i<cats.size();i++){
+    for(unsigned int j=0; j<walls.size();j++){
+       Vector3 cPos = cats[i].getPosition();
+       bool c = testCollision(walls[j],cPos);
+       if(c==1){
+        cout<<"collision at cat "<<i<<" with wall "<<j<<endl;
+        cout<<"Position of cat "<<cPos<<" ,wall position is "<<walls[j]<<endl;
+         }
+       //pass the result back to cat's AI. so it realise it hits wall and need to change its direction
+     }  
+  }
+}
 
-//}
+void GameModel::mouseCollideWalls(vector<Vector3>& walls,vector<Mouse>& mice)
+{
+  for(unsigned int i=0;i<mice.size();i++){
+    for(unsigned int j=0;j<walls.size();j++){
+      Vector3 mPos = mice[i].getPosition();
+      bool c = testCollision(walls[j],mPos);
+      if(c==1){
+        cout<<"collision at mouse "<<i<<" with wall "<<j<<endl;
+        cout<<"Position of mouse"<<mPos<<" ,wall position is "<<walls[j]<<endl;
+      } 
+    }
+  }
+ //need to pass the result back to mouse's AI.
+}
 
+
+
+
+bool GameModel::testCollision(Vector3& a, Vector3& b)
+{
+  float halfWidthBox = 0.5;
+  float halfHeightBox = 0.5;
+  if(abs(a.x - b.x)>(halfWidthBox + halfWidthBox)) return false;
+  if(abs(a.y - b.y)>(halfHeightBox + halfHeightBox)) return false;
+  return true;
+}
 

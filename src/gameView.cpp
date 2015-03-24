@@ -114,6 +114,7 @@ float vert[] = {-0.5f,0.5f,0.0f,
    theGameModel->drawTile();
    glTranslatef(1.5,0,0);
    theGameModel->drawBots();
+   
    glutSwapBuffers();    
 }
 

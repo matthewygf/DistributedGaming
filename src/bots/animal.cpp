@@ -37,6 +37,11 @@ int Animal::getId()
   return id;
 }
 
+Vector3 Animal::getPosition()
+{
+  return pos;
+}
+
 void Animal::setPositionX(float new_pos_x)
 {
   pos.x = new_pos_x;
@@ -130,6 +135,10 @@ void Animal::moveLeft()
   setPositionX(newX);  
   glTranslatef(getPositionX(),getPositionY(),getPositionZ());
 
+}
+
+void Animal::stop()
+{
 }
 
 void Animal::moveUp()

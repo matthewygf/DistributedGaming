@@ -39,12 +39,12 @@ class GameModel
    float getCameraLookAtPos_x();
    float getCameraLookAtPos_y();
    float getCameraLookAtPos_z();
-   void getCameraLookAtPos();
+   void  getCameraLookAtPos();
    float getCameraAngle();
    void getWallsPos();
+   void getTileSettings();
    int  generateRandom(int start, int end);
    
-
    
    // setters
    void setPosition_x(float new_x);
@@ -65,13 +65,15 @@ class GameModel
    //void setBots();
    void initCamera();
    void initAnimals();
+   void initCnM();
    void gameSetUp();
    void drawTile();
    void drawBots();
    void drawCats();
    void drawMouse();
-   //void testForCollision(vector<Vector3>& walls);
-   
+   void catCollideWalls(vector<Vector3>& walls, vector<Cat>& cats);
+   void mouseCollideWalls(vector<Vector3>& walls,vector<Mouse>& mice);
+   bool testCollision(Vector3& a, Vector3& b);
 
    private:
    int width, height;
@@ -79,10 +81,13 @@ class GameModel
    float lposition_x, lposition_y, lposition_z; //for the camera lookAt
    float angle;//for camera angle
    float deltaAngle,deltaMove;
+   float tileWidth, tileHeight;
    Camera *theCamera;
    TileMap *tile;
    vector <Vector3> wallsPos;
    vector <Animal>  animals;
+   vector <Cat>     cats;
+   vector <Mouse>   mice;
    Cat c;
    Mouse m;
    //Bots bots;

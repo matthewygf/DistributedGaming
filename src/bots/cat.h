@@ -10,6 +10,9 @@ class Cat:public Animal
     Cat(int i);
     ~Cat();
     virtual void render();
+    int getId();
+  private:
+   int id;
 };
 
 #endif

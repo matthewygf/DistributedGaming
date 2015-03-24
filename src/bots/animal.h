@@ -17,6 +17,7 @@ class Animal
       float getPositionX();
       float getPositionY();
       float getPositionZ();
+      Vector3 getPosition();
       int getId();
       void  setPositionX(float new_pos_x);
       void  setPositionY(float new_pos_y);
@@ -28,6 +29,7 @@ class Animal
       void  moveLeft();
       void  moveUp();
       void  moveDown();
+      void  stop();
       virtual void render(){};
       
 
