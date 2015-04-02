@@ -24,6 +24,7 @@ class TileMap
    void loadTexture(GLuint texture, const char* filename);
    void render();
    void drawBox();
+   void drawWalls();
    int generateRandom(int start, int end);
    void calculateWallsPos();
    vector <Vector3> getWallsPos();

@@ -3,14 +3,12 @@
 #include "gameView.h"
 #include <GL/glut.h>
 #include "../supports/glext.h"
-#include "rawModel/rawModel.h"
 #include <stdio.h>
 #include <iostream>
 #include <pthread.h>
 #include <iomanip>
 #include <cstdlib>
 #include <vector>
-#include "rawModel/loader.h"
 #include "bots/animal.h"
 #include "bots/cat.h"
 #include "bots/mouse.h"
@@ -95,29 +93,33 @@ void GameView::display()
 	    
    glRotatef(theGameModel->getAngle(),0.0,1.0,0.0); //camera angle
    
-float vert[] = {-0.5f,0.5f,0.0f, 
-                   -0.5f, -0.5f, 0.0f,
-                   0.5f, -0.5f, 0.0f,
-                   0.5f, -0.5f, 0.0f,
-                   0.5f, 0.5f, 0.0f,
-                   -0.5f, 0.5f, 0.0f};
-   vector<float> vertices (vert,vert+sizeof(vert)/sizeof(float));
-   
-   //Loader loader;
-   //RawModel rm =loader.loadToVao(vertices);	
-   //glBindVertexArray(rm.getVaoID());
-   //glEnableVertexAttribArray(0);
-   //glDrawArrays(GL_TRIANGLES, 0, rm.getVertexCount());
-   //glDisableVertexAttribArray(0);
-
    //worlds objects
+   t1.start();
    theGameModel->drawTile();
-   glTranslatef(1.5,0,0);
    theGameModel->drawBots();
-   
+   theGameModel->runCollision(); //physics collision
+   t1.stop();
+   drawTime = (float) t1.getElapsedTimeInMilliSec();
+   //cout<<drawTime<<endl;
+   //countFPS();
+
    glutSwapBuffers();    
 }
 
+void GameView::countFPS()
+{
+  static Timer timer;
+  static int count = 0;
+  double elapsedTime = 0.0;
+  ++count;
+  elapsedTime = timer.getElapsedTime();
+  if(elapsedTime>1.0)
+  {
+    cout<<(count/elapsedTime)<<" FPS"<<endl;
+    count = 0;
+    timer.start();
+  }
+}
 
 
 
@@ -170,11 +172,6 @@ void GameView::timerWrapper(int t) {
   instanceView->animate(t);
 }
 
-//void GameView::menuWrapper(int item) {
-  //instanceController->menu(item);
-//}
-
-
 void GameView::keyboardWrapper(unsigned char key, int x, int y) {
   instanceController->keyboard(key, x, y);
 }
@@ -216,7 +213,6 @@ int GameView::render(int argc, char *argv[])
   glutKeyboardFunc(keyboardWrapper);
   glutSpecialFunc(specialInputWrapper);
   glutSpecialUpFunc(upFunctionInputWrapper);
-
 
   glutMainLoop();
   

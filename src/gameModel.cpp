@@ -119,7 +119,6 @@ float GameModel::getCameraAngle(){
 }
 
 void GameModel::getWallsPos(){
-  tile->calculateWallsPos();
   wallsPos = tile->getWallsPos();
 }
 
@@ -189,11 +188,13 @@ void GameModel::initCamera(){
 void GameModel::initAnimals()
 {
   //random generate some animals
-  for(int i = 0 ; i<10; i++){
+  //generates cats n mouse according to ID.
+  for(int i = 0 ; i<(tileWidth/2); i++){
   int r = generateRandom(0,1);
   Animal a(r);
   animals.push_back(a);
   }
+  //initialise mouse n cats
   initCnM();
 
 }
@@ -202,19 +203,36 @@ void GameModel::initCnM()
 {
   for (unsigned int i = 0; i<animals.size();i++)
   {
-
+    //if the id = 0
     if(animals[i].getId()==0){
       Cat c;
       float x = generateRandom(2,tileWidth-3);
-      float y = generateRandom(2,tileHeight-3);
-      c.setPosition(x,y,0);
+      float y = generateRandom(2,tileHeight-5);
+      int dir = generateRandom(0,3);
+      for(unsigned int j = 0; j<wallsPos.size();j++){
+           //make sure the cats positions are not same as anywalls
+         while(x == wallsPos[j].x && y ==wallsPos[j].y){
+            x = generateRandom(2,tileWidth-3);
+            y = generateRandom(2,tileHeight-5);
+        }
+      }
+      //inital position& moving direction
+      c.setMovingDirection(dir);
+      c.setPosition(x,y,0.5);
       cats.push_back(c);
     }else{
       Mouse m;
       float x = generateRandom(2,tileWidth-3);
-      float y = generateRandom(2,tileHeight-3);
-      m.setPosition(x,y,0);
-      //cout<<x<<" "<<y<< " "<<endl;
+      float y = generateRandom(2,tileHeight-5);
+       int dir = generateRandom(0,3);
+      for(unsigned int j = 0; j<wallsPos.size();j++){
+         while(x == wallsPos[j].x && y ==wallsPos[j].y){
+            x = generateRandom(2,tileWidth-3);
+            y = generateRandom(2,tileHeight-5);
+        }
+      }
+      m.setMovingDirection(dir);
+      m.setPosition(x,y,0.5);
       mice.push_back(m);
    }
   }
@@ -230,9 +248,6 @@ void GameModel::gameSetUp(){
     getTileSettings();
     getWallsPos();
     initAnimals();
-    //test once. later test every frames
-    catCollideWalls(wallsPos, cats);
-    mouseCollideWalls(wallsPos, mice);
 }
 
 void GameModel::getTileSettings(){
@@ -249,8 +264,12 @@ void GameModel::drawCats()
 {
     for (unsigned int i = 0; i<cats.size();i++){   
     glPushMatrix();
-    glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),0.5);
+    glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
     cats[i].render();
+    //should be cats.update(); 
+    //so it follows the cats ai, plus any interaction to draw the scene
+    int d = cats[i].getMovingDirection();
+    cats[i].move(d);
     glPopMatrix();
   }
 }
@@ -259,8 +278,11 @@ void GameModel::drawMouse()
 {
  for (unsigned int i = 0; i<mice.size();i++){ 
     glPushMatrix();
-    glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),0.5);
+    glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
     mice[i].render();
+    //should be each mice.update();
+    int d = mice[i].getMovingDirection();
+    mice[i].move(d);
     glPopMatrix();
   }
 }
@@ -271,6 +293,14 @@ void GameModel::drawBots()
   drawMouse();
 }
 
+void GameModel::runCollision()
+{
+    catCollideWalls(wallsPos, cats);
+    mouseCollideWalls(wallsPos, mice);
+    catCollideCats(cats);
+    mouseCollideMice(mice);
+    //cout<<"testing collision"<<endl;
+}
 int GameModel::generateRandom(int start, int end)
 {
     random_device                  rand_dev;
@@ -289,10 +319,18 @@ void GameModel::catCollideWalls(vector<Vector3>& walls, vector<Cat>& cats)
   for(unsigned int i=0;i<cats.size();i++){
     for(unsigned int j=0; j<walls.size();j++){
        Vector3 cPos = cats[i].getPosition();
-       bool c = testCollision(walls[j],cPos);
+       Vector3 wall = walls[j];
+       bool c = testCollision(wall,cPos);
        if(c==1){
-        cout<<"collision at cat "<<i<<" with wall "<<j<<endl;
-        cout<<"Position of cat "<<cPos<<" ,wall position is "<<walls[j]<<endl;
+          int d = cats[i].getMovingDirection();
+          cats[i].setOppositeDirection();//stop()
+          int new_d = generateRandom(0,3);
+          while(new_d == d){
+              new_d = generateRandom(0,3);
+          }    
+          cats[i].setMovingDirection(new_d);
+          //cout<<"collision at cat "<<i<<" with wall "<<j<<endl;
+          //cout<<"Position of cat "<<cPos<<" ,wall position is "<<wall<<endl;
          }
        //pass the result back to cat's AI. so it realise it hits wall and need to change its direction
      }  
@@ -306,20 +344,76 @@ void GameModel::mouseCollideWalls(vector<Vector3>& walls,vector<Mouse>& mice)
       Vector3 mPos = mice[i].getPosition();
       bool c = testCollision(walls[j],mPos);
       if(c==1){
-        cout<<"collision at mouse "<<i<<" with wall "<<j<<endl;
-        cout<<"Position of mouse"<<mPos<<" ,wall position is "<<walls[j]<<endl;
+          int d = mice[i].getMovingDirection();
+          mice[i].setOppositeDirection();//stop()
+          int new_d = generateRandom(0,3);
+          while(new_d == d){
+              new_d = generateRandom(0,3);
+          }    
+          mice[i].setMovingDirection(new_d);
+        //cout<<"collision at mouse "<<i<<" with wall "<<j<<endl;
+        //cout<<"Position of mouse"<<mPos<<" ,wall position is "<<walls[j]<<endl;
       } 
     }
   }
  //need to pass the result back to mouse's AI.
 }
 
+void GameModel::catCollideCats(vector<Cat>& cats)
+{
+  for(unsigned int i=0; i<cats.size();i++){
+    Vector3 cPos = cats[i].getPosition();
+    for(unsigned int j=0; j<cats.size();j++){
+      if(i!=j){ // except itself.
+      Vector3 c2Pos = cats[j].getPosition();
+      bool c = testCollision(c2Pos, cPos);
+      if(c==1){
+         int d = cats[i].getMovingDirection();
+          cats[i].setOppositeDirection();//stop()
+          int new_d = generateRandom(0,3);
+          while(new_d == d){
+              new_d = generateRandom(0,3);
+          }    
+          cats[i].setMovingDirection(new_d);
+        //cout<<"collision at cat "<<i<<" with another cat "<<j<<endl;
+        //cout<<"Position of cat"<<cPos<<" ,another cat position is "<<c2Pos<<endl;
+      } 
+    }else{}
+   }
+  }
+}
 
+
+void GameModel::mouseCollideMice(vector<Mouse>& mice)
+{
+  for(unsigned int i=0; i<mice.size();i++){
+    Vector3 mPos = mice[i].getPosition();
+    for(unsigned int j=0; j<mice.size();j++){
+      if(i!=j){ // except itself.
+      Vector3 m2Pos = mice[j].getPosition();
+      bool c = testCollision(m2Pos, mPos);
+      if(c==1){
+        int d = mice[i].getMovingDirection();
+          mice[i].setOppositeDirection();//stop()
+          int new_d = generateRandom(0,3);
+          while(new_d == d){
+              new_d = generateRandom(0,3);
+          }    
+          mice[i].setMovingDirection(new_d);
+        //cout<<"collision at mouse "<<i<<" with another mouse "<<j<<endl;
+        //cout<<"Position of mouse"<<mPos<<" ,another mouse position is "<<m2Pos<<endl;
+      } 
+    }else{}
+   }
+  }
+
+}
 
 
 bool GameModel::testCollision(Vector3& a, Vector3& b)
 {
-  float halfWidthBox = 0.5;
+  //give a little space
+  float halfWidthBox = 0.5; 
   float halfHeightBox = 0.5;
   if(abs(a.x - b.x)>(halfWidthBox + halfWidthBox)) return false;
   if(abs(a.y - b.y)>(halfHeightBox + halfHeightBox)) return false;

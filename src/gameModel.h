@@ -73,7 +73,11 @@ class GameModel
    void drawMouse();
    void catCollideWalls(vector<Vector3>& walls, vector<Cat>& cats);
    void mouseCollideWalls(vector<Vector3>& walls,vector<Mouse>& mice);
+   void catCollideCats(vector<Cat>& cats);
+   void mouseCollideMice(vector<Mouse>& mice);
+   void catsCollideMice(vector<Cat>& cats, vector<Mouse>& mice);
    bool testCollision(Vector3& a, Vector3& b);
+   void runCollision();
 
    private:
    int width, height;

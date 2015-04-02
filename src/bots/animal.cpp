@@ -1,6 +1,8 @@
 #include "animal.h"
 #include <GL/glut.h>
 #include <iostream>
+#include <random>
+#include <stdio.h>
 
 using namespace std;
 
@@ -42,6 +44,11 @@ Vector3 Animal::getPosition()
   return pos;
 }
 
+int Animal::getMovingDirection()
+{
+  return dir;
+}
+
 void Animal::setPositionX(float new_pos_x)
 {
   pos.x = new_pos_x;
@@ -62,6 +69,11 @@ void Animal::setPosition(float new_pos_x, float new_pos_y, float new_pos_z)
    setPositionX(new_pos_x);
    setPositionY(new_pos_y);
    setPositionZ(new_pos_z);
+}
+
+void Animal::setMovingDirection(int new_dir)
+{
+  dir = new_dir;
 }
 
 void Animal::drawBox()
@@ -119,13 +131,9 @@ void Animal::drawBox()
 
 void Animal::moveRight()
 {
-  //just the width right now
   float currentX = getPositionX();
-  //if(currentX < width){
    float newX = currentX + 0.01;
    setPositionX(newX);
-  //}
-  glTranslatef(getPositionX(),getPositionY(),getPositionZ());
 }
 
 void Animal::moveLeft()
@@ -133,12 +141,13 @@ void Animal::moveLeft()
   float currentX = getPositionX();
   float newX = currentX - 0.01;
   setPositionX(newX);  
-  glTranslatef(getPositionX(),getPositionY(),getPositionZ());
+  
 
 }
 
 void Animal::stop()
 {
+  
 }
 
 void Animal::moveUp()
@@ -146,7 +155,7 @@ void Animal::moveUp()
   float currentY = getPositionY();
   float newY = currentY + 0.01;
   setPositionY(newY);
-  glTranslatef(getPositionX(),getPositionY(),getPositionZ());
+  
 }
 
 void Animal::moveDown()
@@ -154,6 +163,81 @@ void Animal::moveDown()
   float currentY = getPositionY();
   float newY = currentY - 0.01;
   setPositionY(newY);
-  glTranslatef(getPositionX(),getPositionY(),getPositionZ());
+}
+
+//PATROL():
+// dir = generateRandomDir();
+// animal.move(dir);         //set new position
+//   if hit walls:
+//    new_dir = generateRandomDir(); 
+//    checkDir(dir,new_dir); //modified new_dir if same as previous dir.
+//    animal.move(new_dir);  //set new position
+
+void Animal::patrol(int dir, int collide)
+{
+   if(collide != 1){
+   move(dir);
+   }else{
+   int new_dir = generateRandom(0,3);
+   }
+   
+   
+}
+
+void Animal::setOppositeDirection()
+{
+  int d = getMovingDirection();
+  switch (d){
+    case 0:
+      d = 1; //assign to going bottom
+      break;
+    case 1:
+      d = 0; //assign to going up
+      break;
+    case 2:
+      d =  3; //assign to going left
+      break;
+    case 3:
+      d = 2;
+      break;
+ 
+
+  }
+}
+
+void Animal::move(int dir)
+{
+ //top(0),down(1),right(2),left(3)
+  switch(dir){
+   case 0:
+     moveUp();
+     break;
+   case 1:
+     moveDown();
+     break;
+   case 2:
+     moveRight();
+     break;
+   case 3:
+     moveLeft();
+     break;
+   case 4:
+     break;
+   default:
+     stop();
+     break;
+ }
+}
+
+int Animal::generateRandom(int start, int end)
+{
+
+    random_device                  rand_dev;
+    mt19937                        generator(rand_dev());
+    uniform_int_distribution<int>  distr(start, end);
+    
+    int result = distr(generator);
+    return result;
+    
 }
 

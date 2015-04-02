@@ -3,6 +3,7 @@
 
 #include "gameModel.h"
 #include "gameController.h"
+#include "../supports/vbo/src/Timer.h"
 
 class GameView
 {       
@@ -19,6 +20,8 @@ class GameView
     //check positions
     void checkPos();
     
+    //fpscount
+    void countFPS();
     
     //setters
     void setInstanceObject();
@@ -57,11 +60,14 @@ class GameView
     float ang;
     float deltaAngle;
     float deltaMove;
-    
+    //GL initialise methods
     void init();
     void initLights();
     void update();
     void reset();
+    //for the measuring time
+    Timer t1;
+    float drawTime, updateTime;
 
 };
 

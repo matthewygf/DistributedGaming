@@ -10,6 +10,7 @@ class Animal
    protected:
       Vector3 pos;
       int id;
+      int dir;
    public:
       Animal();
       Animal(int i);
@@ -18,13 +19,19 @@ class Animal
       float getPositionY();
       float getPositionZ();
       Vector3 getPosition();
-      int getId();
+      int   getId();
+      int   getMovingDirection();
+      void  setOppositeDirection();
+      void  setMovingDirection(int new_dir);
       void  setPositionX(float new_pos_x);
       void  setPositionY(float new_pos_y);
       void  setPositionZ(float new_pos_z);
       void  setPosition(float new_pos_x, float new_pos_y, float new_pos_z);
       void  drawBox();
-      void  thinkMove(float width, float height);
+      //the id is for collisiondetected
+      int   generateRandom(int start, int end);
+      void  patrol(int dir, int collide);
+      void  move(int dir);
       void  moveRight();
       void  moveLeft();
       void  moveUp();

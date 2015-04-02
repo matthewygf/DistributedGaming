@@ -9,7 +9,7 @@ LIBS = -lGL -lGLU -lglut -lm -lpthread
 
 
 # files to be compiled
-FILES = src/main.cpp src/tileMap/tileMap.cpp src/gameModel.cpp src/gameController.cpp src/gameView.cpp src/camera/camera.cpp supports/stb_image.h src/bots/animal.cpp src/bots/cat.cpp src/bots/mouse.cpp supports/matrix/src/Matrices.cpp src/tileMap/box.cpp #src/rawModel/rawModel.cpp src/rawModel/loader.cpp
+FILES = src/main.cpp src/tileMap/tileMap.cpp src/gameModel.cpp src/gameController.cpp src/gameView.cpp src/camera/camera.cpp supports/stb_image.h src/bots/animal.cpp src/bots/cat.cpp src/bots/mouse.cpp supports/matrix/src/Matrices.cpp src/tileMap/box.cpp supports/vbo/src/Timer.cpp #src/rawModel/rawModel.cpp src/rawModel/loader.cpp
 
 AUXFILES := 
 

@@ -85,7 +85,6 @@ void TileMap::setWalls()
    	m[y][x] = 1;
 	}
    }
-
 }
 
  void TileMap::initTexture()
@@ -132,7 +131,7 @@ void TileMap::calculateWallsPos()
      for(int x = 0; x < x_size; x++)
      {
        tile = m[y][x];
-        if(tile==1){
+       if(tile==1){
        Vector3 wallPos(x+0.5,y-2.5,0.5);
        wallsPos.push_back(wallPos);
        }
@@ -142,29 +141,18 @@ void TileMap::calculateWallsPos()
 
 vector <Vector3> TileMap::getWallsPos()
 {
+  calculateWallsPos();
   return wallsPos;
 }
 
-
-void TileMap::render()
+void TileMap::drawWalls()
 {
-   
-   int tile;
-   //vector <Vector3> wallsPos;
-   for (int y = 0 ; y < y_size; y++)
-   {
-     for(int x = 0; x < x_size; x++)
-     {
-        tile = m[y][x];
-        if(tile==1){
-       // cout<<"going to draw a cube"<<endl;
-          glPushMatrix();
-          glEnable(GL_TEXTURE_2D);
-          glBindTexture(GL_TEXTURE_2D, texturesID[1]);
-          //Vector3 wallPos(x+0.5,y-2.5,0.5);
-          //wallsPos.push_back(wallPos);
-
-          glTranslatef(x+0.5,y-2.5,0.5);
+  for(unsigned int i = 0; i<wallsPos.size();i++)
+  {
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texturesID[1]);
+    glTranslatef(wallsPos[i].x,wallsPos[i].y,wallsPos[i].z);
 
           glBegin(GL_TRIANGLES);
          glTexCoord2f(0.0,1.0);    glVertex3f(-1.0/2,-1.0/2,-1.0/2); // triangle 1 : begin
@@ -215,8 +203,22 @@ void TileMap::render()
         glTexCoord2f(1.0,0.0);     glVertex3f(-1.0/2, 1.0/2, 1.0/2);
         glTexCoord2f(0.0,0.0);     glVertex3f(1.0/2,-1.0/2, 1.0/2); //triangle 12 :end
         glEnd();
-        glPopMatrix();
-        }
+    glPopMatrix();
+  }
+
+}
+
+
+void TileMap::render()
+{
+   //walls
+   drawWalls();
+
+   //floor
+   for (int y = 0 ; y < y_size; y++)
+   {
+     for(int x = 0; x < x_size; x++)
+     {
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, texturesID[0]);
         glBegin(GL_QUADS);

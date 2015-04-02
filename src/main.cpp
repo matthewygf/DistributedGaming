@@ -4,6 +4,7 @@
 #include "gameController.h"
 #include "camera/camera.h"
 #include "tileMap/tileMap.h"
+#include "../supports/vbo/src/Timer.h"
 #include <pthread.h>
 #include <iostream>
 #ifdef __APPLE__
@@ -13,12 +14,8 @@
 #include <GL/glut.h>
 #endif
 
-
-
-#define MAP_SIZEX 20
-#define MAP_SIZEY 20
-
-
+#define MAP_SIZEX 30
+#define MAP_SIZEY 30
 
 
 // angle of rotation for the camera direction
@@ -28,7 +25,8 @@ float lx=0.0f,ly=1.1,lz=-1.0f;
 // XYZ position of the camera
 float px=5.0f,py=1.0f,pz=14.0f;
 
-
+Timer t;
+float updateTime;
 
 const char *texture_one = "data/grass.jpeg";
 const char *texture_two = "data/wood.jpeg";
@@ -37,15 +35,12 @@ const char *texture_two = "data/wood.jpeg";
 
 
 void GameLoop(GameView *view,int argc, char *argv[]){
-       view->render(argc, argv);
+       view->render(argc, argv); //this is the graphics main loop
 }
-
-
 
 
 int main(int argc, char **argv)
 {
-
 
    TileMap *tmap = new TileMap(MAP_SIZEY,MAP_SIZEX,texture_one,texture_two);
    
