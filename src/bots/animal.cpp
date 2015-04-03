@@ -41,6 +41,11 @@ int Animal::getId()
   return id;
 }
 
+int Animal::getEntityId()
+{
+  return entity_id;
+}
+
 Vector3 Animal::getPosition()
 {
   return pos;
@@ -65,6 +70,12 @@ float Animal::getHungerLevel()
 {
   return hunger;
 }
+
+void Animal::setEntityId(int e_id)
+{
+  entity_id = e_id;
+}
+
 
 void Animal::setPosition (Vector3 newPosition)
 {
@@ -171,10 +182,13 @@ void Animal::moveLeft()
 
 void Animal::stop()
 {
+  Vector3 current = getPosition();
+  setPosition(current);
 }
 
 void Animal::update()
 {
+  boredLevel+=0.01;
   if(currentState){
     currentState->Execute(this);
   }
@@ -182,14 +196,14 @@ void Animal::update()
 
 void Animal::increaseFatigue()
 {
-  cout<<"increasing fatigue"<<tiredLevel<<endl;
+  //cout<<"increasing fatigue"<<tiredLevel<<endl;
   tiredLevel += 0.01;
 }
 
 void Animal::decreaseFatigue()
 {
-  cout<<"decrease fatigue"<<tiredLevel<<endl;
-  tiredLevel -= 0.01;
+  //cout<<"decrease fatigue"<<tiredLevel<<endl;
+  tiredLevel -= 1.0;
 }
 
 void Animal::changeState(State* new_state)
@@ -207,6 +221,19 @@ bool Animal::tired()const
 
 }
 
+bool Animal::bored()const
+{
+ if(boredLevel>=BoredThreshold){
+  return true;
+ }
+ return false;
+}
+
+void Animal::setBoredLevel(int level)
+{
+  boredLevel = level;
+}
+
 void Animal::moveUp()
 {
   float currentY = getPositionY();
@@ -222,24 +249,6 @@ void Animal::moveDown()
   setPositionY(newY);
 }
 
-//PATROL():
-// dir = generateRandomDir();
-// animal.move(dir);         //set new position
-//   if hit walls:
-//    new_dir = generateRandomDir(); 
-//    checkDir(dir,new_dir); //modified new_dir if same as previous dir.
-//    animal.move(new_dir);  //set new position
-
-void Animal::patrol(int dir, int collide)
-{
-   if(collide != 1){
-   move(dir);
-   }else{
-   int new_dir = generateRandom(0,3);
-   }
-   
-   
-}
 
 void Animal::setOppositeDirection()
 {
@@ -255,12 +264,24 @@ void Animal::setOppositeDirection()
       d =  3; //assign to going left
       break;
     case 3:
-      d = 2;
+      d = 2; //assign to going right
       break;
  
 
   }
 }
+
+void Animal::patrol()
+{
+  move(getMovingDirection());
+}
+
+void Animal::changeDirection()
+{
+   int a = generateRandom(0,3);
+   setMovingDirection(a);
+}
+
 
 void Animal::move(int dir)
 {
@@ -288,13 +309,11 @@ void Animal::move(int dir)
 
 int Animal::generateRandom(int start, int end)
 {
-
     random_device                  rand_dev;
     mt19937                        generator(rand_dev());
     uniform_int_distribution<int>  distr(start, end);
     
     int result = distr(generator);
     return result;
-    
 }
 

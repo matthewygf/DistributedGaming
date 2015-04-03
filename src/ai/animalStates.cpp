@@ -26,24 +26,22 @@ void Patrol::Enter(Animal* animal)
 void Patrol::Execute(Animal* animal)
 {  
 
-  animal->move(animal->getMovingDirection());
+  animal->patrol();
 
   //only tired when patrolling
   animal->increaseFatigue();
-
-  //cout << "patrolling" << endl;
-
-  //if enough gold mined, go and put it in the bank
-  //if (animal->Full())
-  //{
-    //pMiner->ChangeState(VisitBankAndDepositGold::Instance());
-  //}
+  
+  if(animal->bored())
+  {
+    animal->changeDirection();
+    animal->setBoredLevel(0.01);
+  }
 
   if (animal->tired())
   {
-    animal->move(4);
     animal->changeState(Tired::Instance());
   }
+  
 }
 
 
@@ -64,7 +62,6 @@ Tired* Tired::Instance()
 
 void Tired::Enter(Animal* animal)
 {
-  cout<<"tired"<<endl;
 }
 
 void Tired::Execute(Animal* animal)
@@ -78,7 +75,7 @@ void Tired::Execute(Animal* animal)
 
   else 
   {
-    
+
     Vector3 currentPos = animal -> getPosition();
     animal -> setPosition(currentPos);
     animal->decreaseFatigue();

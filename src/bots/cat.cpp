@@ -16,4 +16,8 @@ void Cat::render()
   drawBox();
 }
 
+void Cat::caught()
+{
+  score += 1;
+}
 

@@ -11,6 +11,7 @@ class Cat:public Animal
     ~Cat();
     virtual void render();
     int getId();
+    void caught();
   private:
    int id;
 };

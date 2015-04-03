@@ -10,9 +10,10 @@ class State;
 
 
 
-const float TiredThreshold = 7.00;
+const float TiredThreshold = 24.00;
 const float Full  = 7.00;
-
+const float HungerThreshold = 7.00;
+const float BoredThreshold  = 3.50;
 
 class Animal
 {
@@ -21,6 +22,7 @@ class Animal
       int id;
       int dir;
       int entity_id;
+      float boredLevel;
       float tiredLevel;
       float hunger;
       int score;
@@ -29,6 +31,7 @@ class Animal
       Animal();
       Animal(int i);
       ~Animal();
+
       float getPositionX();
       float getPositionY();
       float getPositionZ();
@@ -37,8 +40,11 @@ class Animal
       int   getScore();
       float getHungerLevel();
       int   getId();
+      int   getEntityId();
       int   getMovingDirection();
       
+      void  setBoredLevel(int level);
+      void  setEntityId(int e_id);
       void  setOppositeDirection();
       void  setMovingDirection(int new_dir);
       void  setPosition (Vector3 newPosition);
@@ -47,22 +53,29 @@ class Animal
       void  setPositionZ(float new_pos_z);
       void  setPosition(float new_pos_x, float new_pos_y, float new_pos_z);
       void  drawBox();
-      //the id is for collisiondetected
-      int   generateRandom(int start, int end);
-      void  patrol(int dir, int collide);
-
+      
+      //tired states
+      bool  tired()const;
+      bool  bored()const;
       void  decreaseFatigue();
       void  increaseFatigue();
+
+      //update the ai
       void  update();
       void  changeState(State* new_state);
-      bool  tired()const;
-
+      
+      //methods for moving
+      void  patrol();
+      void  changeDirection();
       void  move(int dir);
       void  moveRight();
       void  moveLeft();
       void  moveUp();
       void  moveDown();
       void  stop();
+
+      int   generateRandom(int start, int end);
+
       virtual void render(){};
       
 
