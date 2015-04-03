@@ -8,6 +8,7 @@ class Animal;
 
 class State
 {
+  public:
   virtual ~State(){}
   
   //execute when state is entered

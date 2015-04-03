@@ -3,10 +3,12 @@
 #include <iostream>
 #include <random>
 #include <stdio.h>
+#include <cassert>
+#include "../ai/animalStates.h"
 
 using namespace std;
 
-Animal::Animal()
+Animal::Animal():tiredLevel(0),currentState(Patrol::Instance())
 {
 }
 
@@ -47,6 +49,28 @@ Vector3 Animal::getPosition()
 int Animal::getMovingDirection()
 {
   return dir;
+}
+
+int Animal::getScore()
+{
+  return score;
+}
+
+float Animal::getTiredLevel()
+{
+  return tiredLevel;
+}
+
+float Animal::getHungerLevel()
+{
+  return hunger;
+}
+
+void Animal::setPosition (Vector3 newPosition)
+{
+   pos.x = newPosition.x;
+   pos.y = newPosition.y;
+   pos.z = newPosition.z;
 }
 
 void Animal::setPositionX(float new_pos_x)
@@ -147,7 +171,40 @@ void Animal::moveLeft()
 
 void Animal::stop()
 {
-  
+}
+
+void Animal::update()
+{
+  if(currentState){
+    currentState->Execute(this);
+  }
+}
+
+void Animal::increaseFatigue()
+{
+  cout<<"increasing fatigue"<<tiredLevel<<endl;
+  tiredLevel += 0.01;
+}
+
+void Animal::decreaseFatigue()
+{
+  cout<<"decrease fatigue"<<tiredLevel<<endl;
+  tiredLevel -= 0.01;
+}
+
+void Animal::changeState(State* new_state)
+{
+ assert(currentState && new_state);
+ currentState -> Exit (this);
+ currentState = new_state;
+ currentState -> Enter (this);
+}
+
+bool Animal::tired()const
+{
+  if(tiredLevel >= TiredThreshold){return true;}
+  return false;
+
 }
 
 void Animal::moveUp()

@@ -266,10 +266,7 @@ void GameModel::drawCats()
     glPushMatrix();
     glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
     cats[i].render();
-    //should be cats.update(); 
-    //so it follows the cats ai, plus any interaction to draw the scene
-    int d = cats[i].getMovingDirection();
-    cats[i].move(d);
+    cats[i].update();
     glPopMatrix();
   }
 }
@@ -280,9 +277,8 @@ void GameModel::drawMouse()
     glPushMatrix();
     glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
     mice[i].render();
-    //should be each mice.update();
-    int d = mice[i].getMovingDirection();
-    mice[i].move(d);
+    //ai update.
+    mice[i].update();
     glPopMatrix();
   }
 }
