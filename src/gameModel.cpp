@@ -488,8 +488,7 @@ void GameModel::mouseAteCheese(vector<Vector3>& cheese, vector<Mouse>& mice)
       Vector3 cPos = cheese[j];
       bool c = testCollision(cPos, mPos,0.25);
       if(c==1){
-         cout<<"atecheese"<<endl;
-         //int m_id = mice[i].getEntityId();
+         //cheese ate
          mice[i].ateCheese();
          cheese.erase(cheese.begin() + j);
          mice[i].setOppositeDirection();

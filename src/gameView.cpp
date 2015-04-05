@@ -99,8 +99,7 @@ void GameView::display()
    theGameModel->drawTile();
    theGameModel->drawCheese();
    theGameModel->drawBots();
-   cats = theGameModel->getCats();
-   mice = theGameModel->getMice();
+
    showScores();
    theGameModel->runCollision(); //physics collision
    t1.stop();
@@ -181,6 +180,10 @@ void GameView::drawString(const char *str, int x, int y, float color[4], void *f
 
 void GameView::showScores()
 {
+   //get the objects
+   cats = theGameModel->getCats();
+   mice = theGameModel->getMice();
+    
     glPushMatrix();                 // save current modelview matrix
     glLoadIdentity();               // reset modelview matrix
 
@@ -191,17 +194,27 @@ void GameView::showScores()
     gluOrtho2D(0, width, 0, height); // set to orthogonal projection
     
     float color[4] = {1, 1, 1, 1};
-
     stringstream ss;
-    ss << fixed << setprecision(3);
-    ss << "cat " << cats[0].getEntityId()<<" num of mouse caught" <<cats[0].getScore()<<ends;
-    drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT-10, color, font);
-    ss.str("");
+    for(unsigned int i = 0; i< cats.size();i++)
+    {
+      
+      ss << fixed << setprecision(3);
+      ss << "cat " << cats[i].getEntityId()<<" num of mouse caught " <<cats[i].getScore()<<ends;
+      drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT-(i*10+10), color, font);
+      ss.str("");
+    }
 
-    ss << fixed << setprecision(3);
-    ss << "cat " << cats[1].getEntityId()<<" num of mouse caught" <<cats[1].getScore()<<ends;
-    drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT-20, color, font);
-    ss.str("");
+    for(unsigned int i = 0; i< mice.size();i++)
+    {
+      
+      ss << fixed << setprecision(3);
+      ss << "mouse " << mice[i].getEntityId()<<" num of cheese ate " <<mice[i].getScore()<<ends;
+      string scores = ss.str();
+      int textWidth = (int)scores.size() * TEXT_WIDTH;
+      drawString(scores.c_str(), width-textWidth, height-TEXT_HEIGHT-(i*10+10), color, font);
+      ss.str("");
+    }
+
     
     ss<<resetiosflags(ios_base::fixed | ios_base::floatfield);
 
