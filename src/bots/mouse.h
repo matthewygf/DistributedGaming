@@ -11,6 +11,7 @@ class Mouse:public Animal
    ~Mouse();
    virtual void render();
    int getId();
+   void ateCheese();
   private:
    int id;
 };

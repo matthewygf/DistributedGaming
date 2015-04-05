@@ -17,4 +17,9 @@ void Mouse::render()
    drawBox();
 }
 
+void Mouse::ateCheese()
+{
+  score+=1;
+}
+
 

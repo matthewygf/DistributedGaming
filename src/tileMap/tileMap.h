@@ -18,6 +18,7 @@ class TileMap
    //return the map array to theGameModel.
    void setMap();
    void setWalls();
+   void setCheese();
    int  getWidth();
    int  getHeight();
    void initTexture();
@@ -25,9 +26,13 @@ class TileMap
    void render();
    void drawBox();
    void drawWalls();
+   void drawCheese();
+   void cheese();
    int generateRandom(int start, int end);
    void calculateWallsPos();
+   void calculateCheesePos();
    vector <Vector3> getWallsPos();
+   vector <Vector3> getCheesePos();
    //need to make a method for storing walls information
    //calculateWallsPosi & store walls vertices for collision
    //return the vector for the world
@@ -42,6 +47,7 @@ class TileMap
    const int *mdata;
    const static GLsizei textureSize = 2;
    vector <Vector3> wallsPos;
+   vector <Vector3> cheesePos;
 
    GLuint texturesID[textureSize]; //only 2 textures
    

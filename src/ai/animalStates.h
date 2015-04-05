@@ -45,7 +45,22 @@ class Tired : public State
   virtual void Exit(Animal* animal);
 };
 
+class Hungry : public State
+{
+  private:
+   Hungry(){}
+   ~Hungry(){}
+   Hungry(const Hungry&);
+   Hungry& operator=(const Hungry&);
 
+  public:
+   static Hungry* Instance();
+   
+   virtual void Enter (Animal* animal);
+   virtual void Execute(Animal* animal);
+   virtual void Exit(Animal* animal);
+
+};
 
 #endif
 

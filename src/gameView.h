@@ -4,7 +4,13 @@
 #include "gameModel.h"
 #include "gameController.h"
 #include "../supports/vbo/src/Timer.h"
-
+#include <sstream>
+#include <vector>
+#include "../supports/matrix/src/Vectors.h"
+#include "bots/animal.h"
+#include "bots/cat.h"
+#include "bots/mouse.h"
+using namespace std;
 class GameView
 {       
     public:
@@ -20,8 +26,14 @@ class GameView
     //check positions
     void checkPos();
     
+    //drawstrings on screen
+    void drawString(const char *str, int x, int y, float color[4], void *font);
+
     //fpscount
     void countFPS();
+    //display the informations
+    void showInfo();
+    void showScores();
     
     //setters
     void setInstanceObject();
@@ -52,6 +64,9 @@ class GameView
     
     int width, height;
     const char* winTitle;
+    void *font = GLUT_BITMAP_8_BY_13;
+    const int   TEXT_WIDTH      = 8;
+    const int   TEXT_HEIGHT     = 13;
     //frame
     int frame;
     //camera
@@ -68,6 +83,8 @@ class GameView
     //for the measuring time
     Timer t1;
     float drawTime, updateTime;
+    vector<Cat> cats;
+    vector<Mouse> mice;
 
 };
 

@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Animal::Animal():tiredLevel(0),currentState(Patrol::Instance())
+Animal::Animal():tiredLevel(0),score(0),currentState(Patrol::Instance())
 {
 }
 
@@ -19,6 +19,11 @@ Animal::Animal(int i)
 
 Animal::~Animal()
 {
+}
+
+float Animal::getSpeed()
+{
+  return speed;
 }
 
 float Animal::getPositionX()
@@ -111,6 +116,11 @@ void Animal::setMovingDirection(int new_dir)
   dir = new_dir;
 }
 
+void Animal::setSpeed(float newSpeed)
+{
+  speed = newSpeed;
+}
+
 void Animal::drawBox()
 {
           glBegin(GL_TRIANGLES);
@@ -176,8 +186,6 @@ void Animal::moveLeft()
   float currentX = getPositionX();
   float newX = currentX - 0.01;
   setPositionX(newX);  
-  
-
 }
 
 void Animal::stop()
@@ -218,7 +226,6 @@ bool Animal::tired()const
 {
   if(tiredLevel >= TiredThreshold){return true;}
   return false;
-
 }
 
 bool Animal::bored()const

@@ -19,7 +19,6 @@ Patrol* Patrol::Instance()
 
 void Patrol::Enter(Animal* animal)
 {
-  //cout<<"starting to patrol, looking for other animals"<<endl;
 }
 
 
@@ -67,7 +66,7 @@ void Tired::Enter(Animal* animal)
 void Tired::Execute(Animal* animal)
 { 
   float t = animal -> getTiredLevel();
-  //if miner is not fatigued start to dig for nuggets again.
+  
   if (t<=0 )
   {
      animal->changeState(Patrol::Instance());
@@ -75,11 +74,9 @@ void Tired::Execute(Animal* animal)
 
   else 
   {
-
     Vector3 currentPos = animal -> getPosition();
     animal -> setPosition(currentPos);
     animal->decreaseFatigue();
-    
   } 
 }
 

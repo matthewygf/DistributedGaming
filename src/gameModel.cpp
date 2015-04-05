@@ -122,6 +122,19 @@ void GameModel::getWallsPos(){
   wallsPos = tile->getWallsPos();
 }
 
+void GameModel::getCheesePos(){
+  cheesePos = tile->getCheesePos();
+}
+
+
+vector <Cat> GameModel::getCats(){
+ return cats;
+}
+
+vector <Mouse> GameModel::getMice(){
+  return mice;
+}
+
 // setter
 
 void GameModel::setPosition_x(float new_x){
@@ -200,6 +213,8 @@ void GameModel::initAnimals()
 
 }
 
+
+
 void GameModel::initCnM()
 {
   for (unsigned int i = 0; i<animals.size();i++)
@@ -225,6 +240,7 @@ void GameModel::initCnM()
       c.setEntityId(e);
       c.setPosition(x,y,0.5);
       cats.push_back(c);
+      cout<<"Cats has entity IDs :"<< c.getEntityId()<<endl;
     }else{
       Mouse m;
       float x = generateRandom(2,tileWidth-3);
@@ -240,6 +256,7 @@ void GameModel::initCnM()
       m.setEntityId(e);
       m.setPosition(x,y,0.5);
       mice.push_back(m);
+      cout<<"Mice has entity IDs :"<< m.getEntityId()<<endl;
    }
   }
   cout<<cats.size()<<endl;
@@ -253,7 +270,9 @@ void GameModel::gameSetUp(){
     tile->initTexture();
     getTileSettings();
     getWallsPos();
+    getCheesePos();
     initAnimals();
+    
 }
 
 void GameModel::getTileSettings(){
@@ -280,7 +299,7 @@ void GameModel::drawCats()
 
 void GameModel::drawMouse()
 {
- if(mice.size()!= 0){
+ if(mice.size() >= 1){
  for (unsigned int i = 0; i<mice.size();i++){ 
     glPushMatrix();
     glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
@@ -289,15 +308,34 @@ void GameModel::drawMouse()
     mice[i].update();
     glPopMatrix();
   }
-}else{
-  cout<<"no more mouse"<<endl;
+}else{}
 }
+
+
+void GameModel::drawCheese()
+{
+  if(cheesePos.size()>=1){
+    for(unsigned int i = 0; i<cheesePos.size();i++){
+       glPushMatrix();
+       glTranslatef(cheesePos[i].x,cheesePos[i].y,cheesePos[i].z);
+       glColor3f(1.0,1.0,0.0);
+       tile->cheese();
+      glPopMatrix();
+    }
+  }
 }
+
+
 
 void GameModel::drawBots()
 {
-  drawCats();
+  //check numbers!!!!
+  if(cats.size() >= 1){ 
+   drawCats();
+   }
+  if(mice.size() >= 1){
   drawMouse();
+  }else{};
 }
 
 void GameModel::runCollision()
@@ -307,7 +345,7 @@ void GameModel::runCollision()
     catCollideCats(cats);
     mouseCollideMice(mice);
     catsCaughtMice(cats,mice);
-    //cout<<"testing collision"<<endl;
+    mouseAteCheese(cheesePos,mice);
 }
 int GameModel::generateRandom(int start, int end)
 {
@@ -328,10 +366,10 @@ void GameModel::catCollideWalls(vector<Vector3>& walls, vector<Cat>& cats)
     for(unsigned int j=0; j<walls.size();j++){
        Vector3 cPos = cats[i].getPosition();
        Vector3 wall = walls[j];
-       bool c = testCollision(wall,cPos);
+       bool c = testCollision(wall,cPos,0.5);
+       int d = cats[i].getMovingDirection();
        if(c==1){
           cats[i].setOppositeDirection();//first turn around
-          int d = cats[i].getMovingDirection();
           int new_d = generateRandom(0,3);
           while(new_d == d){ //newdirection
               new_d = generateRandom(0,3);
@@ -350,10 +388,10 @@ void GameModel::mouseCollideWalls(vector<Vector3>& walls,vector<Mouse>& mice)
   for(unsigned int i=0;i<mice.size();i++){
     for(unsigned int j=0;j<walls.size();j++){
       Vector3 mPos = mice[i].getPosition();
-      bool c = testCollision(walls[j],mPos);
+      bool c = testCollision(walls[j],mPos,0.5);
+      int d = mice[i].getMovingDirection();
       if(c==1){
           mice[i].setOppositeDirection();
-          int d = mice[i].getMovingDirection();
           int new_d = generateRandom(0,3);
           while(new_d == d){
               new_d = generateRandom(0,3);
@@ -374,7 +412,7 @@ void GameModel::catCollideCats(vector<Cat>& cats)
     for(unsigned int j=0; j<cats.size();j++){
       if(i!=j){ // except itself.
       Vector3 c2Pos = cats[j].getPosition();
-      bool c = testCollision(c2Pos, cPos);
+      bool c = testCollision(c2Pos, cPos,0.5);
       if(c==1){
          cats[i].setOppositeDirection();
          int d = cats[i].getMovingDirection();
@@ -399,7 +437,7 @@ void GameModel::mouseCollideMice(vector<Mouse>& mice)
     for(unsigned int j=0; j<mice.size();j++){
       if(i!=j){ // except itself.
       Vector3 m2Pos = mice[j].getPosition();
-      bool c = testCollision(m2Pos, mPos);
+      bool c = testCollision(m2Pos, mPos,0.5);
       if(c==1){
         mice[i].setOppositeDirection();
         int d = mice[i].getMovingDirection();
@@ -422,11 +460,45 @@ void GameModel::catsCaughtMice(vector<Cat>& cats, vector<Mouse>& mice)
     Vector3 cPos = cats[i].getPosition();
     for(unsigned int j=0; j<cats.size();j++){
       Vector3 mPos = mice[j].getPosition();
-      bool c = testCollision(cPos, mPos);
+      bool c = testCollision(cPos, mPos,0.5);
       if(c==1){
+         int c_id = cats[i].getEntityId();
+         int m_id = mice[j].getEntityId();
          cats[i].caught();
          mice.erase(mice.begin() + j);
-         cout<<"cat  "<<cats[i].getEntityId()<<" caught Mouse "<<mice[j].getEntityId()<<endl;
+         cout<<"cat  "<<c_id<<" caught Mouse "<<m_id<<endl;
+         cats[i].setOppositeDirection();
+        int d = cats[i].getMovingDirection();
+          int new_d = generateRandom(0,3);
+          while(new_d == d){
+              new_d = generateRandom(0,3);
+          }    
+          cats[i].setMovingDirection(new_d);
+      } 
+   }
+  }
+}
+
+void GameModel::mouseAteCheese(vector<Vector3>& cheese, vector<Mouse>& mice)
+{
+   
+   for(unsigned int i=0; i<mice.size();i++){
+    Vector3 mPos = mice[i].getPosition();
+    for(unsigned int j=0; j<cheese.size();j++){
+      Vector3 cPos = cheese[j];
+      bool c = testCollision(cPos, mPos,0.25);
+      if(c==1){
+         cout<<"atecheese"<<endl;
+         //int m_id = mice[i].getEntityId();
+         mice[i].ateCheese();
+         cheese.erase(cheese.begin() + j);
+         mice[i].setOppositeDirection();
+        int d = mice[i].getMovingDirection();
+          int new_d = generateRandom(0,3);
+          while(new_d == d){
+              new_d = generateRandom(0,3);
+          }    
+          mice[i].setMovingDirection(new_d);
       } 
    }
   }
@@ -434,11 +506,11 @@ void GameModel::catsCaughtMice(vector<Cat>& cats, vector<Mouse>& mice)
 
 
 
-bool GameModel::testCollision(Vector3& a, Vector3& b)
+bool GameModel::testCollision(Vector3& a, Vector3& b, float width)
 {
   //give a little space
-  float halfWidthBox = 0.5; 
-  float halfHeightBox = 0.5;
+  float halfWidthBox = width; 
+  float halfHeightBox = width;
   if(abs(a.x - b.x)>(halfWidthBox + halfWidthBox)) return false;
   if(abs(a.y - b.y)>(halfHeightBox + halfHeightBox)) return false;
   return true;

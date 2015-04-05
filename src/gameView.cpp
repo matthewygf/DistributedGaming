@@ -5,6 +5,7 @@
 #include "../supports/glext.h"
 #include <stdio.h>
 #include <iostream>
+#include <sstream>
 #include <pthread.h>
 #include <iomanip>
 #include <cstdlib>
@@ -96,32 +97,155 @@ void GameView::display()
    //worlds objects
    t1.start();
    theGameModel->drawTile();
+   theGameModel->drawCheese();
    theGameModel->drawBots();
+   cats = theGameModel->getCats();
+   mice = theGameModel->getMice();
+   showScores();
    theGameModel->runCollision(); //physics collision
    t1.stop();
    drawTime = (float) t1.getElapsedTimeInMilliSec();
-   //cout<<drawTime<<endl;
-   //countFPS();
+   countFPS();
+   showInfo();
 
    glutSwapBuffers();    
 }
+
 
 void GameView::countFPS()
 {
   static Timer timer;
   static int count = 0;
   double elapsedTime = 0.0;
+  static string fps = "0.0 FPS";
   ++count;
   elapsedTime = timer.getElapsedTime();
   if(elapsedTime>1.0)
   {
-    cout<<(count/elapsedTime)<<" FPS"<<endl;
+
+    stringstream ss;
+        ss << fixed << setprecision(1);
+        ss << (count / elapsedTime) << " FPS" << ends; // update fps string
+        ss << resetiosflags(ios_base::fixed | ios_base::floatfield);
+        fps = ss.str();
+    //cout<<(count/elapsedTime)<<" FPS"<<endl;
     count = 0;
     timer.start();
   }
+   // backup current model-view matrix
+    glPushMatrix();                     // save current modelview matrix
+    glLoadIdentity();                   // reset modelview matrix
+
+    // set to 2D orthogonal projection
+    glMatrixMode(GL_PROJECTION);        // switch to projection matrix
+    glPushMatrix();                     // save current projection matrix
+    glLoadIdentity();                   // reset projection matrix
+    gluOrtho2D(0, width, 0, height); // set to orthogonal projection
+
+    float color[4] = {1, 1, 0, 1};
+    int textWidth = (int)fps.size() * TEXT_WIDTH;
+    drawString(fps.c_str(), width-textWidth, height-TEXT_HEIGHT, color, font);
+
+    // restore projection matrix
+    glPopMatrix();                      // restore to previous projection matrix
+
+    // restore modelview matrix
+    glMatrixMode(GL_MODELVIEW);         // switch to modelview matrix
+    glPopMatrix();       
+
+ 
+}
+
+//taken from 'vbo' libraries and included in the supports folder.
+void GameView::drawString(const char *str, int x, int y, float color[4], void *font)
+{
+    glPushAttrib(GL_LIGHTING_BIT | GL_CURRENT_BIT); // lighting and color mask
+    glDisable(GL_LIGHTING);     // need to disable lighting for proper text color
+    glDisable(GL_TEXTURE_2D);
+
+    glColor4fv(color);          // set text color
+    glRasterPos2i(x, y);        // place text position
+
+    // loop all characters in the string
+    while(*str)
+    {
+        glutBitmapCharacter(font, *str);
+        ++str;
+    }
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+    glPopAttrib();
 }
 
 
+void GameView::showScores()
+{
+    glPushMatrix();                 // save current modelview matrix
+    glLoadIdentity();               // reset modelview matrix
+
+    // set to 2D orthogonal projection
+    glMatrixMode(GL_PROJECTION);    // switch to projection matrix
+    glPushMatrix();                 // save current projection matrix
+    glLoadIdentity();               // reset projection matrix
+    gluOrtho2D(0, width, 0, height); // set to orthogonal projection
+    
+    float color[4] = {1, 1, 1, 1};
+
+    stringstream ss;
+    ss << fixed << setprecision(3);
+    ss << "cat " << cats[0].getEntityId()<<" num of mouse caught" <<cats[0].getScore()<<ends;
+    drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT-10, color, font);
+    ss.str("");
+
+    ss << fixed << setprecision(3);
+    ss << "cat " << cats[1].getEntityId()<<" num of mouse caught" <<cats[1].getScore()<<ends;
+    drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT-20, color, font);
+    ss.str("");
+    
+    ss<<resetiosflags(ios_base::fixed | ios_base::floatfield);
+
+    // restore projection matrix
+    glPopMatrix();                   // restore to previous projection matrix
+
+    // restore modelview matrix
+    glMatrixMode(GL_MODELVIEW);      // switch to modelview matrix
+    glPopMatrix();                   // restore to previous modelview matrix
+}
+
+
+
+void GameView::showInfo()
+{  
+// backup current model-view matrix
+    glPushMatrix();                 // save current modelview matrix
+    glLoadIdentity();               // reset modelview matrix
+
+    // set to 2D orthogonal projection
+    glMatrixMode(GL_PROJECTION);    // switch to projection matrix
+    glPushMatrix();                 // save current projection matrix
+    glLoadIdentity();               // reset projection matrix
+    gluOrtho2D(0, width, 0, height); // set to orthogonal projection
+
+    float color[4] = {1, 1, 1, 1};
+
+    stringstream ss;
+    ss << fixed << setprecision(3);
+    ss << "Updating Time: " << drawTime<<" ms" <<ends;
+    drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT, color, font);
+    ss.str("");
+
+    ss<<resetiosflags(ios_base::fixed | ios_base::floatfield);
+
+    // restore projection matrix
+    glPopMatrix();                   // restore to previous projection matrix
+
+    // restore modelview matrix
+    glMatrixMode(GL_MODELVIEW);      // switch to modelview matrix
+    glPopMatrix();                   // restore to previous modelview matrix
+
+
+}
 
 void GameView::reshape(int w, int h) {
   

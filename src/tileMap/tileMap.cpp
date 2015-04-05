@@ -16,6 +16,7 @@ TileMap::TileMap(int mapSize_x,int mapSize_y,
    //set to private
     setMap();
     setWalls();
+    setCheese();
     textureOne = texture_one;
     textureTwo = texture_two;
     
@@ -87,6 +88,17 @@ void TileMap::setWalls()
    }
 }
 
+void TileMap::setCheese()
+{
+  for(int i = 0; i<y_size; i++){
+   int y = generateRandom(0,y_size-1);
+   int x = generateRandom(0,x_size-1);
+   if(m[y][x]==0 && m[y][x]!=1){
+     m[y][x]=2;
+   }
+ }
+}
+
  void TileMap::initTexture()
 {
     glGenTextures(textureSize,texturesID);
@@ -138,6 +150,29 @@ void TileMap::calculateWallsPos()
      }
    }
 }
+
+void TileMap::calculateCheesePos()
+{
+ int tile;
+ for (int y = 0 ; y < y_size; y++)
+   {
+     for(int x = 0; x < x_size; x++)
+     {
+       tile = m[y][x];
+       if(tile==2){
+       Vector3 cheese(x+0.5,y-2.5,0.5);
+       cheesePos.push_back(cheese);
+       }
+     }
+   }
+}
+
+vector <Vector3> TileMap::getCheesePos()
+{
+  calculateCheesePos();
+  return cheesePos;
+}
+
 
 vector <Vector3> TileMap::getWallsPos()
 {
@@ -208,12 +243,28 @@ void TileMap::drawWalls()
 
 }
 
+void TileMap::drawCheese()
+{
+  //cout<<"cheese drawing and cheese sizes are : "<<cheesePos.size()<<endl;
+  for(unsigned int i = 0; i<cheesePos.size();i++)
+  {
+    glPushMatrix();
+   
+    glTranslatef(cheesePos[i].x,cheesePos[i].y,cheesePos[i].z);
+    
+    glColor3f(1.0,1.0,0.0);
+    cheese();
+
+    glPopMatrix();
+  }
+}
 
 void TileMap::render()
 {
    //walls
    drawWalls();
 
+   
    //floor
    for (int y = 0 ; y < y_size; y++)
    {
@@ -233,6 +284,61 @@ void TileMap::render()
    }
    
    glDisable(GL_TEXTURE_2D);
+ //cheese
+   //drawCheese();
+}
+
+void TileMap::cheese()
+{
+          glBegin(GL_TRIANGLES);
+           glVertex3f(-1.0/4,-1.0/4,-1.0/4); // triangle 1 : begin
+           glVertex3f(-1.0/4,-1.0/4, 1.0/4);
+           glVertex3f(-1.0/4, 1.0/4, 1.0/4); // triangle 1 : end
+ 
+           glVertex3f(1.0/4, 1.0/4,-1.0/4); // triangle 2 : begin
+           glVertex3f(-1.0/4,-1.0/4,-1.0/4);
+           glVertex3f(-1.0/4, 1.0/4,-1.0/4); // triangle 2 : end
+ 
+           glVertex3f(1.0/4,-1.0/4, 1.0/4); // triangle 3 :begin
+           glVertex3f(-1.0/4,-1.0/4,-1.0/4);
+           glVertex3f(1.0/4,-1.0/4,-1.0/4);  //triangle 3 :end
+ 
+           glVertex3f(1.0/4, 1.0/4,-1.0/4); // triangle 4 :begin
+           glVertex3f(1.0/4,-1.0/4,-1.0/4);
+           glVertex3f(-1.0/4,-1.0/4,-1.0/4);// triangle 4 :end
+ 
+           glVertex3f(-1.0/4,-1.0/4,-1.0/4); //triangle 5 :begin
+           glVertex3f(-1.0/4, 1.0/4, 1.0/4);
+           glVertex3f(-1.0/4, 1.0/4,-1.0/4); // triangle 5 :end
+ 
+           glVertex3f(1.0/4,-1.0/4, 1.0/4); //triangle 6 :begin
+           glVertex3f(-1.0/4,-1.0/4, 1.0/4);
+           glVertex3f(-1.0/4,-1.0/4,-1.0/4); //triangle 6 :end
+ 
+           glVertex3f(-1.0/4, 1.0/4, 1.0/4); //triangle 7 :begin
+           glVertex3f(-1.0/4,-1.0/4, 1.0/4);
+           glVertex3f(1.0/4,-1.0/4, 1.0/4); //triangle 7 :end
+ 
+           glVertex3f(1.0/4, 1.0/4, 1.0/4); //triangle 8 :begin
+           glVertex3f(1.0/4,-1.0/4,-1.0/4);
+           glVertex3f(1.0/4, 1.0/4,-1.0/4); //triangle 8 :end
+ 
+           glVertex3f(1.0/4,-1.0/4,-1.0/4); //triangle 9 :begin
+           glVertex3f(1.0/4, 1.0/4, 1.0/4);
+           glVertex3f(1.0/4,-1.0/4, 1.0/4); //triangle 9 :end
+ 
+           glVertex3f(1.0/4, 1.0/4, 1.0/4); //triangle 10 :begin
+           glVertex3f(1.0/4, 1.0/4,-1.0/4);
+           glVertex3f(-1.0/4, 1.0/4,-1.0/4); //triangle 10 :end
+ 
+           glVertex3f(1.0/4, 1.0/4, 1.0/4); //triangle 11 :begin
+           glVertex3f(-1.0/4, 1.0/4,-1.0/4);
+           glVertex3f(-1.0/4, 1.0/4, 1.0/4); //triangle 11 :end
+ 
+           glVertex3f(1.0/4, 1.0/4, 1.0/4);//triangle 12 :begin
+           glVertex3f(-1.0/4, 1.0/4, 1.0/4);
+           glVertex3f(1.0/4,-1.0/4, 1.0/4); //triangle 12 :end
+        glEnd();
 }
 
 

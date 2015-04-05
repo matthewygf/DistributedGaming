@@ -1,0 +1,20 @@
+This is a game simulation of cats and mice.
+
+aim is to catch the mice.
+
+Type 'make' for linux.
+
+--------------------------------------------------------------------------------------------------------------------
+To-Do:
+
+-implement stateMachines
+-display each score of the cats and mouse.
+-distribute the ai codes.
+
+--------------------------------------------------------------------------------------------------------------------
+
+Credits:
+
+all libraries i have used are inside 'supports' folder.
+inside it has several libraries that i have used and included in this project.
+authors name are also included in the libraries.

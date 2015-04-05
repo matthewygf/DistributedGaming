@@ -22,6 +22,7 @@ class Animal
       int id;
       int dir;
       int entity_id;
+      int speed;
       float boredLevel;
       float tiredLevel;
       float hunger;
@@ -32,6 +33,7 @@ class Animal
       Animal(int i);
       ~Animal();
 
+      float getSpeed();
       float getPositionX();
       float getPositionY();
       float getPositionZ();
@@ -43,6 +45,7 @@ class Animal
       int   getEntityId();
       int   getMovingDirection();
       
+      void  setSpeed(float newSpeed);
       void  setBoredLevel(int level);
       void  setEntityId(int e_id);
       void  setOppositeDirection();
