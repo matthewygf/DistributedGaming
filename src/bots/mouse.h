@@ -1,6 +1,11 @@
 #ifndef MOUSE_H
 #define MOUSE_H
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include "animal.h"
 
 class Mouse:public Animal

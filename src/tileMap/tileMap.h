@@ -2,7 +2,12 @@
 #define TILEMAP_H
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_ASSERT(x)
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include <iostream>
 #include <vector>
 #include "../../supports/matrix/src/Vectors.h"

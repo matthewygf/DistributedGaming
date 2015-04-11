@@ -1,7 +1,12 @@
 #ifndef CAT_H
 #define CAT_H
-#include <GL/glut.h>
 #include "animal.h"
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 
 class Cat:public Animal
 {

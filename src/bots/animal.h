@@ -1,11 +1,16 @@
 #ifndef ANIMAL_H
 #define ANIMAL_H
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include <vector>
 #include "../../supports/matrix/src/Vectors.h"
 //baseclass for the animal
 
-
+using namespace std;
 class State;
 
 
@@ -19,10 +24,11 @@ class Animal
 {
    protected:
       Vector3 pos;
+      vector <int> objectsBumped;
       int id;
       int dir;
       int entity_id;
-      int speed;
+      float speed;
       float boredLevel;
       float tiredLevel;
       float hunger;
@@ -57,11 +63,14 @@ class Animal
       void  setPosition(float new_pos_x, float new_pos_y, float new_pos_z);
       void  drawBox();
       
-      //tired states
+      // states methods
       bool  tired()const;
       bool  bored()const;
+      bool  hungry()const;
       void  decreaseFatigue();
       void  increaseFatigue();
+      void  increaseHunger();
+      void  decreaseHunger();
 
       //update the ai
       void  update();

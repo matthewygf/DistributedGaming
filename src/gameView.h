@@ -1,6 +1,11 @@
 #ifndef GAMEVIEW_h
 #define GAMEVIEW_h
-
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
 #include "gameModel.h"
 #include "gameController.h"
 #include "../supports/vbo/src/Timer.h"

@@ -20,6 +20,7 @@ void Mouse::render()
 void Mouse::ateCheese()
 {
   score+=1;
+  decreaseHunger();
 }
 
 

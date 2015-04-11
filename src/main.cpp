@@ -7,6 +7,10 @@
 #include "../supports/vbo/src/Timer.h"
 #include <pthread.h>
 #include <iostream>
+
+
+
+
 #ifdef __APPLE__
 #include <OpenGL/OpenGL.h>
 #include <GLUT/glut.h>
@@ -14,8 +18,9 @@
 #include <GL/glut.h>
 #endif
 
-#define MAP_SIZEX 30
-#define MAP_SIZEY 30
+#define MAP_SIZEX 40
+#define MAP_SIZEY 40
+
 
 
 // angle of rotation for the camera direction
@@ -23,14 +28,13 @@ float ang=0.0;
 // actual vector representing the camera's lookat direction
 float lx=0.0f,ly=1.1,lz=-1.0f;
 // XYZ position of the camera
-float px=5.0f,py=1.0f,pz=14.0f;
+float px=10.0f,py=1.0f,pz=14.0f;
 
 Timer t;
 float updateTime;
 
 const char *texture_one = "data/grass.jpeg";
 const char *texture_two = "data/wood.jpeg";
-
 
 
 
@@ -48,6 +52,7 @@ int main(int argc, char **argv)
    //model-view-controller
    
    GameModel *model = new GameModel(camera,tmap);
+   model->createThreads();
 
    //controller modifed the model.
    GameController *controller = new GameController(model);
@@ -56,12 +61,15 @@ int main(int argc, char **argv)
    GameView *view = new GameView(controller,model);
    
    GameLoop(view,argc,argv); // will also contain physics, AI
-   
-   delete camera;
-   delete model;
-   delete view;
-   delete controller;
-   delete tmap;
+ 
+
+
+    delete camera;
+    delete model;
+    delete view;
+    delete controller;
+    delete tmap;
+
    
    return 0;
  

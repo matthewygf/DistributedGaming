@@ -1,6 +1,11 @@
 #ifndef BOX_H
 #define BOX_H
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include <vector>
 #include <iostream>
 #include "../../supports/matrix/src/Vectors.h"

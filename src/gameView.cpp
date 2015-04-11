@@ -1,7 +1,12 @@
 
 #define GL_GLEXT_PROTOTYPES
 #include "gameView.h"
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include "../supports/glext.h"
 #include <stdio.h>
 #include <iostream>
@@ -99,7 +104,6 @@ void GameView::display()
    theGameModel->drawTile();
    theGameModel->drawCheese();
    theGameModel->drawBots();
-
    showScores();
    theGameModel->runCollision(); //physics collision
    t1.stop();
@@ -195,17 +199,19 @@ void GameView::showScores()
     
     float color[4] = {1, 1, 1, 1};
     stringstream ss;
-    for(unsigned int i = 0; i< cats.size();i++)
-    {
+    unsigned int s = cats.size();
+    if(s>0){
+     for(unsigned int i = 0; i< cats.size();i++)
+     {
       
-      ss << fixed << setprecision(3);
-      ss << "cat " << cats[i].getEntityId()<<" num of mouse caught " <<cats[i].getScore()<<ends;
-      drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT-(i*10+10), color, font);
-      ss.str("");
-    }
+       ss << fixed << setprecision(3);
+       ss << "cat " << cats[i].getEntityId()<<" num of mouse caught " <<cats[i].getScore()<<ends;
+       drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT-(i*10+10), color, font);
+       ss.str("");
+     }
 
-    for(unsigned int i = 0; i< mice.size();i++)
-    {
+     for(unsigned int i = 0; i< mice.size();i++)
+     {
       
       ss << fixed << setprecision(3);
       ss << "mouse " << mice[i].getEntityId()<<" num of cheese ate " <<mice[i].getScore()<<ends;
@@ -213,11 +219,11 @@ void GameView::showScores()
       int textWidth = (int)scores.size() * TEXT_WIDTH;
       drawString(scores.c_str(), width-textWidth, height-TEXT_HEIGHT-(i*10+10), color, font);
       ss.str("");
-    }
+     }
 
     
-    ss<<resetiosflags(ios_base::fixed | ios_base::floatfield);
-
+     ss<<resetiosflags(ios_base::fixed | ios_base::floatfield);
+    }
     // restore projection matrix
     glPopMatrix();                   // restore to previous projection matrix
 

@@ -1,7 +1,12 @@
 #ifndef GAMEMODEL_H
 #define GAMEMODEL_H
 
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include "camera/camera.h"
 #include "tileMap/tileMap.h"
 #include <vector>
@@ -12,6 +17,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 using namespace std;
+
+#define PORT "3490"  // the port users will be connecting to
+
+#define BACKLOG 10     // how many pending connections queue will hold
+
 
 class GameModel
 {
@@ -84,6 +94,23 @@ class GameModel
    bool testCollision(Vector3& a, Vector3& b, float width);
    void runCollision();
    
+   //networks 
+   //sockets methods
+   //create a thread for server accept.
+   //server accept()
+   //spawn a thread for a connection.
+   //it shud be non-blocking.
+   //thread
+   void  createThreads();
+   static void *serverHandler(void *);
+   static void *clientHandler(void *socket);
+
+   void sigchld_handler(int s);
+   void *get_in_addr(struct sockaddr *sa);
+   //since graphics rendering depends on the data in the model.
+   //so the returned data from sockets can directly alter the data.
+   
+
 
    private:
    int width, height;

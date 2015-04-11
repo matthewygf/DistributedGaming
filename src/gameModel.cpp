@@ -4,6 +4,19 @@
 #include <stdlib.h>
 #include <random>
 #include <cmath>
+#include <cstdlib>
+#include <pthread.h>
+#include <cstring>
+#include <sys/types.h>   // Types used in sys/socket.h and netinet/in.h
+#include <netinet/in.h>  // Internet domain address structures and functions
+#include <sys/socket.h>  // Structures and functions used for socket API
+#include <netdb.h>       // Used for domain/DNS hostname lookup
+#include <unistd.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <arpa/inet.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 using namespace std;
 
@@ -200,6 +213,7 @@ void GameModel::initCamera(){
 
 void GameModel::initAnimals()
 {
+  //distribute these animals.
   //random generate some animals
   //generates cats n mouse according to ID.
   for(int i = 0 ; i<(tileWidth/2); i++){
@@ -217,6 +231,7 @@ void GameModel::initAnimals()
 
 void GameModel::initCnM()
 {
+  float speed = 0.01;
   for (unsigned int i = 0; i<animals.size();i++)
   {
 
@@ -227,20 +242,23 @@ void GameModel::initCnM()
       Cat c;
       float x = generateRandom(2,tileWidth-3);
       float y = generateRandom(2,tileHeight-5);
+      
       int dir = generateRandom(0,3);
       for(unsigned int j = 0; j<wallsPos.size();j++){
            //make sure the cats positions are not same as anywalls
          while (x == wallsPos[j].x && y ==wallsPos[j].y){
-            x = generateRandom(2,tileWidth-4) ;
-            y = generateRandom(2,tileHeight-6);
+             
+            x += 0.5 ;
+            y += 0.5 ;
         }
       }
       //inital position& moving direction
       c.setMovingDirection(dir);
       c.setEntityId(e);
       c.setPosition(x,y,0.5);
+      c.setSpeed(speed);
       cats.push_back(c);
-      cout<<"Cats has entity IDs :"<< c.getEntityId()<<endl;
+      //cout<<"Cats has entity IDs :"<< c.getEntityId()<<endl;
     }else{
       Mouse m;
       float x = generateRandom(2,tileWidth-3);
@@ -248,15 +266,18 @@ void GameModel::initCnM()
       int dir = generateRandom(0,3);
       for(unsigned int j = 0; j<wallsPos.size();j++){
          while(x == wallsPos[j].x && y ==wallsPos[j].y){
-            x = generateRandom(2,tileWidth-3);
-            y = generateRandom(2,tileHeight-5);
+              x+=0.5;
+              y+=0.5;
+            //x = generateRandom(2,tileWidth-3);
+            //y = generateRandom(2,tileHeight-5);
         }
       }
       m.setMovingDirection(dir);
       m.setEntityId(e);
       m.setPosition(x,y,0.5);
+      m.setSpeed(0.02);
       mice.push_back(m);
-      cout<<"Mice has entity IDs :"<< m.getEntityId()<<endl;
+      //cout<<"Mice has entity IDs :"<< m.getEntityId()<<endl;
    }
   }
   cout<<cats.size()<<endl;
@@ -282,11 +303,13 @@ void GameModel::getTileSettings(){
 
 void GameModel::drawTile()
 {
+   
    tile->render();
 }
 
 void GameModel::drawCats()
 {
+   if(cats.size()>0){
     for (unsigned int i = 0; i<cats.size();i++){   
     glPushMatrix();
     glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
@@ -295,26 +318,26 @@ void GameModel::drawCats()
     cats[i].update();
     glPopMatrix();
   }
+ }else{}
 }
 
 void GameModel::drawMouse()
 {
- if(mice.size() >= 1){
+ if(mice.size()>0){
  for (unsigned int i = 0; i<mice.size();i++){ 
     glPushMatrix();
     glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
     mice[i].render();
-    //ai update.
     mice[i].update();
     glPopMatrix();
   }
-}else{}
+}else{cout<<"all mouse are eaten"<<endl;}
 }
 
 
 void GameModel::drawCheese()
 {
-  if(cheesePos.size()>=1){
+  if(cheesePos.size()>0){
     for(unsigned int i = 0; i<cheesePos.size();i++){
        glPushMatrix();
        glTranslatef(cheesePos[i].x,cheesePos[i].y,cheesePos[i].z);
@@ -330,22 +353,46 @@ void GameModel::drawCheese()
 void GameModel::drawBots()
 {
   //check numbers!!!!
-  if(cats.size() >= 1){ 
+  if(cats.size() >0){ 
    drawCats();
-   }
-  if(mice.size() >= 1){
-  drawMouse();
-  }else{};
+   }else{}
+  if(mice.size() >0){
+   drawMouse();
+  }else{}
 }
 
 void GameModel::runCollision()
 {
+    if(cats.size()>0){
     catCollideWalls(wallsPos, cats);
-    mouseCollideWalls(wallsPos, mice);
+    //mouseCollideWalls(wallsPos, mice);
     catCollideCats(cats);
+    //mouseCollideMice(mice);
+    //catsCaughtMice(cats,mice);
+    //mouseAteCheese(cheesePos,mice);
+   }
+    
+   if(mice.size()>0){
+    //catCollideWalls(wallsPos, cats);
+    mouseCollideWalls(wallsPos, mice);
+    //catCollideCats(cats);
     mouseCollideMice(mice);
-    catsCaughtMice(cats,mice);
+    //catsCaughtMice(cats,mice);
     mouseAteCheese(cheesePos,mice);
+   }
+  
+   if(cats.size()>0 && mice.size()>0){
+    //catCollideWalls(wallsPos, cats);
+    //mouseCollideWalls(wallsPos, mice);
+    //catCollideCats(cats);
+    //mouseCollideMice(mice);
+    catsCaughtMice(cats,mice);
+    //mouseAteCheese(cheesePos,mice);
+   }
+    
+
+
+
 }
 int GameModel::generateRandom(int start, int end)
 {
@@ -370,10 +417,12 @@ void GameModel::catCollideWalls(vector<Vector3>& walls, vector<Cat>& cats)
        int d = cats[i].getMovingDirection();
        if(c==1){
           cats[i].setOppositeDirection();//first turn around
+
           int new_d = generateRandom(0,3);
           while(new_d == d){ //newdirection
               new_d = generateRandom(0,3);
           }    
+          //only set new direction when not equal to old direction
           cats[i].setMovingDirection(new_d);
           //cout<<"collision at cat "<<i<<" with wall "<<j<<endl;
           //cout<<"Position of cat "<<cPos<<" ,wall position is "<<wall<<endl;
@@ -392,6 +441,7 @@ void GameModel::mouseCollideWalls(vector<Vector3>& walls,vector<Mouse>& mice)
       int d = mice[i].getMovingDirection();
       if(c==1){
           mice[i].setOppositeDirection();
+
           int new_d = generateRandom(0,3);
           while(new_d == d){
               new_d = generateRandom(0,3);
@@ -413,9 +463,10 @@ void GameModel::catCollideCats(vector<Cat>& cats)
       if(i!=j){ // except itself.
       Vector3 c2Pos = cats[j].getPosition();
       bool c = testCollision(c2Pos, cPos,0.5);
+      int d = cats[i].getMovingDirection();
       if(c==1){
          cats[i].setOppositeDirection();
-         int d = cats[i].getMovingDirection();
+         
           int new_d = generateRandom(0,3);
           while(new_d == d){
               new_d = generateRandom(0,3);
@@ -438,9 +489,10 @@ void GameModel::mouseCollideMice(vector<Mouse>& mice)
       if(i!=j){ // except itself.
       Vector3 m2Pos = mice[j].getPosition();
       bool c = testCollision(m2Pos, mPos,0.5);
+      int d = mice[i].getMovingDirection();
       if(c==1){
         mice[i].setOppositeDirection();
-        int d = mice[i].getMovingDirection();
+        
           int new_d = generateRandom(0,3);
           while(new_d == d){
               new_d = generateRandom(0,3);
@@ -456,9 +508,10 @@ void GameModel::mouseCollideMice(vector<Mouse>& mice)
 
 void GameModel::catsCaughtMice(vector<Cat>& cats, vector<Mouse>& mice)
 {
+  
    for(unsigned int i=0; i<cats.size();i++){
     Vector3 cPos = cats[i].getPosition();
-    for(unsigned int j=0; j<cats.size();j++){
+    for(unsigned int j=0; j<mice.size();j++){
       Vector3 mPos = mice[j].getPosition();
       bool c = testCollision(cPos, mPos,0.5);
       if(c==1){
@@ -487,12 +540,13 @@ void GameModel::mouseAteCheese(vector<Vector3>& cheese, vector<Mouse>& mice)
     for(unsigned int j=0; j<cheese.size();j++){
       Vector3 cPos = cheese[j];
       bool c = testCollision(cPos, mPos,0.25);
+      int d = mice[i].getMovingDirection();
       if(c==1){
          //cheese ate
          mice[i].ateCheese();
          cheese.erase(cheese.begin() + j);
          mice[i].setOppositeDirection();
-        int d = mice[i].getMovingDirection();
+        
           int new_d = generateRandom(0,3);
           while(new_d == d){
               new_d = generateRandom(0,3);
@@ -503,8 +557,6 @@ void GameModel::mouseAteCheese(vector<Vector3>& cheese, vector<Mouse>& mice)
   }
 }
 
-
-
 bool GameModel::testCollision(Vector3& a, Vector3& b, float width)
 {
   //give a little space
@@ -514,4 +566,194 @@ bool GameModel::testCollision(Vector3& a, Vector3& b, float width)
   if(abs(a.y - b.y)>(halfHeightBox + halfHeightBox)) return false;
   return true;
 }
+
+
+
+void GameModel::sigchld_handler(int s)
+{
+    while(waitpid(-1, NULL, WNOHANG) > 0);
+}
+
+// get sockaddr, IPv4 or IPv6:
+void *GameModel::get_in_addr(struct sockaddr *sa)
+{
+    if (sa->sa_family == AF_INET) {
+        return &(((struct sockaddr_in*)sa)->sin_addr);
+    }
+
+    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
+
+
+//modified from C++ tutorial point
+void *GameModel::serverHandler(void *)
+{
+   //pass in a server class here.
+    int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
+    pthread_t worker_thread;
+    struct addrinfo hints, *servinfo, *p;
+    struct sockaddr_storage their_addr; // connector's address information
+    socklen_t sin_size;
+    int yes=1;
+    int rv;
+    int port;
+    char ipstr[INET6_ADDRSTRLEN];
+
+    memset(&hints, 0, sizeof hints); //make sure the struct hints is empty.
+    hints.ai_family = AF_UNSPEC;  //unspecified IPV4 or IPV6
+    hints.ai_socktype = SOCK_STREAM; //TCP
+    hints.ai_flags = AI_PASSIVE; // use my IP
+
+    //get address info
+    if ((rv = getaddrinfo(NULL, PORT, &hints, &servinfo)) != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(rv));
+        pthread_exit(NULL);
+    }
+    
+     //create socket
+     for(p = servinfo; p != NULL; p = p->ai_next) {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,
+                p->ai_protocol)) == -1) {
+            perror("server: socket");
+            continue;
+        }
+
+        if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes,
+                sizeof(int)) == -1) {
+            perror("setsockopt");
+            close(sockfd);
+            continue;
+        }
+        //bind sockets
+        if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            close(sockfd);
+            perror("server: bind");
+            continue;
+        }
+
+        if (listen(sockfd, BACKLOG) == -1) {
+           perror("listen");
+           close(sockfd);
+           continue;
+         }
+
+        break;
+    }
+
+    if (p == NULL)  {
+        fprintf(stderr, "server: failed to bind\n");
+       pthread_exit(NULL);
+    }
+
+    freeaddrinfo(servinfo); // all done with this structure
+
+    
+
+    printf("server: waiting for connections...\n");
+
+    while(1) {  // main accept() loop
+        sin_size = sizeof their_addr;
+        //accept the client
+        new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+        
+        if (new_fd == -1) {
+            perror("accept");
+            continue;
+        }
+
+       cout<<"server: got a connection "<<endl;
+
+       //get the client addresses
+       getpeername(new_fd, (struct sockaddr*)&their_addr, &sin_size);
+
+      // deal with both IPv4 and IPv6:
+      if (their_addr.ss_family == AF_INET) {
+       struct sockaddr_in *s = (struct sockaddr_in *)&their_addr;
+       port = ntohs(s->sin_port);
+       inet_ntop(AF_INET, &s->sin_addr, ipstr, sizeof ipstr);
+      } else { // AF_INET6
+        struct sockaddr_in6 *s = (struct sockaddr_in6 *)&their_addr;
+        port = ntohs(s->sin6_port);
+        inet_ntop(AF_INET6, &s->sin6_addr, ipstr, sizeof ipstr);
+     }
+
+      cout << "Connection accepted from "  << ipstr <<  " using port " << port << endl;
+
+            //create a thread for each client
+         if (pthread_create(&worker_thread, NULL, clientHandler, (void *)&new_fd) != 0) 
+           {
+			perror("Could not create a worker thread");
+			pthread_exit(NULL);
+	   }
+
+        
+    }
+   
+   pthread_exit(NULL);
+}
+
+
+
+//modified from https://gist.github.com/5821760.git is included in the supports folder
+//this is to handle the client
+void *GameModel::clientHandler(void *client)
+{
+   //Get the socket descriptor
+    int socket = *(int*)client;
+    int read_size;
+    char const *message; 
+    char client_message[2000];  
+    
+     memset(client_message, 0, sizeof(client_message));
+    
+    message = "Hey there! you are now connected to the server\n";
+    write(socket , message , strlen(message));
+
+     //In the while loop constantly receiving message from client
+    while( (read_size = recv(socket , client_message , sizeof(client_message) , 0)) > 0 )
+    {
+        //end of string marker
+		client_message[read_size] = '\0';
+		
+		//Send the message back to client
+        write(socket , client_message , strlen(client_message));
+		
+		//clear the message buffer
+		memset(client_message, 0, 2000);
+    }
+     
+    if(read_size == 0)
+    {
+        puts("Client disconnected");
+        fflush(stdout);
+    }
+    else if(read_size == -1)
+    {
+        perror("recv failed");
+        close(socket);
+        pthread_exit(NULL);
+        
+    }
+
+   return 0;
+}
+
+
+//server thread
+void GameModel::createThreads()
+{
+   pthread_t serverThread;
+   int rc;
+   
+      rc = pthread_create(&serverThread, NULL, 
+                          serverHandler, NULL);
+      if (rc){
+         cout << "Error:unable to create thread," << rc << endl;
+         exit(-1);
+      }
+}
+
+
+
 

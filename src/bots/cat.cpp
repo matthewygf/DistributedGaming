@@ -1,5 +1,6 @@
 #include "cat.h"
 #include <iostream>
+
 using namespace std;
 
 Cat::Cat()
@@ -19,5 +20,6 @@ void Cat::render()
 void Cat::caught()
 {
   score += 1;
+  decreaseHunger();
 }
 

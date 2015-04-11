@@ -19,16 +19,18 @@ Patrol* Patrol::Instance()
 
 void Patrol::Enter(Animal* animal)
 {
+  //cout<<"back to patrol"<<endl;
 }
 
 
 void Patrol::Execute(Animal* animal)
 {  
-
+  animal->setSpeed(0.01);
   animal->patrol();
 
   //only tired when patrolling
   animal->increaseFatigue();
+  animal->increaseHunger();
   
   if(animal->bored())
   {
@@ -39,6 +41,11 @@ void Patrol::Execute(Animal* animal)
   if (animal->tired())
   {
     animal->changeState(Tired::Instance());
+  }
+
+  if(animal->hungry())
+  {
+    animal->changeState(Hungry::Instance());
   }
   
 }
@@ -84,5 +91,33 @@ void Tired::Exit(Animal* animal)
 { 
 }
 
+
+//----------------------------------------methods for Hungry
+
+Hungry* Hungry::Instance()
+{
+  static Hungry instance;
+
+  return &instance;
+}
+
+void Hungry::Enter(Animal* animal)
+{
+}
+
+void Hungry::Execute(Animal* animal)
+{ 
+  animal->setSpeed(0.03);
+  animal->patrol();
+  if(!animal->hungry()){
+    animal->changeState(Patrol::Instance());
+  }
+ 
+}
+
+void Hungry::Exit(Animal* animal)
+{
+   
+}
 
 

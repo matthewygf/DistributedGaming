@@ -1,5 +1,10 @@
 #include "animal.h"
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
+#endif
 #include <iostream>
 #include <random>
 #include <stdio.h>
@@ -173,20 +178,40 @@ void Animal::drawBox()
            glVertex3f(1.0/2,-1.0/2, 1.0/2); //triangle 12 :end
         glEnd();
 }
-
 void Animal::moveRight()
 {
   float currentX = getPositionX();
-   float newX = currentX + 0.01;
+  float s  = getSpeed();
+   float newX = currentX + s;
    setPositionX(newX);
 }
 
 void Animal::moveLeft()
 {
   float currentX = getPositionX();
-  float newX = currentX - 0.01;
+  float s  = getSpeed();
+  float newX = currentX - s;
   setPositionX(newX);  
 }
+
+
+void Animal::moveUp()
+{
+  float currentY = getPositionY();
+  float s  = getSpeed();
+  float newY = currentY + s;
+  setPositionY(newY);
+  
+}
+
+void Animal::moveDown()
+{
+  float currentY = getPositionY();
+  float s  = getSpeed();
+  float newY = currentY - s;
+  setPositionY(newY);
+}
+
 
 void Animal::stop()
 {
@@ -214,6 +239,20 @@ void Animal::decreaseFatigue()
   tiredLevel -= 1.0;
 }
 
+void Animal::increaseHunger()
+{
+ if(hunger<HungerThreshold){
+  hunger += 0.01;
+  }
+}
+
+void Animal::decreaseHunger()
+{
+ if(hunger>0){
+  hunger -= 2.0;
+ }
+}
+
 void Animal::changeState(State* new_state)
 {
  assert(currentState && new_state);
@@ -236,24 +275,18 @@ bool Animal::bored()const
  return false;
 }
 
+bool Animal::hungry()const
+{
+  if(hunger>=HungerThreshold){
+    return true;
+  }
+  return false;
+
+}
+
 void Animal::setBoredLevel(int level)
 {
   boredLevel = level;
-}
-
-void Animal::moveUp()
-{
-  float currentY = getPositionY();
-  float newY = currentY + 0.01;
-  setPositionY(newY);
-  
-}
-
-void Animal::moveDown()
-{
-  float currentY = getPositionY();
-  float newY = currentY - 0.01;
-  setPositionY(newY);
 }
 
 
@@ -263,15 +296,19 @@ void Animal::setOppositeDirection()
   switch (d){
     case 0:
       d = 1; //assign to going bottom
+      setMovingDirection(d);
       break;
     case 1:
       d = 0; //assign to going up
+      setMovingDirection(d);
       break;
     case 2:
       d =  3; //assign to going left
+      setMovingDirection(d);
       break;
     case 3:
       d = 2; //assign to going right
+      setMovingDirection(d);
       break;
  
 
@@ -292,7 +329,6 @@ void Animal::changeDirection()
 
 void Animal::move(int dir)
 {
- //top(0),down(1),right(2),left(3)
   switch(dir){
    case 0:
      moveUp();
