@@ -285,6 +285,16 @@ int GameModel::getNumOfAnimals()
    return animals.size();
 }
 
+int GameModel::getNumOfCats()
+{
+   return cats.size();
+}
+
+int GameModel::getNumOfMice()
+{
+   return mice.size();
+}
+
 void GameModel::getTileSettings(){
   tileWidth = tile->getWidth();
   tileHeight= tile->getHeight();
@@ -378,11 +388,8 @@ void GameModel::runCollision()
     catsCaughtMice(cats,mice);
     //mouseAteCheese(cheesePos,mice);
    }
-    
-
-
-
 }
+
 int GameModel::generateRandom(int start, int end)
 {
     random_device                  rand_dev;
@@ -556,21 +563,20 @@ bool GameModel::testCollision(Vector3& a, Vector3& b, float width)
   return true;
 }
 
-
-
-void GameModel::sigchld_handler(int s)
+void GameModel::runAi(int id)
 {
-    while(waitpid(-1, NULL, WNOHANG) > 0);
-}
-
-// get sockaddr, IPv4 or IPv6:
-void *GameModel::get_in_addr(struct sockaddr *sa)
-{
-    if (sa->sa_family == AF_INET) {
-        return &(((struct sockaddr_in*)sa)->sin_addr);
-    }
-
-    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+  cout<<"got result from Client, tell animals to go into this state"<<endl;
+  switch(id){
+    case 0 :
+     //animals->goToStates(0);
+     cout<<"this is case zero"<<endl;
+     break;
+    default:
+     cout<<"in default state"<<endl;
+     //animals->goToStates(patrol state);
+     break;
+  }
+  
 }
 
 // void method access via wrapper
@@ -590,6 +596,10 @@ int GameModel::getAnimalSize()
   return animalSize;
 }
 
+void GameModel::doAiCalculation(int id)
+{
+  instanceModel->runAi(id);
+}
 
 
 //modified from C++ tutorial point
@@ -718,6 +728,7 @@ void *GameModel::clientHandler(void *client)
     int read_size;
     char const *message; 
     char client_message[2000]; 
+    char *d;
     
     memset(client_message, 0, sizeof(client_message));
 
@@ -728,21 +739,31 @@ void *GameModel::clientHandler(void *client)
     int net_a =  htonl(a);
     printf("establishing connections \n"); 
     sleep(2); 
+    printf("connections success \n");
     
     if( send(socket, (const char*)&net_a, sizeof(a), 0)<0){
      perror("send");
      }
     
 
-     //In the while loop constantly receiving message from client
+    /**In the while loop constantly receiving message from client
+     Ai calculations for which states to go in.
+     possibly received by int.
+     switch case:
+      if client tells its 1:
+         animal->goesToFirstState();
+      if client tells its 2:
+         animal->goesToSecondState();**/
+ 
     while( (read_size = recv(socket , client_message , sizeof(client_message) , 0)) > 0 )
     {
                 //end of string marker
 		client_message[read_size] = '\0';
-                cout<<client_message<<endl;
-		
-		//Send the message back to client
-                //write(socket , client_message , strlen(client_message));
+                d = client_message;
+                cout<<d<<endl;
+                
+                doAiCalculation(1);
+
 		
 		//clear the message buffer
 		memset(client_message, 0, 2000);

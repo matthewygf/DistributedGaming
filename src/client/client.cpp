@@ -68,8 +68,8 @@ bool Client::conn(string address , int port)
     server.sin_port = htons( port );
 
     struct timeval tv; 
-    
-     tv.tv_sec = 3; 
+    //3 second timeout
+    tv.tv_sec = 3; 
     tv.tv_usec = 0; 
     if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof tv)) {
         perror("setsockopt"); 
@@ -134,6 +134,7 @@ int Client::receiveInt()
    int timeouts = 0; 
    
    cout<<"receiving int"<<endl;
+   //however we not allowed to go more than 1 second, so keep recving until connected.
    while(recv(sock, &Buf, sizeof(Buf), 0)<0 && (++timeouts < 1000))
    {
      puts("recv failed");
@@ -143,5 +144,5 @@ int Client::receiveInt()
 }
 
 
-
+//make a return int method for AI;
  

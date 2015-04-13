@@ -36,7 +36,7 @@ public:
     bool send_data(string data);
     string receive(int);
     int  receiveInt();
-    void doStatesCalculations();
+    void createStates();
     //create Animals
     //ai methods
     //update

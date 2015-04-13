@@ -1,6 +1,15 @@
 #include <pthread.h>
 #include <iostream>
 #include "client.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <iostream>
+#include <random>
+#include <cmath>
+#include <cstdlib>
+#include <pthread.h>
+#include <cstring>
 using namespace std;
 
 
@@ -44,7 +53,8 @@ int main(int argc , char *argv[])
     //cout<<c.receive(1024)<<endl;
 
     while(1){
-         
+         c.send_data("0");
+         sleep(2);
     }
      
     //done

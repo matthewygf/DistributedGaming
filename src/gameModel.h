@@ -76,8 +76,8 @@ class GameModel
    void getWallsPos();
    void getCheesePos();
    void getTileSettings();
+   void runAi(int id);
    int  generateRandom(int start, int end);
-
    vector<Cat> getCats();
    vector<Mouse> getMice();
    
@@ -130,10 +130,8 @@ class GameModel
    static void *clientHandler(void *socket);
    //create static functions for the thread to get something from the model to pass to client.
    static int getAnimalSize();
-   
+   static void doAiCalculation(int id);
 
-   void sigchld_handler(int s);
-   void *get_in_addr(struct sockaddr *sa);
    //since graphics rendering depends on the data in the model.
    //so the returned data from sockets can directly alter the data.
    
@@ -157,7 +155,12 @@ class GameModel
    vector <Mouse>   mice;
    Cat c;
    Mouse m;
-   //Bots bots;
+   
+  //this is to store results get from client
+  int testForClient;
+
+
+
    
 };
 #endif
