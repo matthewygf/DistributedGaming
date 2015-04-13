@@ -13,8 +13,6 @@
 using namespace std;
 class State;
 
-
-
 const float TiredThreshold = 24.00;
 const float Full  = 7.00;
 const float HungerThreshold = 7.00;

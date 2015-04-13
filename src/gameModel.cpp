@@ -1,22 +1,5 @@
 #include "gameModel.h"
-#include <stdio.h>
-#include <iostream>
-#include <stdlib.h>
-#include <random>
-#include <cmath>
-#include <cstdlib>
-#include <pthread.h>
-#include <cstring>
-#include <sys/types.h>   // Types used in sys/socket.h and netinet/in.h
-#include <netinet/in.h>  // Internet domain address structures and functions
-#include <sys/socket.h>  // Structures and functions used for socket API
-#include <netdb.h>       // Used for domain/DNS hostname lookup
-#include <unistd.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <arpa/inet.h>
-#include <sys/wait.h>
-#include <signal.h>
+
 
 using namespace std;
 
@@ -28,6 +11,7 @@ GameModel::GameModel(Camera *newCamera, TileMap * newTileMap)
   theCamera = newCamera;
   tile = newTileMap;
   cout<<"modelInitialised"<<endl;
+  setInstance();
   
 }
 
@@ -296,6 +280,11 @@ void GameModel::gameSetUp(){
     
 }
 
+int GameModel::getNumOfAnimals()
+{
+   return animals.size();
+}
+
 void GameModel::getTileSettings(){
   tileWidth = tile->getWidth();
   tileHeight= tile->getHeight();
@@ -315,7 +304,7 @@ void GameModel::drawCats()
     glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
     cats[i].render();
     //ai update to check its states
-    cats[i].update();
+    //cats[i].update();
     glPopMatrix();
   }
  }else{}
@@ -328,7 +317,7 @@ void GameModel::drawMouse()
     glPushMatrix();
     glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
     mice[i].render();
-    mice[i].update();
+    //mice[i].update();
     glPopMatrix();
   }
 }else{cout<<"all mouse are eaten"<<endl;}
@@ -584,6 +573,23 @@ void *GameModel::get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
+// void method access via wrapper
+GameModel *GameModel::instanceModel = NULL;
+
+
+void GameModel::setInstance()
+{
+   instanceModel = this;
+}
+
+
+int GameModel::getAnimalSize()
+{
+  int animalSize = instanceModel->getNumOfAnimals();
+  cout<<"animal Size is "<<animalSize<<endl;
+  return animalSize;
+}
+
 
 
 //modified from C++ tutorial point
@@ -599,6 +605,7 @@ void *GameModel::serverHandler(void *)
     int rv;
     int port;
     char ipstr[INET6_ADDRSTRLEN];
+
 
     memset(&hints, 0, sizeof hints); //make sure the struct hints is empty.
     hints.ai_family = AF_UNSPEC;  //unspecified IPV4 or IPV6
@@ -649,7 +656,6 @@ void *GameModel::serverHandler(void *)
     freeaddrinfo(servinfo); // all done with this structure
 
     
-
     printf("server: waiting for connections...\n");
 
     while(1) {  // main accept() loop
@@ -662,6 +668,13 @@ void *GameModel::serverHandler(void *)
             continue;
         }
 
+       //tosetNon-block.
+       //int flags;
+       //flags = fcntl(new_fd,F_GETFL,0);
+       //assert(flags != -1);
+       //fcntl(new_fd, F_SETFL, flags | O_NONBLOCK);
+     
+       
        cout<<"server: got a connection "<<endl;
 
        //get the client addresses
@@ -679,6 +692,7 @@ void *GameModel::serverHandler(void *)
      }
 
       cout << "Connection accepted from "  << ipstr <<  " using port " << port << endl;
+
 
             //create a thread for each client
          if (pthread_create(&worker_thread, NULL, clientHandler, (void *)&new_fd) != 0) 
@@ -703,21 +717,32 @@ void *GameModel::clientHandler(void *client)
     int socket = *(int*)client;
     int read_size;
     char const *message; 
-    char client_message[2000];  
+    char client_message[2000]; 
     
-     memset(client_message, 0, sizeof(client_message));
-    
+    memset(client_message, 0, sizeof(client_message));
+
     message = "Hey there! you are now connected to the server\n";
     write(socket , message , strlen(message));
+
+    int a = getAnimalSize();
+    int net_a =  htonl(a);
+    printf("establishing connections \n"); 
+    sleep(2); 
+    
+    if( send(socket, (const char*)&net_a, sizeof(a), 0)<0){
+     perror("send");
+     }
+    
 
      //In the while loop constantly receiving message from client
     while( (read_size = recv(socket , client_message , sizeof(client_message) , 0)) > 0 )
     {
-        //end of string marker
+                //end of string marker
 		client_message[read_size] = '\0';
+                cout<<client_message<<endl;
 		
 		//Send the message back to client
-        write(socket , client_message , strlen(client_message));
+                //write(socket , client_message , strlen(client_message));
 		
 		//clear the message buffer
 		memset(client_message, 0, 2000);
@@ -727,6 +752,7 @@ void *GameModel::clientHandler(void *client)
     {
         puts("Client disconnected");
         fflush(stdout);
+        close(socket);
     }
     else if(read_size == -1)
     {

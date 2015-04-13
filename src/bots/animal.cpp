@@ -293,22 +293,27 @@ void Animal::setBoredLevel(int level)
 void Animal::setOppositeDirection()
 {
   int d = getMovingDirection();
+  //cout<<"before channg direction "<<d<<endl; 
   switch (d){
     case 0:
       d = 1; //assign to going bottom
       setMovingDirection(d);
+    //  cout<<"after changing direction "<<d<<endl;
       break;
     case 1:
       d = 0; //assign to going up
       setMovingDirection(d);
+      //cout<<"after changing direction "<<d<<endl;
       break;
     case 2:
       d =  3; //assign to going left
       setMovingDirection(d);
+      //cout<<"after changing direction "<<d<<endl;
       break;
     case 3:
       d = 2; //assign to going right
       setMovingDirection(d);
+      //cout<<"after changing direction "<<d<<endl;
       break;
  
 

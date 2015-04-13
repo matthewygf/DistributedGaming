@@ -16,6 +16,25 @@
 #include "bots/mouse.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
+#include <iostream>
+#include <random>
+#include <cmath>
+#include <cstdlib>
+#include <pthread.h>
+#include <cstring>
+#include <sys/types.h>   // Types used in sys/socket.h and netinet/in.h
+#include <netinet/in.h>  // Internet domain address structures and functions
+#include <sys/socket.h>  // Structures and functions used for socket API
+#include <sys/select.h>
+#include <sys/time.h>
+#include <netdb.h>       // Used for domain/DNS hostname lookup
+#include <errno.h>
+#include <arpa/inet.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <cassert>
 using namespace std;
 
 #define PORT "3490"  // the port users will be connecting to
@@ -51,10 +70,14 @@ class GameModel
    float getCameraLookAtPos_z();
    void  getCameraLookAtPos();
    float getCameraAngle();
+   int   getNumOfAnimals();
+   int   getNumOfCats();
+   int   getNumOfMice();
    void getWallsPos();
    void getCheesePos();
    void getTileSettings();
    int  generateRandom(int start, int end);
+
    vector<Cat> getCats();
    vector<Mouse> getMice();
    
@@ -102,17 +125,23 @@ class GameModel
    //it shud be non-blocking.
    //thread
    void  createThreads();
+   void  setInstance(); //to handle the static class.
    static void *serverHandler(void *);
    static void *clientHandler(void *socket);
+   //create static functions for the thread to get something from the model to pass to client.
+   static int getAnimalSize();
+   
 
    void sigchld_handler(int s);
    void *get_in_addr(struct sockaddr *sa);
    //since graphics rendering depends on the data in the model.
    //so the returned data from sockets can directly alter the data.
    
-
+   
 
    private:
+   
+   static GameModel *instanceModel;
    int width, height;
    float position_x, position_y, position_z; //for the camera
    float lposition_x, lposition_y, lposition_z; //for the camera lookAt

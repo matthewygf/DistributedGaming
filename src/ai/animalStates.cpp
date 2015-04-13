@@ -19,7 +19,6 @@ Patrol* Patrol::Instance()
 
 void Patrol::Enter(Animal* animal)
 {
-  //cout<<"back to patrol"<<endl;
 }
 
 
