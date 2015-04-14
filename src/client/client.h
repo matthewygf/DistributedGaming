@@ -14,8 +14,11 @@
 #include <cassert>
 #include <sys/time.h>
 #include "../bots/animal.h"
+#include "../bots/cat.h"
+#include "../bots/mouse.h"
 #include "../ai/state.h"
 #include "../ai/animalStates.h"
+#include <vector>
  
 using namespace std;
  

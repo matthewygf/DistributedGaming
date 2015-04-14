@@ -32,7 +32,8 @@ int main(int argc , char *argv[])
     Client c;
     string host;
     int a;
-
+    vector<Cat> cats;
+    
     cout<<"Enter hostname : ";
     cin>>host;
      
@@ -45,13 +46,21 @@ int main(int argc , char *argv[])
     cout<<c.receive(1024);
     cout<<"\n\n----------------------------\n\n";
   
+    ////////////////////////////////////////////////////////////
+    //here to receive all the require information before calculating Ai.
     a = c.receiveInt();
     cout<<a<<endl;
-    //c.send_data("hi this is the client");
-    //cout<<c.receive(1024)<<endl;
-    //c.send_data("second data sent");
-    //cout<<c.receive(1024)<<endl;
+   
+    for(int i = 0; i<a; i++){
+      Cat c;
+      cats.push_back(c);
+    }
+    int i = cats.size();
+    cout<<"client have cats size "<<i<<endl;
+    cout<<c.receive(1024)<<endl;
+    ///////////////////////////////////////////////////////////////
 
+    //keep send results to server.
     while(1){
          c.sendAiResult();
          sleep(2);

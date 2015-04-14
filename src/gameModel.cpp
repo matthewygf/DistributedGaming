@@ -622,6 +622,16 @@ void GameModel::doAiCalculation(int id)
   instanceModel->runAi(id);
 }
 
+vector<Cat> GameModel::getCatsForClient()
+{
+  return instanceModel->getCats();
+
+}
+vector<Mouse> GameModel::getMiceForClient()
+{
+
+  return instanceModel->getMice();
+}
 
 //modified from C++ tutorial point
 void *GameModel::serverHandler(void *)
@@ -748,11 +758,14 @@ void *GameModel::clientHandler(void *client)
     int socket = *(int*)client;
     int read_size;
     char const *message; 
+    char const *test;
     //char client_message[2000]; 
     //char *d;
     //memset(client_message, 0, sizeof(client_message));
     int Buf;
     int i;
+    vector<Cat> c;
+    c = getCatsForClient();
  
     message = "Hey there! you are now connected to the server\n";
     write(socket , message , strlen(message));
@@ -768,6 +781,18 @@ void *GameModel::clientHandler(void *client)
      perror("send");
      }
     cout<<"send to client"<<endl;
+
+    test = "Hey there! now send cats informations\n";
+    write(socket , test , strlen(test));
+    //for(int i = 0; i<a ; i++)
+    //{
+    // sleep(2);
+     //if( send(socket, (const char*)&net_a, sizeof(a), 0)<0){
+      //perror("send");
+    // }
+      //cout<<"send cats entity id to client"<<endl;
+      //sleep(2);
+    //}
 
     /**In the while loop constantly receiving message from client
      Ai calculations for which states to go in.
