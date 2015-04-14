@@ -53,7 +53,7 @@ int main(int argc , char *argv[])
     //cout<<c.receive(1024)<<endl;
 
     while(1){
-         c.send_data("0");
+         c.sendAiResult();
          sleep(2);
     }
      

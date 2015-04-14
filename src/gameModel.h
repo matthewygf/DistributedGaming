@@ -130,6 +130,11 @@ class GameModel
    static void *clientHandler(void *socket);
    //create static functions for the thread to get something from the model to pass to client.
    static int getAnimalSize();
+   static int getCatsSize();
+   static int getMiceSize();
+   //needa send information to clients
+   static vector<Cat> getCatsForClient();
+   static vector<Mouse> getMiceForClient();
    static void doAiCalculation(int id);
 
    //since graphics rendering depends on the data in the model.

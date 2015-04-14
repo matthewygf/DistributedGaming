@@ -46,14 +46,19 @@ float Animal::getPositionZ()
   return pos.z;
 }
 
-int Animal::getId()
+int Animal::getId() //classify whether mouse or cats
 {
   return id;
 }
 
-int Animal::getEntityId()
+int Animal::getEntityId() //gives them an ID for each entity.
 {
   return entity_id;
+}
+
+int Animal::getState()
+{
+  return state;
 }
 
 Vector3 Animal::getPosition()
@@ -86,6 +91,10 @@ void Animal::setEntityId(int e_id)
   entity_id = e_id;
 }
 
+void Animal::setState(int new_state)
+{
+  state = new_state;
+}
 
 void Animal::setPosition (Vector3 newPosition)
 {
@@ -222,9 +231,10 @@ void Animal::stop()
 void Animal::update()
 {
   boredLevel+=0.01;
-  if(currentState){
-    currentState->Execute(this);
-  }
+  //if(currentState){
+    //currentState->Execute(this);
+  //}
+  
 }
 
 void Animal::increaseFatigue()
@@ -252,6 +262,30 @@ void Animal::decreaseHunger()
   hunger -= 2.0;
  }
 }
+
+void Animal::goToState()
+{
+   int s = getState();
+   switch(s){
+       case 0:
+         //changes state first before executing
+         //changeState(Patrol::Instance());
+         cout<<"Now in state Zero"<<endl;
+         //update(); to execute state
+         break;
+       case 1:
+         //changes state first before executing
+         //changeState(Tired::Instance());
+         cout<<"Now in state one"<<endl;
+         //update();
+         break;
+       case 2:
+         break;
+       default:
+         break;
+   }
+}
+
 
 void Animal::changeState(State* new_state)
 {

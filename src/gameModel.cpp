@@ -240,6 +240,7 @@ void GameModel::initCnM()
       c.setMovingDirection(dir);
       c.setEntityId(e);
       c.setPosition(x,y,0.5);
+      c.setState(0);
       c.setSpeed(speed);
       cats.push_back(c);
       //cout<<"Cats has entity IDs :"<< c.getEntityId()<<endl;
@@ -260,6 +261,7 @@ void GameModel::initCnM()
       m.setEntityId(e);
       m.setPosition(x,y,0.5);
       m.setSpeed(0.02);
+      m.setState(0);
       mice.push_back(m);
       //cout<<"Mice has entity IDs :"<< m.getEntityId()<<endl;
    }
@@ -566,16 +568,21 @@ bool GameModel::testCollision(Vector3& a, Vector3& b, float width)
 void GameModel::runAi(int id)
 {
   cout<<"got result from Client, tell animals to go into this state"<<endl;
-  switch(id){
-    case 0 :
+  
+  cout<<"cats[0] was in state "<<cats[0].getState()<<endl;
+  cats[0].setState(id);
+  cats[0].goToState();
+  
+  //switch(id){
+    //case 0 :
      //animals->goToStates(0);
-     cout<<"this is case zero"<<endl;
-     break;
-    default:
-     cout<<"in default state"<<endl;
+     //cout<<"this is case zero"<<endl;
+     //break;
+    //default:
+     //cout<<"in default state"<<endl;
      //animals->goToStates(patrol state);
-     break;
-  }
+    // break;
+  //}
   
 }
 
@@ -594,6 +601,20 @@ int GameModel::getAnimalSize()
   int animalSize = instanceModel->getNumOfAnimals();
   cout<<"animal Size is "<<animalSize<<endl;
   return animalSize;
+}
+
+int GameModel::getCatsSize()
+{
+  int catsSize = instanceModel->getNumOfCats();
+  cout<<"cat Size is "<<catsSize<<endl;
+  return catsSize;
+}
+
+int GameModel::getMiceSize()
+{
+  int miceSize = instanceModel->getNumOfMice();
+  cout<<"mice Size is "<<miceSize<<endl;
+  return miceSize;
 }
 
 void GameModel::doAiCalculation(int id)
@@ -727,24 +748,26 @@ void *GameModel::clientHandler(void *client)
     int socket = *(int*)client;
     int read_size;
     char const *message; 
-    char client_message[2000]; 
-    char *d;
-    
-    memset(client_message, 0, sizeof(client_message));
-
+    //char client_message[2000]; 
+    //char *d;
+    //memset(client_message, 0, sizeof(client_message));
+    int Buf;
+    int i;
+ 
     message = "Hey there! you are now connected to the server\n";
     write(socket , message , strlen(message));
 
-    int a = getAnimalSize();
+    int a = getCatsSize();
     int net_a =  htonl(a);
     printf("establishing connections \n"); 
     sleep(2); 
     printf("connections success \n");
     
+    //send all the prerequired information here.
     if( send(socket, (const char*)&net_a, sizeof(a), 0)<0){
      perror("send");
      }
-    
+    cout<<"send to client"<<endl;
 
     /**In the while loop constantly receiving message from client
      Ai calculations for which states to go in.
@@ -754,20 +777,32 @@ void *GameModel::clientHandler(void *client)
          animal->goesToFirstState();
       if client tells its 2:
          animal->goesToSecondState();**/
+
+    cout<<"receiving int from client"<<endl;
+   //however we not allowed to go more than 1 second, so keep recving until connected.
+   while((read_size = recv(socket, &Buf, sizeof(Buf), 0))>0)
+   {
+      i = ntohl(Buf);
+      doAiCalculation(i);
+   }
+   
+
+
+
  
-    while( (read_size = recv(socket , client_message , sizeof(client_message) , 0)) > 0 )
-    {
+   // while( (read_size = recv(socket , client_message , sizeof(client_message) , 0)) > 0 )
+    //{
                 //end of string marker
-		client_message[read_size] = '\0';
-                d = client_message;
-                cout<<d<<endl;
+	//	client_message[read_size] = '\0';
+          //      d = client_message;
+            //    cout<<d<<endl;
                 
-                doAiCalculation(1);
+              //  doAiCalculation(1);
 
 		
 		//clear the message buffer
-		memset(client_message, 0, 2000);
-    }
+		//memset(client_message, 0, 2000);
+    //}
      
     if(read_size == 0)
     {

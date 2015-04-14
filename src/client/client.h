@@ -34,9 +34,11 @@ public:
     Client();
     bool conn(string, int);
     bool send_data(string data);
+    bool sendAiResult();
     string receive(int);
     int  receiveInt();
     void createStates();
+    
     //create Animals
     //ai methods
     //update

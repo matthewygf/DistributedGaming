@@ -10,7 +10,7 @@
 class Patrol : public State
 {
   private:
-    Patrol(){}
+    Patrol(){stateId = 0;}
     ~Patrol(){}
     //copy ctor and assignment should be private
      Patrol(const Patrol&);
@@ -31,7 +31,7 @@ public:
 class Tired : public State
 {
   private:
-   Tired(){}
+   Tired(){stateId = 1;}
    ~Tired(){}
    Tired(const Tired&);
    Tired& operator=(const Tired&);
@@ -48,7 +48,7 @@ class Tired : public State
 class Hungry : public State
 {
   private:
-   Hungry(){}
+   Hungry(){stateId = 2;}
    ~Hungry(){}
    Hungry(const Hungry&);
    Hungry& operator=(const Hungry&);

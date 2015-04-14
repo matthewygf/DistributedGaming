@@ -11,6 +11,10 @@ class State
   public:
   virtual ~State(){}
   
+  int stateId;
+
+  int getStateId(){return stateId;}  
+
   //execute when state is entered
   virtual void Enter(Animal*) = 0;
 

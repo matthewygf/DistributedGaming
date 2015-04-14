@@ -31,6 +31,7 @@ class Animal
       float tiredLevel;
       float hunger;
       int score;
+      int state;
       State* currentState;
    public:
       Animal();
@@ -47,10 +48,15 @@ class Animal
       float getHungerLevel();
       int   getId();
       int   getEntityId();
+      int   getState();
       int   getMovingDirection();
+      int   getCurrentState();
       
+      void  goToState();
+      void  setState(int new_state);
       void  setSpeed(float newSpeed);
       void  setBoredLevel(int level);
+      void  setCurrentState(int state);
       void  setEntityId(int e_id);
       void  setOppositeDirection();
       void  setMovingDirection(int new_dir);

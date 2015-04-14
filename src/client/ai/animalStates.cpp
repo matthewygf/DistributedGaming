@@ -3,7 +3,7 @@
 #include "../bots/animal.h"
 #include <iostream>
 #include <stdio.h>
-
+#include "../../../supports/matrix/src/Vectors.h"
 using namespace std;
 
 //also modified from 'WestWord1' by Mat Buckland 2002 fup@ai-junkie.com
