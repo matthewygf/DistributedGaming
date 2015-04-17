@@ -41,6 +41,8 @@ using namespace std;
 
 #define BACKLOG 10     // how many pending connections queue will hold
 
+#define NUMCLIENT 2    //2 machines connect to the server.
+
 
 class GameModel
 {
@@ -73,6 +75,7 @@ class GameModel
    int   getNumOfAnimals();
    int   getNumOfCats();
    int   getNumOfMice();
+   int   getNumOfMiceEaten();
    void getWallsPos();
    void getCheesePos();
    void getTileSettings();
@@ -80,6 +83,7 @@ class GameModel
    int  generateRandom(int start, int end);
    vector<Cat> getCats();
    vector<Mouse> getMice();
+   vector<int>   getMiceEaten();
    
    // setters
    void setPosition_x(float new_x);
@@ -132,9 +136,11 @@ class GameModel
    static int getAnimalSize();
    static int getCatsSize();
    static int getMiceSize();
+   static int getMiceEatenSize();
    //needa send information to clients
    static vector<Cat> getCatsForClient();
    static vector<Mouse> getMiceForClient();
+   static vector<int>  getMiceEatenForClient();
    static void doAiCalculation(int id);
 
    //since graphics rendering depends on the data in the model.
@@ -158,6 +164,7 @@ class GameModel
    vector <Animal>  animals;
    vector <Cat>     cats;
    vector <Mouse>   mice;
+   vector <int>     miceEatenId;
    Cat c;
    Mouse m;
    

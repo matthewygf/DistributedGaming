@@ -9,6 +9,8 @@ using namespace std;
 //also modified from 'WestWord1' by Mat Buckland 2002 fup@ai-junkie.com
 
 //--------------------------------------methods for Patrol
+//In the Server. the animal only execute the state main methods, no need to keep track of the AI.
+//Since AI calculation is all in Client.
 
 Patrol* Patrol::Instance()
 {
@@ -26,10 +28,10 @@ void Patrol::Execute(Animal* animal)
 {  
   animal->setSpeed(0.01);
   animal->patrol();
-
+  /* this should now only be calculated in Client
   //only tired when patrolling
-  animal->increaseFatigue();
-  animal->increaseHunger();
+  //animal->increaseFatigue();
+  //animal->increaseHunger();
   
   if(animal->bored())
   {
@@ -46,7 +48,7 @@ void Patrol::Execute(Animal* animal)
   {
     animal->changeState(Hungry::Instance());
   }
-  
+  */
 }
 
 
@@ -71,6 +73,7 @@ void Tired::Enter(Animal* animal)
 
 void Tired::Execute(Animal* animal)
 { 
+  /* calcu
   float t = animal -> getTiredLevel();
   
   if (t<=0 )
@@ -79,11 +82,11 @@ void Tired::Execute(Animal* animal)
   }
 
   else 
-  {
+  {*/
     Vector3 currentPos = animal -> getPosition();
     animal -> setPosition(currentPos);
     animal->decreaseFatigue();
-  } 
+  
 }
 
 void Tired::Exit(Animal* animal)
@@ -108,9 +111,9 @@ void Hungry::Execute(Animal* animal)
 { 
   animal->setSpeed(0.03);
   animal->patrol();
-  if(!animal->hungry()){
+  /*if(!animal->hungry()){ now should be in the client code.
     animal->changeState(Patrol::Instance());
-  }
+  }*/
  
 }
 

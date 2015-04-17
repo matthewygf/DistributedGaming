@@ -269,15 +269,15 @@ void Animal::goToState()
    switch(s){
        case 0:
          //changes state first before executing
-         //changeState(Patrol::Instance());
+         changeState(Patrol::Instance());
          cout<<"Now in state Zero"<<endl;
-         //update(); to execute state
+         update(); 
          break;
        case 1:
          //changes state first before executing
          //changeState(Tired::Instance());
          cout<<"Now in state one"<<endl;
-         //update();
+         //update(); 
          break;
        case 2:
          break;

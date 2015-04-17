@@ -29,7 +29,7 @@ bool Client::conn(string address , int port)
     else    {   /* OK , nothing */  }
      
     //setup address structure
-    if(inet_addr(address.c_str()) == -1)
+    if(inet_addr(address.c_str()) == (unsigned)-1)
     {
         struct hostent *he;
         struct in_addr **addr_list;
@@ -124,6 +124,7 @@ string Client::receive(int size=1024)
     }
      
     reply = buffer;
+    memset(buffer, 0, sizeof(buffer));
     return reply;
 }
 
@@ -133,9 +134,9 @@ int Client::receiveInt()
    int i;
    int timeouts = 0; 
    
-   cout<<"receiving int"<<endl;
+   //cout<<"receiving int"<<endl;
    //however we not allowed to go more than 1 second, so keep recving until connected.
-   while(recv(sock, &Buf, sizeof(Buf), 0)<0 && (++timeouts < 1000))
+   while(recv(sock, &Buf, sizeof(Buf), MSG_NOSIGNAL)<0 && (++timeouts < 1000))
    {
      puts("recv failed");
    }
@@ -149,7 +150,7 @@ int Client::receiveInt()
 bool Client::sendAiResult()
 {
     //int a = getAnimalSize();
-    int a = 1;
+    int a = 0;
     int net_a =  htonl(a);
     //printf("establishing connections \n"); 
     //sleep(2); 

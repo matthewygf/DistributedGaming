@@ -132,6 +132,12 @@ vector <Mouse> GameModel::getMice(){
   return mice;
 }
 
+vector <int> GameModel::getMiceEaten()
+{
+  return miceEatenId;
+}
+
+
 // setter
 
 void GameModel::setPosition_x(float new_x){
@@ -295,6 +301,11 @@ int GameModel::getNumOfCats()
 int GameModel::getNumOfMice()
 {
    return mice.size();
+}
+
+int GameModel::getNumOfMiceEaten()
+{
+  return miceEatenId.size();
 }
 
 void GameModel::getTileSettings(){
@@ -516,11 +527,12 @@ void GameModel::catsCaughtMice(vector<Cat>& cats, vector<Mouse>& mice)
          int c_id = cats[i].getEntityId();
          int m_id = mice[j].getEntityId();
          cats[i].caught();
+         miceEatenId.push_back(m_id);
          mice.erase(mice.begin() + j);
          cout<<"cat  "<<c_id<<" caught Mouse "<<m_id<<endl;
          cats[i].setOppositeDirection();
-        int d = cats[i].getMovingDirection();
-          int new_d = generateRandom(0,3);
+         int d = cats[i].getMovingDirection();
+         int new_d = generateRandom(0,3);
           while(new_d == d){
               new_d = generateRandom(0,3);
           }    
@@ -606,16 +618,24 @@ int GameModel::getAnimalSize()
 int GameModel::getCatsSize()
 {
   int catsSize = instanceModel->getNumOfCats();
-  cout<<"cat Size is "<<catsSize<<endl;
+  //cout<<"cat Size is "<<catsSize<<endl;
   return catsSize;
 }
 
 int GameModel::getMiceSize()
 {
   int miceSize = instanceModel->getNumOfMice();
-  cout<<"mice Size is "<<miceSize<<endl;
+  //cout<<"mice Size is "<<miceSize<<endl;
   return miceSize;
 }
+
+int GameModel::getMiceEatenSize()
+{
+  int miceEatenSize = instanceModel->getNumOfMiceEaten();
+  //cout<<"mice Size is "<<miceSize<<endl;
+  return miceEatenSize;
+}
+
 
 void GameModel::doAiCalculation(int id)
 {
@@ -631,6 +651,10 @@ vector<Mouse> GameModel::getMiceForClient()
 {
 
   return instanceModel->getMice();
+}
+vector <int> GameModel::getMiceEatenForClient()
+{
+  return instanceModel->getMiceEaten();
 }
 
 //modified from C++ tutorial point
@@ -751,48 +775,123 @@ void *GameModel::serverHandler(void *)
 
 
 //modified from https://gist.github.com/5821760.git is included in the supports folder
-//this is to handle the client
+//this is to handle each client
 void *GameModel::clientHandler(void *client)
 {
    //Get the socket descriptor
     int socket = *(int*)client;
     int read_size;
     char const *message; 
-    char const *test;
-    //char client_message[2000]; 
-    //char *d;
-    //memset(client_message, 0, sizeof(client_message));
-    int Buf;
-    int i;
+    char const *info;
+    char const *e_cats;
+    char const *e_mice;
+    char const *client_mice_eaten;
+    char client_message[2000]; 
+    memset(client_message, 0, sizeof(client_message));
+    int b,a,net_a,net_b,Buf,ai;
+    int old_a = 0;
     vector<Cat> c;
-    c = getCatsForClient();
- 
-    message = "Hey there! you are now connected to the server\n";
-    write(socket , message , strlen(message));
-
-    int a = getCatsSize();
-    int net_a =  htonl(a);
-    printf("establishing connections \n"); 
-    sleep(2); 
-    printf("connections success \n");
+    vector<Mouse> m;
+    vector<int>   current_mice_eaten; //to keep track of the mice eaten size.
+    c = getCatsForClient(); //get the cats in the model
+    m = getMiceForClient(); //get the mice in the model
+    current_mice_eaten = getMiceEatenForClient(); //get mice eaten in the model.
+    string entity_ids_for_cats;
+    string entity_ids_for_mice = "m";
     
-    //send all the prerequired information here.
-    if( send(socket, (const char*)&net_a, sizeof(a), 0)<0){
-     perror("send");
-     }
-    cout<<"send to client"<<endl;
+ 
+    message = "Hey there! you are now connected to the server.\n";
+    write(socket , message , strlen(message));
+    
+    printf("establishing connections \n"); 
+    printf("connections success \n");
 
-    test = "Hey there! now send cats informations\n";
-    write(socket , test , strlen(test));
-    //for(int i = 0; i<a ; i++)
-    //{
-    // sleep(2);
-     //if( send(socket, (const char*)&net_a, sizeof(a), 0)<0){
-      //perror("send");
-    // }
-      //cout<<"send cats entity id to client"<<endl;
-      //sleep(2);
-    //}
+    //send all the cats entity ID to client
+   for(unsigned int i = 0; i<c.size();i++){
+      int j = c[i].getEntityId();
+      entity_ids_for_cats.append(to_string(j));
+     if(i != c.size()-1){
+      entity_ids_for_cats.append(",");}
+   }
+   //cout<<"entity_ids_for_cats = "<<entity_ids_for_cats<<endl;
+   e_cats = entity_ids_for_cats.c_str();
+
+   for(unsigned int i = 0; i<m.size();i++){
+      int j = m[i].getEntityId();
+      entity_ids_for_mice.append(to_string(j));
+     if(i != m.size()-1){
+      entity_ids_for_mice.append(",");}
+     }
+   // cout<<"entity_ids_for_mice = "<<entity_ids_for_mice<<endl;
+ 
+   e_mice = entity_ids_for_mice.c_str();
+   sleep(1);
+   
+   //send all the mice entity ID to client
+   
+   write(socket , e_cats , strlen(e_cats));
+   cout<<"sending cats entitys id"<<endl;
+   write(socket , e_mice , strlen(e_mice));
+   cout<<"sending mice entitys id"<<endl;
+
+   sleep(1);
+    //start the loop here to send n recv from client
+    //first update how many cats n mice in the model.
+    while((read_size = recv(socket, &Buf, sizeof(Buf), 0))>0){
+    b = getMiceSize();
+    net_b =  htonl(b);
+    a = getMiceEatenSize();
+    net_a = htonl(a);
+    string mice_eaten;
+    current_mice_eaten = getMiceEatenForClient();
+    
+    //net_a =  htonl(a);
+    //dont need to send cats size as cats wont die.
+    //only mice.
+    if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
+      {perror("error");}
+
+   //send the size of the mice eaten.
+   if(send(socket, (const char*)&net_a, sizeof(a), MSG_NOSIGNAL)<0)
+      {perror("error");}
+    
+
+    if(a != 0 && (abs(a-old_a))!=0){
+     for(unsigned int i = old_a; i<current_mice_eaten.size();i++){
+      int j = current_mice_eaten[i];
+      mice_eaten.append(to_string(j));
+     if(i != current_mice_eaten.size()-1){
+       mice_eaten.append(",");}
+     }
+    client_mice_eaten = mice_eaten.c_str();
+    write(socket , client_mice_eaten , strlen(client_mice_eaten));
+    }
+
+    old_a = a;
+    ai = ntohl(Buf);
+      //doAiCalculation(ai);
+    sleep(2); 
+    
+   }
+   
+   if(read_size == 0)
+    {
+        puts("Client disconnected");
+        fflush(stdout);
+        close(socket);
+    }
+    else if(read_size == -1)
+    {
+        puts("recv failed");
+        puts("Client disconnected");
+        //fflush(stdout);
+        close(socket);   
+    }
+ 
+   
+
+
+   
 
     /**In the while loop constantly receiving message from client
      Ai calculations for which states to go in.
@@ -803,45 +902,6 @@ void *GameModel::clientHandler(void *client)
       if client tells its 2:
          animal->goesToSecondState();**/
 
-    cout<<"receiving int from client"<<endl;
-   //however we not allowed to go more than 1 second, so keep recving until connected.
-   while((read_size = recv(socket, &Buf, sizeof(Buf), 0))>0)
-   {
-      i = ntohl(Buf);
-      doAiCalculation(i);
-   }
-   
-
-
-
- 
-   // while( (read_size = recv(socket , client_message , sizeof(client_message) , 0)) > 0 )
-    //{
-                //end of string marker
-	//	client_message[read_size] = '\0';
-          //      d = client_message;
-            //    cout<<d<<endl;
-                
-              //  doAiCalculation(1);
-
-		
-		//clear the message buffer
-		//memset(client_message, 0, 2000);
-    //}
-     
-    if(read_size == 0)
-    {
-        puts("Client disconnected");
-        fflush(stdout);
-        close(socket);
-    }
-    else if(read_size == -1)
-    {
-        perror("recv failed");
-        close(socket);
-        pthread_exit(NULL);
-        
-    }
 
    return 0;
 }
