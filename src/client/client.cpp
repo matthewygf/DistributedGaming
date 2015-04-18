@@ -141,6 +141,7 @@ int Client::receiveInt()
      puts("recv failed");
    }
    i = ntohl(Buf);
+   Buf = 0;
    return i;
 }
 

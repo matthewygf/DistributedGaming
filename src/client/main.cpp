@@ -12,6 +12,7 @@
 #include <pthread.h>
 #include <cstring>
 #include <vector>
+#include "bots/animal.h"
 using namespace std;
 
 
@@ -45,10 +46,7 @@ void getEntitiesIdFromServer(vector<int>&e, string entities)
 
     while (ss >> i)
       {
-        
          e.push_back(i);
- 
-
       if (ss.peek() == ','){
         ss.ignore();
       }
@@ -65,6 +63,7 @@ void createCats(vector<Cat>&cats,vector<int> c_id)
       cats.push_back(c);
     } 
     cout<<"CATS VECTOR NOW HAVE "<<cats.size()<<endl;
+    
 }
 
 void createMice(vector<Mouse>&mice,vector<int> id)
@@ -77,6 +76,34 @@ void createMice(vector<Mouse>&mice,vector<int> id)
     cout<<"MICE VECTOR NOW HAVE "<<mice.size()<<endl;
 }
 
+void calculateAi(vector<Cat>&c, vector<Mouse>&m)
+{
+  for(unsigned int i=0;i<c.size();i++)
+  {
+    c[i].update();
+    //cout<<c[i].getEntityId()<<" updating"<<endl;
+    //cout<<c[i].getHungerLevel()<<endl;
+  }
+}
+
+void deleteMiceFromVector(vector<Mouse>&m, vector<int>&id)
+{
+ if(m.size()!=0){
+  for(unsigned int i = 0 ; i<m.size();i++)
+  {
+    for(unsigned int j = 0; j<id.size();j++)
+     {
+      if(m[i].getEntityId()==id[j])
+       {
+         cout<<"m "<<m[i].getEntityId()<<" going to be deleted"<<endl;
+         m.erase(m.begin() + i);
+
+       }
+     }
+   }
+ }
+ cout<<"mice size is now "<<m.size()<<endl;
+}
 
 int main(int argc , char *argv[])
 {
@@ -85,28 +112,32 @@ int main(int argc , char *argv[])
     int a,b,temp;
     string entities;
     string splitM = "m";
-    
+    string splitC = "c";
+    string splitH = "h";
     string e_cats;
     string e_mice;
-    string eaten;
+    //string e_mice_ate_cheese;
+    string data;
+    string miceEaten;
+    string catAte;
+    string miceAteCheese;
     vector<int> catsId;
     vector<int> miceId;
-    vector<int> m_eatenId;
-    vector<int> m_new_eatenId;
+    vector<int> m_eatenId;//mouse that got eaten at that frame
+    vector<int> mice_ate_cheese;
     vector<Cat> cats;
     vector<Mouse> mice;
+
     cout<<"Enter hostname : ";
-    cin>>host;
      
     //connect to host
-    c.conn(host , 3490);
+    c.conn("localhost" , 3490);
     
     //receive and echo connection reply.
     cout<<"----------------------------\n\n";
     cout<<c.receive(1024);
     cout<<"\n\n----------------------------\n\n";
-    if(m_eatenId.size()!=0){
-    cout<<"m_eatenID size before"<<m_eatenId.size()<<endl;}
+   
     sleep(2);
     
     ////////////////////////////////////////////////////////////
@@ -128,34 +159,47 @@ int main(int argc , char *argv[])
     sleep(1);
     //should be in a while loop keep updating how many animals are left.
     while(1){
+    vector<int> catAteMouseId;//cat that ate a mouse for AI hungry state
     //send default Ai result when connected for let cats n mice starts walkin.;
     c.sendAiResult();
     sleep(1);
     //keep updating mice size. or update which one has got eaten.
     b = c.receiveInt();
     cout<<"mice size is "<<b<<" successfully received in client"<<endl;
-
     a = c.receiveInt();
-    cout<<"miceEaten size is "<<a<<" successfully received in client"<<endl;
-    if(a!=0&& (abs(temp-a))!=0){
-    eaten = c.receive(512);
-    cout<<eaten<<endl;
-    getEntitiesIdFromServer(m_eatenId,eaten);
-    cout<<m_eatenId.size()<<endl;
-    }
-    temp =a;
-    
-    }
-    
-  
-     
+    cout<<"Numof Mice has been eaten "<<a<<" successfully received in client"<<endl;
+    //catEatenMiceSize=c.receiveInt();
+    //cout<<"Num cat has eaten mice "<<catEatenMiceSize<<endl;
 
-    //keep send results to server.
-    //while(1){
-      //   c.sendAiResult();
-       //  sleep(2);
-    //}
-     
+    //receive the mice that has been eaten and cat that has eaten.
+    if(a!=0 && (abs(temp-a))!=0){
+      data = c.receive(512);
+      sleep(1);
+      miceEaten = data.substr(0, data.find(splitC));
+      catAte = data.substr(data.find(splitC)+1, data.find(splitH)-2);
+      //miceAteCheese = data.substr(data.find(splitH)+1,data.length());
+      cout<<"cat that has eaten "<<catAte<<endl;
+      getEntitiesIdFromServer(m_eatenId,miceEaten);
+      getEntitiesIdFromServer(catAteMouseId,catAte);
+     // getEntitiesIdFromServer(mice_ate_cheese,miceAteCheese);
+      deleteMiceFromVector(mice,m_eatenId);
+      cout<<"num of mice that has been eaten "<<m_eatenId.size()<<endl;
+      cout<<"cat's entity ID has been added to the vector "<<catAteMouseId.size()<<endl;
+    }
+
+    cout<<c.receiveInt()<<endl;
+   
+    //calculate Ai
+    //calculateAi(cats,mice,catAteMouseId);
+    //append the string ai result(cats);
+    //append the string ai result(mice);
+    temp =a;
+    b=0;
+    a=0;
+
+    }
+    
+    sleep(1);
     //done
     return 0;
 }

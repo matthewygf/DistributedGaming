@@ -137,6 +137,15 @@ vector <int> GameModel::getMiceEaten()
   return miceEatenId;
 }
 
+vector <int> GameModel::getCatAteMiceVector()
+{
+  return catAteMice;
+}
+
+vector <int> GameModel::getMiceAteCheese()
+{
+  return miceAteCheese;
+}
 
 // setter
 
@@ -306,6 +315,11 @@ int GameModel::getNumOfMice()
 int GameModel::getNumOfMiceEaten()
 {
   return miceEatenId.size();
+}
+
+int GameModel::getNumOfCatAteMice()
+{
+  return catAteMice.size();
 }
 
 void GameModel::getTileSettings(){
@@ -527,6 +541,8 @@ void GameModel::catsCaughtMice(vector<Cat>& cats, vector<Mouse>& mice)
          int c_id = cats[i].getEntityId();
          int m_id = mice[j].getEntityId();
          cats[i].caught();
+         //game model need to know which cat has eaten a mice.
+         catAteMice.push_back(c_id);
          miceEatenId.push_back(m_id);
          mice.erase(mice.begin() + j);
          cout<<"cat  "<<c_id<<" caught Mouse "<<m_id<<endl;
@@ -553,10 +569,11 @@ void GameModel::mouseAteCheese(vector<Vector3>& cheese, vector<Mouse>& mice)
       int d = mice[i].getMovingDirection();
       if(c==1){
          //cheese ate
+         cout<<"mice "<<mice[i].getEntityId()<<" ate cheese"<<endl;
          mice[i].ateCheese();
+         miceAteCheese.push_back(mice[i].getEntityId());
          cheese.erase(cheese.begin() + j);
          mice[i].setOppositeDirection();
-        
           int new_d = generateRandom(0,3);
           while(new_d == d){
               new_d = generateRandom(0,3);
@@ -636,6 +653,13 @@ int GameModel::getMiceEatenSize()
   return miceEatenSize;
 }
 
+int GameModel::getCatAteMiceSize()
+{
+  int catAteMiceS = instanceModel->getNumOfCatAteMice();
+  //cout<<"mice Size is "<<miceSize<<endl;
+  return catAteMiceS;
+}
+
 
 void GameModel::doAiCalculation(int id)
 {
@@ -655,6 +679,16 @@ vector<Mouse> GameModel::getMiceForClient()
 vector <int> GameModel::getMiceEatenForClient()
 {
   return instanceModel->getMiceEaten();
+}
+
+vector <int> GameModel::getCatAteMiceForClient()
+{
+  return instanceModel->getCatAteMiceVector();
+}
+
+vector <int> GameModel::getMiceAteCheeseForClient()
+{
+  return instanceModel->getMiceAteCheese();
 }
 
 //modified from C++ tutorial point
@@ -738,7 +772,6 @@ void *GameModel::serverHandler(void *)
        //flags = fcntl(new_fd,F_GETFL,0);
        //assert(flags != -1);
        //fcntl(new_fd, F_SETFL, flags | O_NONBLOCK);
-     
        
        cout<<"server: got a connection "<<endl;
 
@@ -782,24 +815,34 @@ void *GameModel::clientHandler(void *client)
     int socket = *(int*)client;
     int read_size;
     char const *message; 
-    char const *info;
+    //char const *info;
     char const *e_cats;
     char const *e_mice;
     char const *client_mice_eaten;
+    char const *client_cat_eaten_mice;
+    char const *client_mice_ate_cheese;
     char client_message[2000]; 
     memset(client_message, 0, sizeof(client_message));
-    int b,a,net_a,net_b,Buf,ai;
+    int b,a,catAteMiceSize,net_a,net_b,Buf,ai;
     int old_a = 0;
+    int temp = 0;
+    int tempCheese=0;
     vector<Cat> c;
     vector<Mouse> m;
     vector<int>   current_mice_eaten; //to keep track of the mice eaten size.
+    vector<int>   current_cat_has_eaten_mice;
+    vector<int>   current_mice_ate_cheese;
     c = getCatsForClient(); //get the cats in the model
     m = getMiceForClient(); //get the mice in the model
     current_mice_eaten = getMiceEatenForClient(); //get mice eaten in the model.
+    current_cat_has_eaten_mice = getCatAteMiceForClient();
+    current_mice_ate_cheese = getMiceAteCheeseForClient();
+    
     string entity_ids_for_cats;
     string entity_ids_for_mice = "m";
+    string entity_Cat_Eaten_Mice = "c";
+    string entity_mice_ate_cheese = "h";
     
- 
     message = "Hey there! you are now connected to the server.\n";
     write(socket , message , strlen(message));
     
@@ -842,10 +885,13 @@ void *GameModel::clientHandler(void *client)
     net_b =  htonl(b);
     a = getMiceEatenSize();
     net_a = htonl(a);
+    catAteMiceSize = getCatAteMiceSize();
+    //net_catAteMiceSize = htonl(catAteMiceSize);
     string mice_eaten;
     current_mice_eaten = getMiceEatenForClient();
-    
-    //net_a =  htonl(a);
+    current_cat_has_eaten_mice = getCatAteMiceForClient();
+    current_mice_ate_cheese = getMiceAteCheeseForClient();
+ 
     //dont need to send cats size as cats wont die.
     //only mice.
     if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
@@ -854,8 +900,10 @@ void *GameModel::clientHandler(void *client)
    //send the size of the mice eaten.
    if(send(socket, (const char*)&net_a, sizeof(a), MSG_NOSIGNAL)<0)
       {perror("error");}
-    
 
+   //if(send(socket, (const char*)&net_catAteMiceSize, sizeof(catAteMiceSize), MSG_NOSIGNAL)<0)
+     // {perror("error");}
+    
     if(a != 0 && (abs(a-old_a))!=0){
      for(unsigned int i = old_a; i<current_mice_eaten.size();i++){
       int j = current_mice_eaten[i];
@@ -867,10 +915,44 @@ void *GameModel::clientHandler(void *client)
     write(socket , client_mice_eaten , strlen(client_mice_eaten));
     }
 
+   if(catAteMiceSize != 0 && (abs(catAteMiceSize - temp))!=0){
+     for(int i = temp; i<catAteMiceSize;i++){
+      int j = current_cat_has_eaten_mice[i];
+      entity_Cat_Eaten_Mice.append(to_string(j));
+     if(i != catAteMiceSize-1){
+       entity_Cat_Eaten_Mice.append(",");}
+     }
+    client_cat_eaten_mice = entity_Cat_Eaten_Mice.c_str();
+    //cout<<client_cat_eaten_mice<<endl;
+    write(socket , client_cat_eaten_mice , strlen(client_cat_eaten_mice));
+   }
+  sleep(1);
+  int mac_size = current_mice_ate_cheese.size();
+  int net_mac_size = htonl(mac_size);;
+  cout<<"mac_size "<<mac_size<< " send"<<endl;
+  if(send(socket, (const char*)&net_mac_size, sizeof(mac_size), MSG_NOSIGNAL)<0)
+      {perror("error");}
+   
+  if(current_mice_ate_cheese.size() != 0 && 
+     (abs(current_mice_ate_cheese.size() - tempCheese))!=0){
+    for(unsigned int i = tempCheese; i<current_mice_ate_cheese.size();i++){
+     int j = current_mice_ate_cheese[i];
+     entity_mice_ate_cheese.append(to_string(j));
+     if(i != current_mice_ate_cheese.size()-1){
+       entity_mice_ate_cheese.append(",");
+     }
+    }
+    client_mice_ate_cheese = entity_mice_ate_cheese.c_str();
+    //write(socket,client_mice_ate_cheese,strlen(client_mice_ate_cheese));
+   }   
+
+
     old_a = a;
+    temp = catAteMiceSize;
+    tempCheese = current_mice_ate_cheese.size();
     ai = ntohl(Buf);
-      //doAiCalculation(ai);
-    sleep(2); 
+    //doAiCalculation(ai);
+    sleep(3); 
     
    }
    

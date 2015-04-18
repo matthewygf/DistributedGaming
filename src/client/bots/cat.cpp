@@ -5,6 +5,9 @@ using namespace std;
 
 Cat::Cat()
 {
+  //setHungerLevel(0);
+  //setTiredLevel(0);
+  //setBoredLevel(0);
 }
 
 Cat::~Cat()

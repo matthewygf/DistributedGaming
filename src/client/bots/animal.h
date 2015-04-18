@@ -55,7 +55,9 @@ class Animal
       void  goToState();
       void  setState(int new_state);
       void  setSpeed(float newSpeed);
-      void  setBoredLevel(int level);
+      void  setBoredLevel(float level);
+      void  setHungerLevel(float level);
+      void  setTiredLevel(float level);
       void  setCurrentState(int state);
       void  setEntityId(int e_id);
       void  setOppositeDirection();

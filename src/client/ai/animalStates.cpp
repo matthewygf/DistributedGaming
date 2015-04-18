@@ -19,11 +19,14 @@ Patrol* Patrol::Instance()
 
 void Patrol::Enter(Animal* animal)
 {
+  cout<<"get patrol state ID"<<getStateId()<<endl;
+  animal->setState(getStateId());
 }
 
 
 void Patrol::Execute(Animal* animal)
 {  
+  cout<<"executing patrol state"<<endl;
   animal->setSpeed(0.01);
   animal->patrol();
 
@@ -67,6 +70,8 @@ Tired* Tired::Instance()
 
 void Tired::Enter(Animal* animal)
 {
+ cout<<"get tired state ID"<<getStateId()<<endl;
+ animal->setState(getStateId());
 }
 
 void Tired::Execute(Animal* animal)
@@ -102,6 +107,8 @@ Hungry* Hungry::Instance()
 
 void Hungry::Enter(Animal* animal)
 {
+  cout<<"get Hungry state ID"<<getStateId()<<endl;
+  animal->setState(getStateId());
 }
 
 void Hungry::Execute(Animal* animal)

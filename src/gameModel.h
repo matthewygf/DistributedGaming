@@ -76,6 +76,7 @@ class GameModel
    int   getNumOfCats();
    int   getNumOfMice();
    int   getNumOfMiceEaten();
+   int   getNumOfCatAteMice();
    void getWallsPos();
    void getCheesePos();
    void getTileSettings();
@@ -84,6 +85,8 @@ class GameModel
    vector<Cat> getCats();
    vector<Mouse> getMice();
    vector<int>   getMiceEaten();
+   vector<int>   getCatAteMiceVector();
+   vector<int>   getMiceAteCheese();
    
    // setters
    void setPosition_x(float new_x);
@@ -137,10 +140,13 @@ class GameModel
    static int getCatsSize();
    static int getMiceSize();
    static int getMiceEatenSize();
+   static int getCatAteMiceSize();
    //needa send information to clients
    static vector<Cat> getCatsForClient();
    static vector<Mouse> getMiceForClient();
    static vector<int>  getMiceEatenForClient();
+   static vector<int>  getCatAteMiceForClient();
+   static vector<int>  getMiceAteCheeseForClient();
    static void doAiCalculation(int id);
 
    //since graphics rendering depends on the data in the model.
@@ -165,6 +171,8 @@ class GameModel
    vector <Cat>     cats;
    vector <Mouse>   mice;
    vector <int>     miceEatenId;
+   vector <int>     catAteMice;
+   vector <int>     miceAteCheese;
    Cat c;
    Mouse m;
    

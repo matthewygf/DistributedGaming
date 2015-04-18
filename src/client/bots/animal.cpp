@@ -15,6 +15,9 @@ using namespace std;
 
 Animal::Animal():tiredLevel(0),score(0),currentState(Patrol::Instance())
 {
+    setBoredLevel(0);
+    setHungerLevel(0);
+    setTiredLevel(0);
 }
 
 Animal::Animal(int i)
@@ -89,6 +92,21 @@ float Animal::getHungerLevel()
 void Animal::setEntityId(int e_id)
 {
   entity_id = e_id;
+}
+
+void Animal::setBoredLevel(float level)
+{
+  boredLevel = level;
+}
+
+void Animal::setHungerLevel(float level)
+{
+  hunger = level;
+}
+
+void Animal::setTiredLevel(float level)
+{
+  tiredLevel = level;
 }
 
 void Animal::setState(int new_state)
@@ -230,29 +248,31 @@ void Animal::stop()
 
 void Animal::update()
 {
-  boredLevel+=0.01;
-  //if(currentState){
-    //currentState->Execute(this);
-  //}
+  boredLevel+=0.1;
+  //cout<<"boredLevel"<<boredLevel<<endl;
+  if(currentState){
+    currentState->Execute(this);
+  }
   
 }
 
 void Animal::increaseFatigue()
 {
   //cout<<"increasing fatigue"<<tiredLevel<<endl;
-  tiredLevel += 0.01;
+  tiredLevel += 0.1;
 }
 
 void Animal::decreaseFatigue()
 {
   //cout<<"decrease fatigue"<<tiredLevel<<endl;
-  tiredLevel -= 1.0;
+  tiredLevel -= 2.0;
 }
 
 void Animal::increaseHunger()
 {
  if(hunger<HungerThreshold){
-  hunger += 0.01;
+  hunger += 0.1;
+  //cout<<"increasing hunger"<<endl;
   }
 }
 
@@ -293,6 +313,7 @@ void Animal::changeState(State* new_state)
  currentState -> Exit (this);
  currentState = new_state;
  currentState -> Enter (this);
+ cout<<"changeing states"<<endl;
 }
 
 bool Animal::tired()const
@@ -318,10 +339,6 @@ bool Animal::hungry()const
 
 }
 
-void Animal::setBoredLevel(int level)
-{
-  boredLevel = level;
-}
 
 
 void Animal::setOppositeDirection()
