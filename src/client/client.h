@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <cassert>
 #include <sys/time.h>
+#include <unistd.h>
 #include "../bots/animal.h"
 #include "../bots/cat.h"
 #include "../bots/mouse.h"
@@ -36,8 +37,9 @@ private:
 public:
     Client();
     bool conn(string, int);
+    bool keepConnection();
     bool send_data(string data);
-    bool sendAiResult();
+    bool sendAiResultStringSize(string d);
     string receive(int);
     int  receiveInt();
     void createStates();

@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <cstring>
+#include <sstream>
 #include <sys/types.h>   // Types used in sys/socket.h and netinet/in.h
 #include <netinet/in.h>  // Internet domain address structures and functions
 #include <sys/socket.h>  // Structures and functions used for socket API

@@ -19,14 +19,16 @@ Patrol* Patrol::Instance()
 
 void Patrol::Enter(Animal* animal)
 {
-  cout<<"get patrol state ID"<<getStateId()<<endl;
+  //cout<<"get patrol state ID"<<getStateId()<<endl;
   animal->setState(getStateId());
+  //cout<<"animal "<<animal->getEntityId()<<" now executing state "<<animal->getState()<<endl;
 }
 
 
 void Patrol::Execute(Animal* animal)
 {  
-  cout<<"executing patrol state"<<endl;
+  //cout<<"animal "<<animal->getEntityId()<<" now executing state "<<animal->getState()<<endl;
+
   animal->setSpeed(0.01);
   animal->patrol();
 
@@ -40,7 +42,7 @@ void Patrol::Execute(Animal* animal)
     animal->setBoredLevel(0.01);
   }
 
-  if (animal->tired())
+  if (animal->tired()&&animal->hungry())
   {
     animal->changeState(Tired::Instance());
   }
@@ -76,6 +78,7 @@ void Tired::Enter(Animal* animal)
 
 void Tired::Execute(Animal* animal)
 { 
+  //cout<<"animal "<<animal->getEntityId()<<" now executing state "<<animal->getState()<<endl;
   float t = animal -> getTiredLevel();
   
   if (t<=0 )
@@ -113,6 +116,7 @@ void Hungry::Enter(Animal* animal)
 
 void Hungry::Execute(Animal* animal)
 { 
+  //cout<<"animal "<<animal->getEntityId()<<" now executing state "<<animal->getState()<<endl;
   animal->setSpeed(0.03);
   animal->patrol();
   if(!animal->hungry()){

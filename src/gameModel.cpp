@@ -823,7 +823,7 @@ void *GameModel::clientHandler(void *client)
     char const *client_mice_ate_cheese;
     char client_message[2000]; 
     memset(client_message, 0, sizeof(client_message));
-    int b,a,catAteMiceSize,net_a,net_b,Buf,ai;
+    int b,a,catAteMiceSize,net_a,net_b,Buf,net_Buf,aiSize,net_ai;
     int old_a = 0;
     int temp = 0;
     int tempCheese=0;
@@ -841,7 +841,7 @@ void *GameModel::clientHandler(void *client)
     string entity_ids_for_cats;
     string entity_ids_for_mice = "m";
     string entity_Cat_Eaten_Mice = "c";
-    string entity_mice_ate_cheese = "h";
+    string entity_mice_ate_cheese;
     
     message = "Hey there! you are now connected to the server.\n";
     write(socket , message , strlen(message));
@@ -881,6 +881,9 @@ void *GameModel::clientHandler(void *client)
     //start the loop here to send n recv from client
     //first update how many cats n mice in the model.
     while((read_size = recv(socket, &Buf, sizeof(Buf), 0))>0){
+    net_Buf = ntohl(Buf);
+    cout<<net_Buf<<endl;
+
     b = getMiceSize();
     net_b =  htonl(b);
     a = getMiceEatenSize();
@@ -900,9 +903,6 @@ void *GameModel::clientHandler(void *client)
    //send the size of the mice eaten.
    if(send(socket, (const char*)&net_a, sizeof(a), MSG_NOSIGNAL)<0)
       {perror("error");}
-
-   //if(send(socket, (const char*)&net_catAteMiceSize, sizeof(catAteMiceSize), MSG_NOSIGNAL)<0)
-     // {perror("error");}
     
     if(a != 0 && (abs(a-old_a))!=0){
      for(unsigned int i = old_a; i<current_mice_eaten.size();i++){
@@ -913,7 +913,8 @@ void *GameModel::clientHandler(void *client)
      }
     client_mice_eaten = mice_eaten.c_str();
     write(socket , client_mice_eaten , strlen(client_mice_eaten));
-    }
+    cout<<"mice that got eaten sent"<<endl;
+    }else{cout<<"current no mouse has been eaten"<<endl;}
 
    if(catAteMiceSize != 0 && (abs(catAteMiceSize - temp))!=0){
      for(int i = temp; i<catAteMiceSize;i++){
@@ -923,9 +924,10 @@ void *GameModel::clientHandler(void *client)
        entity_Cat_Eaten_Mice.append(",");}
      }
     client_cat_eaten_mice = entity_Cat_Eaten_Mice.c_str();
-    //cout<<client_cat_eaten_mice<<endl;
     write(socket , client_cat_eaten_mice , strlen(client_cat_eaten_mice));
-   }
+    cout<<"cat that ate mouse sent"<<endl;
+   }else{cout<<"current no cat has eaten a mouse"<<endl;}
+
   sleep(1);
   int mac_size = current_mice_ate_cheese.size();
   int net_mac_size = htonl(mac_size);;
@@ -943,15 +945,63 @@ void *GameModel::clientHandler(void *client)
      }
     }
     client_mice_ate_cheese = entity_mice_ate_cheese.c_str();
-    //write(socket,client_mice_ate_cheese,strlen(client_mice_ate_cheese));
-   }   
+    write(socket,client_mice_ate_cheese,strlen(client_mice_ate_cheese));
+   }else{cout<<"current no cheese has been eaten"<<endl;}   
 
 
     old_a = a;
     temp = catAteMiceSize;
     tempCheese = current_mice_ate_cheese.size();
-    ai = ntohl(Buf);
-    //doAiCalculation(ai);
+    //doAiCalculation
+    recv(socket, &net_ai, sizeof(net_ai), 0);
+    aiSize = ntohl(net_ai);
+    
+    char s[aiSize+1];
+    string a;
+    int bufRead;
+    memset(s,0,sizeof(s));
+    if(aiSize>0){
+      bufRead=(recv(socket,&s,aiSize,0)); 
+      s[bufRead] = '\0';   
+      a = s;
+    }
+ 
+    //splitUpthe strings
+    vector<string> catsNStates;
+    vector<string> miceNStates;
+    string split = "m";
+    string catsStates = a.substr(0, a.find(split));
+    string miceStates = a.substr(a.find(split)+1, a.length());
+    cout<<"CatsStates : "<<catsStates<<endl;
+    cout<<"MiceStates : "<<miceStates<<endl;
+
+   ///////////////////////////////////////store the stores to set.
+    string delimiter = ",";
+    size_t pos = 0;
+    string token;
+    while ((pos = catsStates.find(delimiter)) != string::npos) {
+       token = catsStates.substr(0, pos);
+       //cout << token << endl;
+       catsNStates.push_back(token);
+       catsStates.erase(0, pos + delimiter.length());
+     }
+     catsNStates.push_back(catsStates);
+
+/////////////////////////////////////////////////////////////////////
+     while ((pos = miceStates.find(delimiter)) != string::npos) {
+       token = miceStates.substr(0, pos);
+       //cout << token << endl;
+       miceNStates.push_back(token);
+       miceStates.erase(0, pos + delimiter.length());
+     }
+     miceNStates.push_back(miceStates);
+
+
+
+///////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////finally need to set states.
+
+
     sleep(3); 
     
    }

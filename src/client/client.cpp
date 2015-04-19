@@ -148,10 +148,10 @@ int Client::receiveInt()
 
 //make a return int method for AI;
 
-bool Client::sendAiResult()
+bool Client::sendAiResultStringSize(string d)
 {
     //int a = getAnimalSize();
-    int a = 0;
+    int a = strlen(d.c_str());
     int net_a =  htonl(a);
     //printf("establishing connections \n"); 
     //sleep(2); 
@@ -165,4 +165,21 @@ bool Client::sendAiResult()
     return true;
     
 }
+
+//assumed no fail
+bool Client::keepConnection()
+{
+    //int a = getAnimalSize();
+    int a = 0;
+    int net_a =  htonl(a);
+    
+    if( send(sock, (const char*)&net_a, sizeof(a), 0)<0){
+     perror("send");
+     return false;
+    }
+    return true;
+    
+}
+
+
  
