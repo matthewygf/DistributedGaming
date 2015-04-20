@@ -255,7 +255,7 @@ void GameModel::initCnM()
       c.setMovingDirection(dir);
       c.setEntityId(e);
       c.setPosition(x,y,0.5);
-      c.setState(0);
+      //c.setState(0);
       c.setSpeed(speed);
       cats.push_back(c);
       //cout<<"Cats has entity IDs :"<< c.getEntityId()<<endl;
@@ -276,7 +276,7 @@ void GameModel::initCnM()
       m.setEntityId(e);
       m.setPosition(x,y,0.5);
       m.setSpeed(0.02);
-      m.setState(0);
+      //m.setState(0);
       mice.push_back(m);
       //cout<<"Mice has entity IDs :"<< m.getEntityId()<<endl;
    }
@@ -341,7 +341,7 @@ void GameModel::drawCats()
     glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
     cats[i].render();
     //ai update to check its states
-    //cats[i].update();
+    cats[i].goToState();
     glPopMatrix();
   }
  }else{}
@@ -354,7 +354,7 @@ void GameModel::drawMouse()
     glPushMatrix();
     glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
     mice[i].render();
-    //mice[i].update();
+    mice[i].goToState();
     glPopMatrix();
   }
 }else{cout<<"all mouse are eaten"<<endl;}
@@ -986,8 +986,7 @@ void *GameModel::clientHandler(void *client)
        catsStates.erase(0, pos + delimiter.length());
      }
      catsNStates.push_back(catsStates);
-
-/////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////
      while ((pos = miceStates.find(delimiter)) != string::npos) {
        token = miceStates.substr(0, pos);
        //cout << token << endl;
@@ -996,10 +995,61 @@ void *GameModel::clientHandler(void *client)
      }
      miceNStates.push_back(miceStates);
 
-
-
 ///////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////finally need to set states.
+    for(unsigned int i=0; i<catsNStates.size();i++){
+     string x = catsNStates[i];
+     string delimiter = ":";
+     size_t pos = 0;
+     string etoken;
+     while ((pos = x.find(delimiter)) != string::npos) {
+       etoken = x.substr(0, pos);
+       //catsNStates.push_back(token);
+       x.erase(0, pos + delimiter.length());
+     }
+      for(unsigned int j=0; j<c.size();j++)
+      {
+        int value = atoi(etoken.c_str());
+        int s     = atoi(x.c_str());
+        if(value == instanceModel->cats[j].getEntityId())
+	{
+          instanceModel->cats[j].setState(s);
+         //cout << etoken << endl;
+         //cout<<x<<endl;
+          cout<<"cat entity "<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
+        }
+      }
+    }
+   
+    if(miceNStates.size()>0)
+    {
+     for(unsigned int i=0; i<miceNStates.size();i++){
+     string x = miceNStates[i];
+     string delimiter = ":";
+     size_t pos = 0;
+     string etoken;
+     while ((pos = x.find(delimiter)) != string::npos) {
+       etoken = x.substr(0, pos);
+       x.erase(0, pos + delimiter.length());
+     }
+      for(unsigned int j=0; j<m.size();j++)
+      {
+        int value = atoi(etoken.c_str());
+        int s     = atoi(x.c_str());
+        if(value == instanceModel->mice[j].getEntityId())
+	{
+          instanceModel->mice[j].setState(s);
+         //cout << etoken << endl;
+         //cout<<x<<endl;
+          cout<<"mouse entity "<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
+        }
+      }
+    }
+   }
+
+
+
+
 
 
     sleep(3); 

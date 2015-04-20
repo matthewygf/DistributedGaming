@@ -148,6 +148,7 @@ class GameModel
    static vector<int>  getMiceEatenForClient();
    static vector<int>  getCatAteMiceForClient();
    static vector<int>  getMiceAteCheeseForClient();
+   static void         setStatesFromResults();
    static void doAiCalculation(int id);
 
    //since graphics rendering depends on the data in the model.

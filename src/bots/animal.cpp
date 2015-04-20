@@ -231,9 +231,9 @@ void Animal::stop()
 void Animal::update()
 {
   boredLevel+=0.01;
-  //if(currentState){
-    //currentState->Execute(this);
-  //}
+  if(currentState){
+    currentState->Execute(this);
+  }
   
 }
 
@@ -266,20 +266,24 @@ void Animal::decreaseHunger()
 void Animal::goToState()
 {
    int s = getState();
+   //cout<<"in go to state"<<s<<endl;
    switch(s){
        case 0:
          //changes state first before executing
          changeState(Patrol::Instance());
-         cout<<"Now in state Zero"<<endl;
+         //cout<<"Now in state Zero"<<endl;
          update(); 
          break;
        case 1:
          //changes state first before executing
-         //changeState(Tired::Instance());
-         cout<<"Now in state one"<<endl;
-         //update(); 
+         changeState(Tired::Instance());
+         //cout<<"Now in state one"<<endl;
+         update(); 
          break;
        case 2:
+         changeState(Hungry::Instance());
+         //cout<<"Now in state two"<<endl;
+         update(); 
          break;
        default:
          break;
