@@ -178,8 +178,16 @@ bool Client::keepConnection()
      return false;
     }
     return true;
-    
 }
 
+void Client::checkIfServerReady()
+{
+   int read_size;
+   int a=0;
+   while(a!=1){
+     a = receiveInt();
+     cout<<a<<endl;
+   }
+}
 
  

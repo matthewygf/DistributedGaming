@@ -3,6 +3,11 @@
 
 using namespace std;
 
+struct arg_struct {
+    int socket;
+    vector<Cat> c;
+    vector<Mouse> m;
+};
 
 
 GameModel::GameModel(Camera *newCamera, TileMap * newTileMap)
@@ -12,6 +17,7 @@ GameModel::GameModel(Camera *newCamera, TileMap * newTileMap)
   tile = newTileMap;
   cout<<"modelInitialised"<<endl;
   setInstance();
+  client = 0;
   
 }
 
@@ -439,7 +445,7 @@ void GameModel::catCollideWalls(vector<Vector3>& walls, vector<Cat>& cats)
           cats[i].setOppositeDirection();//first turn around
 
           int new_d = generateRandom(0,3);
-          while(new_d == d){ //newdirection
+          while(d == new_d){ //newdirection
               new_d = generateRandom(0,3);
           }    
           //only set new direction when not equal to old direction
@@ -463,7 +469,7 @@ void GameModel::mouseCollideWalls(vector<Vector3>& walls,vector<Mouse>& mice)
           mice[i].setOppositeDirection();
 
           int new_d = generateRandom(0,3);
-          while(new_d == d){
+          while(d == new_d){
               new_d = generateRandom(0,3);
           }    
           mice[i].setMovingDirection(new_d);
@@ -488,7 +494,7 @@ void GameModel::catCollideCats(vector<Cat>& cats)
          cats[i].setOppositeDirection();
          
           int new_d = generateRandom(0,3);
-          while(new_d == d){
+          while(d == new_d){
               new_d = generateRandom(0,3);
           }    
           cats[i].setMovingDirection(new_d);
@@ -514,7 +520,7 @@ void GameModel::mouseCollideMice(vector<Mouse>& mice)
         mice[i].setOppositeDirection();
         
           int new_d = generateRandom(0,3);
-          while(new_d == d){
+          while(d==new_d){
               new_d = generateRandom(0,3);
           }    
           mice[i].setMovingDirection(new_d);
@@ -546,7 +552,7 @@ void GameModel::catsCaughtMice(vector<Cat>& cats, vector<Mouse>& mice)
          cats[i].setOppositeDirection();
          int d = cats[i].getMovingDirection();
          int new_d = generateRandom(0,3);
-          while(new_d == d){
+          while(d == new_d){
               new_d = generateRandom(0,3);
           }    
           cats[i].setMovingDirection(new_d);
@@ -572,7 +578,7 @@ void GameModel::mouseAteCheese(vector<Vector3>& cheese, vector<Mouse>& mice)
          cheese.erase(cheese.begin() + j);
          mice[i].setOppositeDirection();
           int new_d = generateRandom(0,3);
-          while(new_d == d){
+          while(d == new_d){
               new_d = generateRandom(0,3);
           }    
           mice[i].setMovingDirection(new_d);
@@ -591,26 +597,11 @@ bool GameModel::testCollision(Vector3& a, Vector3& b, float width)
   return true;
 }
 
-void GameModel::runAi(int id)
+void GameModel::increaseClient()
 {
-  cout<<"got result from Client, tell animals to go into this state"<<endl;
-  
-  cout<<"cats[0] was in state "<<cats[0].getState()<<endl;
-  cats[0].setState(id);
-  cats[0].goToState();
-  
-  //switch(id){
-    //case 0 :
-     //animals->goToStates(0);
-     //cout<<"this is case zero"<<endl;
-     //break;
-    //default:
-     //cout<<"in default state"<<endl;
-     //animals->goToStates(patrol state);
-    // break;
-  //}
-  
+   client += 1;
 }
+
 
 // void method access via wrapper
 GameModel *GameModel::instanceModel = NULL;
@@ -658,10 +649,6 @@ int GameModel::getCatAteMiceSize()
 }
 
 
-void GameModel::doAiCalculation(int id)
-{
-  instanceModel->runAi(id);
-}
 
 vector<Cat> GameModel::getCatsForClient()
 {
@@ -687,6 +674,10 @@ vector <int> GameModel::getMiceAteCheeseForClient()
 {
   return instanceModel->getMiceAteCheese();
 }
+void GameModel::registerClient()
+{
+  return instanceModel->increaseClient();
+}
 
 //modified from C++ tutorial point
 void *GameModel::serverHandler(void *)
@@ -701,6 +692,7 @@ void *GameModel::serverHandler(void *)
     int rv;
     int port;
     char ipstr[INET6_ADDRSTRLEN];
+    vector<string> vClientIPs; // client ip string vector
 
 
     memset(&hints, 0, sizeof hints); //make sure the struct hints is empty.
@@ -759,6 +751,7 @@ void *GameModel::serverHandler(void *)
         //accept the client
         new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
         
+        
         if (new_fd == -1) {
             perror("accept");
             continue;
@@ -769,11 +762,13 @@ void *GameModel::serverHandler(void *)
        //flags = fcntl(new_fd,F_GETFL,0);
        //assert(flags != -1);
        //fcntl(new_fd, F_SETFL, flags | O_NONBLOCK);
-       
+       registerClient();
        cout<<"server: got a connection "<<endl;
 
        //get the client addresses
        getpeername(new_fd, (struct sockaddr*)&their_addr, &sin_size);
+       
+
 
       // deal with both IPv4 and IPv6:
       if (their_addr.ss_family == AF_INET) {
@@ -787,9 +782,11 @@ void *GameModel::serverHandler(void *)
      }
 
       cout << "Connection accepted from "  << ipstr <<  " using port " << port << endl;
+      vClientIPs.push_back(ipstr); //insert client ip
+      
 
-
-            //create a thread for each client
+      
+           //create a thread for each client
          if (pthread_create(&worker_thread, NULL, clientHandler, (void *)&new_fd) != 0) 
            {
 			perror("Could not create a worker thread");
@@ -808,6 +805,27 @@ void *GameModel::serverHandler(void *)
 //this is to handle each client
 void *GameModel::clientHandler(void *client)
 {
+  int b = 0;
+  int net_b = htonl(b);
+  int socket = *(int*)client;
+  while(instanceModel->client<2)
+  {
+    cout<<"waiting for 2 clients to connect"<<endl;
+    if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
+      {perror("error");}
+     sleep(2);
+  }
+  cout<<"ready"<<endl;
+  b=1;
+  net_b = htonl(b);
+  sleep(1);
+  if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
+      {perror("error");}
+  
+  //call a method to split animals into 2;
+      
+
+    /*
    //Get the socket descriptor
     int socket = *(int*)client;
     int read_size;
@@ -829,6 +847,7 @@ void *GameModel::clientHandler(void *client)
     vector<int>   current_mice_eaten; //to keep track of the mice eaten size.
     vector<int>   current_cat_has_eaten_mice;
     vector<int>   current_mice_ate_cheese;
+
     c = getCatsForClient(); //get the cats in the model
     m = getMiceForClient(); //get the mice in the model
     current_mice_eaten = getMiceEatenForClient(); //get mice eaten in the model.
@@ -840,7 +859,7 @@ void *GameModel::clientHandler(void *client)
     string entity_Cat_Eaten_Mice = "c";
     string entity_mice_ate_cheese;
     
-    message = "Hey there! you are now connected to the server.\n";
+    message = "Hey there! you are now connected to the server.\n ";
     write(socket , message , strlen(message));
     
     printf("establishing connections \n"); 
@@ -897,7 +916,7 @@ void *GameModel::clientHandler(void *client)
     current_mice_eaten = getMiceEatenForClient();
     current_cat_has_eaten_mice = getCatAteMiceForClient();
     current_mice_ate_cheese = getMiceAteCheeseForClient();
- 
+
     //dont need to send cats size as cats wont die.
     //only mice.
     if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
@@ -937,7 +956,7 @@ void *GameModel::clientHandler(void *client)
     cout<<"cat that ate mouse sent"<<endl;
    }else{cout<<"current no cat has eaten a mouse"<<endl;}
 
-  sleep(1);
+  sleep(3);
   int mac_size = current_mice_ate_cheese.size();
   int net_mac_size = htonl(mac_size);;
   cout<<"mac_size "<<mac_size<< " send"<<endl;
@@ -1095,7 +1114,7 @@ void *GameModel::clientHandler(void *client)
          animal->goesToFirstState();
       if client tells its 2:
          animal->goesToSecondState();**/
-
+   
 
    return 0;
 }

@@ -84,6 +84,13 @@ void Tired::Execute(Animal* animal)
 
   else 
   {*/
+  
+  if(animal->bored()) //not a state, so i will leave this here
+  {
+    animal->changeDirection();
+    animal->setBoredLevel(0.01);
+  }
+  
     Vector3 currentPos = animal -> getPosition();
     animal -> setPosition(currentPos);
     animal->decreaseFatigue();
@@ -116,6 +123,11 @@ void Hungry::Execute(Animal* animal)
     animal->changeState(Patrol::Instance());
   }*/
  
+ if(animal->bored()) //not a state, so i will leave this here
+  {
+    animal->changeDirection();
+    animal->setBoredLevel(0.01);
+  }
 }
 
 void Hungry::Exit(Animal* animal)

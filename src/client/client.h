@@ -43,6 +43,7 @@ public:
     string receive(int);
     int  receiveInt();
     void createStates();
+    void checkIfServerReady();
     
     //create Animals
     //ai methods

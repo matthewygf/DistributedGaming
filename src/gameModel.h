@@ -81,7 +81,6 @@ class GameModel
    void getWallsPos();
    void getCheesePos();
    void getTileSettings();
-   void runAi(int id);
    int  generateRandom(int start, int end);
    vector<Cat> getCats();
    vector<Mouse> getMice();
@@ -124,6 +123,7 @@ class GameModel
    void mouseAteCheese(vector<Vector3>& cheese, vector<Mouse>& mice);
    bool testCollision(Vector3& a, Vector3& b, float width);
    void runCollision();
+   void increaseClient();
    
    //networks 
    //sockets methods
@@ -150,6 +150,7 @@ class GameModel
    static vector<int>  getMiceAteCheeseForClient();
    static void         setStatesFromResults();
    static void doAiCalculation(int id);
+   static void  registerClient();
 
    //since graphics rendering depends on the data in the model.
    //so the returned data from sockets can directly alter the data.
@@ -160,6 +161,7 @@ class GameModel
    
    static GameModel *instanceModel;
    int width, height;
+   int client;
    float position_x, position_y, position_z; //for the camera
    float lposition_x, lposition_y, lposition_z; //for the camera lookAt
    float angle;//for camera angle

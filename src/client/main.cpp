@@ -182,10 +182,13 @@ int main(int argc , char *argv[])
     vector<Mouse> mice;
 
     cout<<"Enter hostname : ";
-     
+    cin>>host; 
     //connect to host
-    c.conn("localhost" , 3490);
+    c.conn(host , 3490);
     
+    c.checkIfServerReady();
+    
+    /*
     //receive and echo connection reply.
     cout<<"----------------------------\n\n";
     cout<<c.receive(1024);
@@ -195,11 +198,10 @@ int main(int argc , char *argv[])
     
     ////////////////////////////////////////////////////////////
     //here to receive all the require information before calculating Ai.
-    entities = c.receive(512);
+    entities = c.receive(2000);
     //sleep(1);
     e_cats = entities.substr(0, entities.find(splitM));
     e_mice = entities.substr(entities.find(splitM)+1, entities.length());
-    
     getEntitiesIdFromServer(catsId,e_cats);
     getEntitiesIdFromServer(miceId,e_mice);
     
@@ -222,10 +224,11 @@ int main(int argc , char *argv[])
 
    // if(c.send_data(stateResults)){
     
-    sleep(1);
+    sleep(2);
     //keep updating mice size. or update which one has got eaten.
     b = c.receiveInt();
     cout<<"mice size is "<<b<<" successfully received in client"<<endl;
+    sleep(1);
     a = c.receiveInt();
     cout<<"Numof Mice has been eaten "<<a<<" successfully received in client"<<endl;
     //catEatenMiceSize=c.receiveInt();
@@ -268,7 +271,7 @@ int main(int argc , char *argv[])
     b=0;
     a=0;
     
-   }
+   }*/
     
     sleep(1);
     //done
