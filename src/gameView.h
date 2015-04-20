@@ -69,9 +69,9 @@ class GameView
     
     int width, height;
     const char* winTitle;
-    void *font = GLUT_BITMAP_8_BY_13;
-    const int   TEXT_WIDTH      = 8;
-    const int   TEXT_HEIGHT     = 13;
+    void *font;
+    static const int   TEXT_WIDTH      = 8;
+    static const int   TEXT_HEIGHT     = 13;
     //frame
     int frame;
     //camera

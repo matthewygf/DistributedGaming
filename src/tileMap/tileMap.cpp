@@ -2,7 +2,7 @@
 #include "../../supports/stb_image.h"
 #include <stdio.h>
 #include <iostream>
-#include <random>
+
 #include <vector>
 #include "../../supports/matrix/src/Vectors.h"
 using namespace std;
@@ -48,11 +48,7 @@ int TileMap::getHeight()
 int TileMap::generateRandom(int start, int end)
 {
 
-    random_device                  rand_dev;
-    mt19937                        generator(rand_dev());
-    uniform_int_distribution<int>  distr(start, end);
-    
-    int result = distr(generator);
+    int result = start + (rand() % (int)(end - start + 1));
     return result;
     
 }

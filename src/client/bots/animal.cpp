@@ -6,7 +6,6 @@
 #include <GL/glut.h>
 #endif
 #include <iostream>
-#include <random>
 #include <stdio.h>
 #include <cassert>
 #include "../ai/animalStates.h"
@@ -410,11 +409,7 @@ void Animal::move(int dir)
 
 int Animal::generateRandom(int start, int end)
 {
-    random_device                  rand_dev;
-    mt19937                        generator(rand_dev());
-    uniform_int_distribution<int>  distr(start, end);
-    
-    int result = distr(generator);
+    int result = start + (rand() % (int)(end - start + 1));
     return result;
 }
 

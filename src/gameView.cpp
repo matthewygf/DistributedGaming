@@ -30,7 +30,7 @@ GameView::GameView(GameController *newGameController, GameModel *newGameModel)
   width = 800;
   height = 600;
   winTitle = "GAME_TEST";
-  
+  font = GLUT_BITMAP_8_BY_13;
   cout<<"viewInitialised"<<endl;
 }
 

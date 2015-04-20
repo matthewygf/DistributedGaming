@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
-#include <random>
 #include <cmath>
 #include <cstdlib>
 #include <pthread.h>
@@ -91,9 +90,15 @@ void calculateAi(vector<Cat>&c, vector<Mouse>&m, vector<int>&CatAteMouse, vector
      int cid = c[i].getEntityId();
      int sid = c[i].getState();
      //append cat first
-     backToClient.append(to_string(cid));
+     stringstream s1;
+      s1 << cid;
+      string str1 = s1.str();
+     backToClient.append(str1);
      backToClient.append(":");
-     backToClient.append(to_string(sid));
+     stringstream s2;
+      s2 << sid;
+      string str2 = s2.str();
+     backToClient.append(str2);
      if(i != c.size()-1){
       backToClient.append(",");
      }
@@ -114,9 +119,16 @@ void calculateAi(vector<Cat>&c, vector<Mouse>&m, vector<int>&CatAteMouse, vector
       m[i].update();
      int mid = m[i].getEntityId();
      int sid = m[i].getState();
-     backToClient.append(to_string(mid));
+     stringstream s1;
+      s1 << mid;
+      string str1 = s1.str();
+     backToClient.append(str1);
      backToClient.append(":");
-     backToClient.append(to_string(sid));
+     stringstream s2;
+      s2 << sid;
+      string str2 = s2.str();
+     backToClient.append(str2);
+
      if(i != m.size()-1){
       backToClient.append(",");
      }

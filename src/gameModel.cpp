@@ -419,10 +419,7 @@ void GameModel::runCollision()
 
 int GameModel::generateRandom(int start, int end)
 {
-    random_device                  rand_dev;
-    mt19937                        generator(rand_dev());
-    uniform_int_distribution<int>  distr(start, end);
-    int result = distr(generator);
+    int result = start + (rand() % (int)(end - start + 1));
     return result;
     
 }
@@ -852,7 +849,10 @@ void *GameModel::clientHandler(void *client)
     //send all the cats entity ID to client
    for(unsigned int i = 0; i<c.size();i++){
       int j = c[i].getEntityId();
-      entity_ids_for_cats.append(to_string(j));
+      stringstream ss;
+      ss << j;
+      string str = ss.str();
+      entity_ids_for_cats.append(str);
      if(i != c.size()-1){
       entity_ids_for_cats.append(",");}
    }
@@ -861,7 +861,10 @@ void *GameModel::clientHandler(void *client)
 
    for(unsigned int i = 0; i<m.size();i++){
       int j = m[i].getEntityId();
-      entity_ids_for_mice.append(to_string(j));
+      stringstream ss;
+      ss << j;
+      string str = ss.str();
+      entity_ids_for_mice.append(str);
      if(i != m.size()-1){
       entity_ids_for_mice.append(",");}
      }
@@ -907,7 +910,10 @@ void *GameModel::clientHandler(void *client)
     if(a != 0 && (abs(a-old_a))!=0){
      for(unsigned int i = old_a; i<current_mice_eaten.size();i++){
       int j = current_mice_eaten[i];
-      mice_eaten.append(to_string(j));
+      stringstream ss;
+      ss << j;
+      string str = ss.str();
+      mice_eaten.append(str);
      if(i != current_mice_eaten.size()-1){
        mice_eaten.append(",");}
      }
@@ -919,7 +925,10 @@ void *GameModel::clientHandler(void *client)
    if(catAteMiceSize != 0 && (abs(catAteMiceSize - temp))!=0){
      for(int i = temp; i<catAteMiceSize;i++){
       int j = current_cat_has_eaten_mice[i];
-      entity_Cat_Eaten_Mice.append(to_string(j));
+      stringstream ss;
+      ss << j;
+      string str = ss.str();
+      entity_Cat_Eaten_Mice.append(str);
      if(i != catAteMiceSize-1){
        entity_Cat_Eaten_Mice.append(",");}
      }
@@ -936,10 +945,13 @@ void *GameModel::clientHandler(void *client)
       {perror("error");}
    
   if(current_mice_ate_cheese.size() != 0 && 
-     (abs(current_mice_ate_cheese.size() - tempCheese))!=0){
+     (fabs(current_mice_ate_cheese.size() - tempCheese))!=0){
     for(unsigned int i = tempCheese; i<current_mice_ate_cheese.size();i++){
      int j = current_mice_ate_cheese[i];
-     entity_mice_ate_cheese.append(to_string(j));
+     stringstream ss;
+      ss << j;
+      string str = ss.str();
+     entity_mice_ate_cheese.append(str);
      if(i != current_mice_ate_cheese.size()-1){
        entity_mice_ate_cheese.append(",");
      }
