@@ -75,6 +75,7 @@ void GameView::init()
    initLights();
    glEnable(GL_LIGHTING);
    theGameModel->gameSetUp();
+   theGameModel->splitAnimals();
 }
 
 void GameView::display()

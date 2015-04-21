@@ -124,6 +124,7 @@ class GameModel
    bool testCollision(Vector3& a, Vector3& b, float width);
    void runCollision();
    void increaseClient();
+   void splitAnimals();
    
    //networks 
    //sockets methods
@@ -173,7 +174,12 @@ class GameModel
    vector <Vector3> cheesePos;
    vector <Animal>  animals;
    vector <Cat>     cats;
+   vector <Cat>     cats_one;
+   vector <Cat>     cats_two;
    vector <Mouse>   mice;
+   vector <Mouse>   mice_one;
+   vector <Mouse>   mice_two;
+   
    vector <int>     miceEatenId;
    vector <int>     catAteMice;
    vector <int>     miceAteCheese;

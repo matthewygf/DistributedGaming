@@ -187,13 +187,20 @@ int main(int argc , char *argv[])
     c.conn(host , 3490);
     
     c.checkIfServerReady();
+    cout<<"server is ready"<<endl;
     
-    /*
     //receive and echo connection reply.
     cout<<"----------------------------\n\n";
     cout<<c.receive(1024);
     cout<<"\n\n----------------------------\n\n";
+    int id;
+    cin>>id;
+    while(!c.send_int(id))
+    {
+    }
+   cout<<id<<" send"<<endl;
    
+    /*
     sleep(2);
     
     ////////////////////////////////////////////////////////////

@@ -602,6 +602,32 @@ void GameModel::increaseClient()
    client += 1;
 }
 
+void GameModel::splitAnimals()
+{
+  unsigned int half_cats_size = cats.size()/2;
+  unsigned int half_mice_size = mice.size()/2;
+
+  for(unsigned int i = 0; i<cats.size();i++)
+  {
+    if(i < half_cats_size)
+    {
+      cats_one.push_back(cats[i]);
+    }else {
+      cats_two.push_back(cats[i]);
+    }
+  }
+
+  for(unsigned int i = 0; i<mice.size();i++)
+  {
+    if(i < half_mice_size)
+    {
+      mice_one.push_back(mice[i]);
+    }else {
+      mice_two.push_back(mice[i]);
+    }
+  }
+
+}
 
 // void method access via wrapper
 GameModel *GameModel::instanceModel = NULL;
@@ -678,6 +704,8 @@ void GameModel::registerClient()
 {
   return instanceModel->increaseClient();
 }
+
+
 
 //modified from C++ tutorial point
 void *GameModel::serverHandler(void *)
@@ -808,6 +836,10 @@ void *GameModel::clientHandler(void *client)
   int b = 0;
   int net_b = htonl(b);
   int socket = *(int*)client;
+  vector<int>   current_mice_eaten; 
+  vector<int>   current_cat_has_eaten_mice;
+  vector<int>   current_mice_ate_cheese;
+
   while(instanceModel->client<2)
   {
     cout<<"waiting for 2 clients to connect"<<endl;
@@ -822,14 +854,40 @@ void *GameModel::clientHandler(void *client)
   if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
       {perror("error");}
   
-  //call a method to split animals into 2;
-      
+  //protocol to distribute the half of the cats, and mice
+  //since my project involve distributing two right now.
+  char const *message; 
+  message = "Hey there! you are now connected to the server.\n Please Enter 1 or 2. ";
+  sleep(1);
+  write(socket , message , strlen(message));
+   
+  int net_client_id;
+  int read_size;
+  while((read_size = recv(socket, &net_client_id, sizeof(net_client_id), 0))<0){
+  }
+  int i = ntohl(net_client_id);
+  cout<<i<<endl;
 
+  switch(i)
+  {
+    case(1):
+     cout<<"client pick 1"<<endl;
+     //c = getCatsOneForClient();
+     //m = getMiceOneForClient();
+     break;
+    case(2):
+     cout<<"client pick 2"<<endl;
+     //c = getCatsTwoForClient();
+     //m = getMiceTwoForClient();
+     break;
+    default:
+     break;
+  }
+  
+  //recv client id;
     /*
    //Get the socket descriptor
-    int socket = *(int*)client;
-    int read_size;
-    char const *message; 
+    
     //char const *info;
     char const *e_cats;
     char const *e_mice;
@@ -842,8 +900,7 @@ void *GameModel::clientHandler(void *client)
     int old_a = 0;
     int temp = 0;
     int tempCheese=0;
-    vector<Cat> c;
-    vector<Mouse> m;
+    
     vector<int>   current_mice_eaten; //to keep track of the mice eaten size.
     vector<int>   current_cat_has_eaten_mice;
     vector<int>   current_mice_ate_cheese;
@@ -859,8 +916,7 @@ void *GameModel::clientHandler(void *client)
     string entity_Cat_Eaten_Mice = "c";
     string entity_mice_ate_cheese;
     
-    message = "Hey there! you are now connected to the server.\n ";
-    write(socket , message , strlen(message));
+    
     
     printf("establishing connections \n"); 
     printf("connections success \n");
@@ -1087,19 +1143,7 @@ void *GameModel::clientHandler(void *client)
     
    }
    
-   if(read_size == 0)
-    {
-        puts("Client disconnected");
-        fflush(stdout);
-        close(socket);
-    }
-    else if(read_size == -1)
-    {
-        puts("recv failed");
-        puts("Client disconnected");
-        //fflush(stdout);
-        close(socket);   
-    }
+   
  
    
 
@@ -1114,6 +1158,20 @@ void *GameModel::clientHandler(void *client)
          animal->goesToFirstState();
       if client tells its 2:
          animal->goesToSecondState();**/
+
+   if(read_size == 0)
+    {
+        puts("Client disconnected");
+        fflush(stdout);
+        close(socket);
+    }
+    else if(read_size == -1)
+    {
+        puts("recv failed");
+        puts("Client disconnected");
+        //fflush(stdout);
+        close(socket);   
+    }
    
 
    return 0;

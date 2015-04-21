@@ -161,10 +161,23 @@ bool Client::sendAiResultStringSize(string d)
      perror("send");
      return false;
     }
-    cout<<"result sent  "<<a<<endl; 
+    
     return true;
     
 }
+
+bool Client::send_int(int i)
+{
+  int net_i = htonl(i);
+  if( send(sock, (const char*)&net_i, sizeof(i), 0)<0){
+     perror("send");
+     return false;
+   }
+    return true;
+
+}
+
+
 
 //assumed no fail
 bool Client::keepConnection()
@@ -180,14 +193,16 @@ bool Client::keepConnection()
     return true;
 }
 
+
+
 void Client::checkIfServerReady()
 {
    int read_size;
    int a=0;
    while(a!=1){
      a = receiveInt();
-     cout<<a<<endl;
    }
+   
 }
 
  

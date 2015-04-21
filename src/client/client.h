@@ -44,6 +44,7 @@ public:
     int  receiveInt();
     void createStates();
     void checkIfServerReady();
+    bool send_int(int i);
     
     //create Animals
     //ai methods
