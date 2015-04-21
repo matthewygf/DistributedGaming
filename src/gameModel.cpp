@@ -331,9 +331,29 @@ int GameModel::getNumOfCats()
    return cats.size();
 }
 
+int GameModel::getNumOfCatsOne()
+{
+   return cats_one.size();
+}
+
+int GameModel::getNumOfCatsTwo()
+{
+   return cats_two.size();
+}
+
 int GameModel::getNumOfMice()
 {
    return mice.size();
+}
+
+int GameModel::getNumOfMiceOne()
+{
+   return mice_one.size();
+}
+
+int GameModel::getNumOfMiceTwo()
+{
+   return mice_two.size();
 }
 
 int GameModel::getNumOfMiceEaten()
@@ -671,11 +691,39 @@ int GameModel::getCatsSize()
   return catsSize;
 }
 
+int GameModel::getCatsOneSize()
+{
+  int catsOneSize = instanceModel->getNumOfCatsOne();
+  //cout<<"cat Size is "<<catsSize<<endl;
+  return catsOneSize;
+}
+
+int GameModel::getCatsTwoSize()
+{
+  int catsTwoSize = instanceModel->getNumOfCatsTwo();
+  //cout<<"cat Size is "<<catsSize<<endl;
+  return catsTwoSize;
+}
+
 int GameModel::getMiceSize()
 {
   int miceSize = instanceModel->getNumOfMice();
   //cout<<"mice Size is "<<miceSize<<endl;
   return miceSize;
+}
+
+int GameModel::getMiceOneSize()
+{
+  int miceOneSize = instanceModel->getNumOfMiceOne();
+  //cout<<"cat Size is "<<catsSize<<endl;
+  return miceOneSize;
+}
+
+int GameModel::getMiceTwoSize()
+{
+  int miceTwoSize = instanceModel->getNumOfMiceTwo();
+  //cout<<"cat Size is "<<catsSize<<endl;
+  return miceTwoSize;
 }
 
 int GameModel::getMiceEatenSize()
@@ -747,7 +795,8 @@ vector<Mouse> GameModel::getMiceTwoForClient()
 void *GameModel::serverHandler(void *)
 {
    //pass in a server class here.
-    int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
+    int sockfd,new_fd;  // listen on sock_fd, new connection on new_fd
+
     pthread_t worker_thread;
     struct addrinfo hints, *servinfo, *p;
     struct sockaddr_storage their_addr; // connector's address information
@@ -849,8 +898,8 @@ void *GameModel::serverHandler(void *)
       vClientIPs.push_back(ipstr); //insert client ip
       
 
-      
-           //create a thread for each client
+
+           //create a thread for client
          if (pthread_create(&worker_thread, NULL, clientHandler, (void *)&new_fd) != 0) 
            {
 			perror("Could not create a worker thread");
@@ -870,8 +919,19 @@ void *GameModel::serverHandler(void *)
 void *GameModel::clientHandler(void *client)
 {
   int b = 0;
+  int handleId;
   int net_b = htonl(b);
+  int a = 0;
+  int old_a=0;
+  int aiSize=0;
+  int net_ai;
+  int temp;
+  int net_a;
   int socket = *(int*)client;
+  int Buf;
+  int net_Buf;
+  int tempCheese=0;
+  int catAteMiceSize=0;
   vector<Cat>   c;
   vector<Mouse> m;
   vector<int>   current_mice_eaten; 
@@ -886,6 +946,9 @@ void *GameModel::clientHandler(void *client)
   string entity_mice_ate_cheese;
   char const *e_cats;
   char const *e_mice;
+  char const *client_mice_eaten;
+  char const *client_cat_eaten_mice;
+  char const *client_mice_ate_cheese;
 
   while(instanceModel->client<2)
   {
@@ -921,11 +984,13 @@ void *GameModel::clientHandler(void *client)
      cout<<"client pick 1"<<endl;
      c = getCatsOneForClient();
      m = getMiceOneForClient();
+     handleId = i;
      break;
     case(2):
      cout<<"client pick 2"<<endl;
      c = getCatsTwoForClient();
      m = getMiceTwoForClient();
+     handleId = i;
      break;
     default:
      break;
@@ -966,107 +1031,41 @@ void *GameModel::clientHandler(void *client)
    write(socket , e_mice , strlen(e_mice));
    cout<<"sending mice entitys id"<<endl;
 
-
-  
-  //recv client id;
-    /*
-   //Get the socket descriptor
-    
-    //char const *info;
-    char const *e_cats;
-    char const *e_mice;
-    char const *client_mice_eaten;
-    char const *client_cat_eaten_mice;
-    char const *client_mice_ate_cheese;
-    char client_message[2000]; 
-    memset(client_message, 0, sizeof(client_message));
-    int b,a,catAteMiceSize,net_a,net_b,Buf,net_Buf,aiSize,net_ai;
-    int old_a = 0;
-    int temp = 0;
-    int tempCheese=0;
-    
-    vector<int>   current_mice_eaten; //to keep track of the mice eaten size.
-    vector<int>   current_cat_has_eaten_mice;
-    vector<int>   current_mice_ate_cheese;
-
-    c = getCatsForClient(); //get the cats in the model
-    m = getMiceForClient(); //get the mice in the model
-    current_mice_eaten = getMiceEatenForClient(); //get mice eaten in the model.
-    current_cat_has_eaten_mice = getCatAteMiceForClient();
-    current_mice_ate_cheese = getMiceAteCheeseForClient();
-    
-    string entity_ids_for_cats;
-    string entity_ids_for_mice = "m";
-    string entity_Cat_Eaten_Mice = "c";
-    string entity_mice_ate_cheese;
-    
-    
-    
-    printf("establishing connections \n"); 
-    printf("connections success \n");
-
-    //send all the cats entity ID to client
-   for(unsigned int i = 0; i<c.size();i++){
-      int j = c[i].getEntityId();
-      stringstream ss;
-      ss << j;
-      string str = ss.str();
-      entity_ids_for_cats.append(str);
-     if(i != c.size()-1){
-      entity_ids_for_cats.append(",");}
-   }
-   //cout<<"entity_ids_for_cats = "<<entity_ids_for_cats<<endl;
-   e_cats = entity_ids_for_cats.c_str();
-
-   for(unsigned int i = 0; i<m.size();i++){
-      int j = m[i].getEntityId();
-      stringstream ss;
-      ss << j;
-      string str = ss.str();
-      entity_ids_for_mice.append(str);
-     if(i != m.size()-1){
-      entity_ids_for_mice.append(",");}
-     }
-   // cout<<"entity_ids_for_mice = "<<entity_ids_for_mice<<endl;
- 
-   e_mice = entity_ids_for_mice.c_str();
-   sleep(1);
-   
-   //send all the mice entity ID to client
-   
-   write(socket , e_cats , strlen(e_cats));
-   cout<<"sending cats entitys id"<<endl;
-   write(socket , e_mice , strlen(e_mice));
-   cout<<"sending mice entitys id"<<endl;
-
    sleep(1);
     //start the loop here to send n recv from client
     //first update how many cats n mice in the model.
     while((read_size = recv(socket, &Buf, sizeof(Buf), 0))>0){
-    net_Buf = ntohl(Buf);
-    cout<<net_Buf<<endl;
-
-    b = getMiceSize();
-    net_b =  htonl(b);
-    a = getMiceEatenSize();
-    net_a = htonl(a);
-    catAteMiceSize = getCatAteMiceSize();
+     current_mice_eaten = getMiceEatenForClient(); //get mice eaten in the model.
+     current_cat_has_eaten_mice = getCatAteMiceForClient();
+     current_mice_ate_cheese = getMiceAteCheeseForClient();
+     catAteMiceSize = getCatAteMiceSize();
     //net_catAteMiceSize = htonl(catAteMiceSize);
-    string mice_eaten;
-    current_mice_eaten = getMiceEatenForClient();
-    current_cat_has_eaten_mice = getCatAteMiceForClient();
-    current_mice_ate_cheese = getMiceAteCheeseForClient();
+     string mice_eaten;
+     net_Buf = ntohl(Buf);
 
-    //dont need to send cats size as cats wont die.
-    //only mice.
+    switch(handleId)
+     {
+       case 1:
+            b = getMiceOneSize();
+            net_b =  htonl(b);
+            a = getMiceEatenSize();
+            net_a = htonl(a);
+            break;
+       case 2:
+            b = getMiceTwoSize();
+            net_b =  htonl(b);
+            a = getMiceEatenSize();
+            net_a = htonl(a);
+            break;     
+      } 
     if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
       {perror("error");}
 
-   //send the size of the mice eaten.
-   if(send(socket, (const char*)&net_a, sizeof(a), MSG_NOSIGNAL)<0)
+     //send the size of the mice eaten.
+    if(send(socket, (const char*)&net_a, sizeof(a), MSG_NOSIGNAL)<0)
       {perror("error");}
-    
-    if(a != 0 && (abs(a-old_a))!=0){
+      
+     if(a != 0 && (abs(a-old_a))!=0){
      for(unsigned int i = old_a; i<current_mice_eaten.size();i++){
       int j = current_mice_eaten[i];
       stringstream ss;
@@ -1081,7 +1080,7 @@ void *GameModel::clientHandler(void *client)
     cout<<"mice that got eaten sent"<<endl;
     }else{cout<<"current no mouse has been eaten"<<endl;}
 
-   if(catAteMiceSize != 0 && (abs(catAteMiceSize - temp))!=0){
+     if(catAteMiceSize != 0 && (abs(catAteMiceSize - temp))!=0){
      for(int i = temp; i<catAteMiceSize;i++){
       int j = current_cat_has_eaten_mice[i];
       stringstream ss;
@@ -1091,21 +1090,21 @@ void *GameModel::clientHandler(void *client)
      if(i != catAteMiceSize-1){
        entity_Cat_Eaten_Mice.append(",");}
      }
-    client_cat_eaten_mice = entity_Cat_Eaten_Mice.c_str();
-    write(socket , client_cat_eaten_mice , strlen(client_cat_eaten_mice));
-    cout<<"cat that ate mouse sent"<<endl;
-   }else{cout<<"current no cat has eaten a mouse"<<endl;}
-
-  sleep(3);
-  int mac_size = current_mice_ate_cheese.size();
-  int net_mac_size = htonl(mac_size);;
-  cout<<"mac_size "<<mac_size<< " send"<<endl;
-  if(send(socket, (const char*)&net_mac_size, sizeof(mac_size), MSG_NOSIGNAL)<0)
+     client_cat_eaten_mice = entity_Cat_Eaten_Mice.c_str();
+     write(socket , client_cat_eaten_mice , strlen(client_cat_eaten_mice));
+     cout<<"cat that ate mouse sent"<<endl;
+     }else{cout<<"current no cat has eaten a mouse"<<endl;}  
+     
+     sleep(3);
+     int mac_size = current_mice_ate_cheese.size();
+     int net_mac_size = htonl(mac_size);;
+     cout<<"mac_size "<<mac_size<< " send"<<endl;
+     if(send(socket, (const char*)&net_mac_size, sizeof(mac_size), MSG_NOSIGNAL)<0)
       {perror("error");}
-   
-  if(current_mice_ate_cheese.size() != 0 && 
+      
+     if(current_mice_ate_cheese.size() != 0 && 
      (fabs(current_mice_ate_cheese.size() - tempCheese))!=0){
-    for(unsigned int i = tempCheese; i<current_mice_ate_cheese.size();i++){
+     for(unsigned int i = tempCheese; i<current_mice_ate_cheese.size();i++){
      int j = current_mice_ate_cheese[i];
      stringstream ss;
       ss << j;
@@ -1117,13 +1116,14 @@ void *GameModel::clientHandler(void *client)
     }
     client_mice_ate_cheese = entity_mice_ate_cheese.c_str();
     write(socket,client_mice_ate_cheese,strlen(client_mice_ate_cheese));
-   }else{cout<<"current no cheese has been eaten"<<endl;}   
-
-
+   }else{cout<<"current no cheese has been eaten"<<endl;}    
+    
     old_a = a;
     temp = catAteMiceSize;
     tempCheese = current_mice_ate_cheese.size();
     //doAiCalculation
+    
+    //recv the ai size;
     recv(socket, &net_ai, sizeof(net_ai), 0);
     aiSize = ntohl(net_ai);
     
@@ -1137,100 +1137,185 @@ void *GameModel::clientHandler(void *client)
       a = s;
     }
  
+     vector<string> catsOneNStates;
+     vector<string> miceOneNStates;
+     vector<string> catsTwoNStates;
+     vector<string> miceTwoNStates;
+     string split = "m";
+     string catsOneStates;
+     string miceOneStates;
+     string catsTwoStates;
+     string miceTwoStates;
+     string delimiter = ",";
+     size_t pos = 0;
+     string token;
     //splitUpthe strings
-    vector<string> catsNStates;
-    vector<string> miceNStates;
-    string split = "m";
-    string catsStates = a.substr(0, a.find(split));
-    string miceStates = a.substr(a.find(split)+1, a.length());
-    cout<<"CatsStates : "<<catsStates<<endl;
-    cout<<"MiceStates : "<<miceStates<<endl;
-
-   ///////////////////////////////////////store the stores to set.
-    string delimiter = ",";
-    size_t pos = 0;
-    string token;
-    while ((pos = catsStates.find(delimiter)) != string::npos) {
-       token = catsStates.substr(0, pos);
-       //cout << token << endl;
-       catsNStates.push_back(token);
-       catsStates.erase(0, pos + delimiter.length());
-     }
-     catsNStates.push_back(catsStates);
-   /////////////////////////////////////////////////////////////////////
-     while ((pos = miceStates.find(delimiter)) != string::npos) {
-       token = miceStates.substr(0, pos);
-       //cout << token << endl;
-       miceNStates.push_back(token);
-       miceStates.erase(0, pos + delimiter.length());
-     }
-     miceNStates.push_back(miceStates);
-
-///////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////finally need to set states.
-    for(unsigned int i=0; i<catsNStates.size();i++){
-     string x = catsNStates[i];
-     string delimiter = ":";
-     size_t pos = 0;
-     string etoken;
-     while ((pos = x.find(delimiter)) != string::npos) {
-       etoken = x.substr(0, pos);
-       //catsNStates.push_back(token);
-       x.erase(0, pos + delimiter.length());
-     }
-      for(unsigned int j=0; j<c.size();j++)
-      {
-        int value = atoi(etoken.c_str());
-        int s     = atoi(x.c_str());
-        if(value == instanceModel->cats[j].getEntityId())
-	{
-          instanceModel->cats[j].setState(s);
-         //cout << etoken << endl;
-         //cout<<x<<endl;
-          cout<<"cat entity "<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
-        }
-      }
-    }
-   
-    if(miceNStates.size()>0)
+    switch(handleId)
     {
-     for(unsigned int i=0; i<miceNStates.size();i++){
-     string x = miceNStates[i];
+      case 1:
+         catsOneStates = a.substr(0, a.find(split));
+         miceOneStates = a.substr(a.find(split)+1, a.length());
+         cout<<"CatsOneStates : "<<catsOneStates<<endl;
+         cout<<"MiceOneStates : "<<miceOneStates<<endl;
+         ///////////////////////////////////////store the stores to set.
+    
+         while ((pos = catsOneStates.find(delimiter)) != string::npos) {
+           token = catsOneStates.substr(0, pos);
+           catsOneNStates.push_back(token);
+           catsOneStates.erase(0, pos + delimiter.length());
+          }
+         catsOneNStates.push_back(catsOneStates);
+        /////////////////////////////////////////////////////////////////////
+        while ((pos = miceOneStates.find(delimiter)) != string::npos) {
+          token = miceOneStates.substr(0, pos);
+          //cout << token << endl;
+          miceOneNStates.push_back(token);
+          miceOneStates.erase(0, pos + delimiter.length());
+        }
+         miceOneNStates.push_back(miceOneStates);
+         //cout<<"cats one n states size "<<catsOneNStates.size()<<endl;
+         //cout<<"mice one n states size "<<miceOneNStates.size()<<endl;
+///////////////////////////////////////////////////////////////////////////
+         
+         break;
+      case 2:
+         catsTwoStates = a.substr(0, a.find(split));
+         miceTwoStates = a.substr(a.find(split)+1, a.length());
+         cout<<"CatsTwoStates : "<<catsTwoStates<<endl;
+         cout<<"MiceTwoStates : "<<miceTwoStates<<endl;
+         
+         while ((pos = catsTwoStates.find(delimiter)) != string::npos) {
+           token = catsTwoStates.substr(0, pos);
+           catsTwoNStates.push_back(token);
+           catsTwoStates.erase(0, pos + delimiter.length());
+          }
+         catsTwoNStates.push_back(catsTwoStates);
+        /////////////////////////////////////////////////////////////////////
+        while ((pos = miceTwoStates.find(delimiter)) != string::npos) {
+          token = miceTwoStates.substr(0, pos);
+          //cout << token << endl;
+          miceTwoNStates.push_back(token);
+          miceTwoStates.erase(0, pos + delimiter.length());
+        }
+         miceTwoNStates.push_back(miceTwoStates);
+         //cout<<"cats two n states size "<<catsTwoNStates.size()<<endl;
+         //cout<<"mice two n states size "<<miceTwoNStates.size()<<endl;
+         break;
+         
+    }
+   
+    int allCatsSize = instanceModel->cats.size();
+/////////////////////////////////////////////////////////finally need to set states.
+    for(unsigned int i=0; i<catsOneNStates.size();i++)
+    {
+     string x = catsOneNStates[i];
      string delimiter = ":";
      size_t pos = 0;
      string etoken;
-     while ((pos = x.find(delimiter)) != string::npos) {
+     while ((pos = x.find(delimiter)) != string::npos) 
+      {
        etoken = x.substr(0, pos);
        x.erase(0, pos + delimiter.length());
-     }
-      for(unsigned int j=0; j<m.size();j++)
+      }
+      for(int j = 0; j < allCatsSize;j++)
+       {
+          int value = atoi(etoken.c_str());
+          int s     = atoi(x.c_str());
+          if(value == instanceModel->cats[j].getEntityId())
+          {
+            instanceModel->cats[j].setState(s);
+            cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
+          }
+       }  
+    }
+    
+    for(unsigned int i=0; i<catsTwoNStates.size();i++)
+    {
+     string x = catsTwoNStates[i];
+     string delimiter = ":";
+     size_t pos = 0;
+     string etoken;
+     while ((pos = x.find(delimiter)) != string::npos) 
       {
-        int value = atoi(etoken.c_str());
-        int s     = atoi(x.c_str());
-        if(value == instanceModel->mice[j].getEntityId())
-	{
-          instanceModel->mice[j].setState(s);
-         //cout << etoken << endl;
-         //cout<<x<<endl;
-          cout<<"mouse entity "<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
+       etoken = x.substr(0, pos);
+       x.erase(0, pos + delimiter.length());
+      }
+      for(int j = 0; j < allCatsSize;j++)
+       {
+          int value = atoi(etoken.c_str());
+          int s     = atoi(x.c_str());
+          if(value == instanceModel->cats[j].getEntityId())
+          {
+            instanceModel->cats[j].setState(s);
+            cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
+          }
+       }  
+    }
+    
+    int allMiceSize = instanceModel->mice.size();
+ //////////////////////////////////////////////////////////////////////////////////////
+  if(miceOneNStates.size()>0 && allMiceSize>0)
+    {
+     for(unsigned int i=0; i<miceOneNStates.size();i++)
+      {
+       string x = miceOneNStates[i];
+       string delimiter = ":";
+       size_t pos = 0;
+       string etoken;   
+       while ((pos = x.find(delimiter)) != string::npos) 
+        {
+         etoken = x.substr(0, pos);
+         x.erase(0, pos + delimiter.length());
         }
+        for(int j = 0; j<allMiceSize;j++)
+         { 
+           int value = atoi(etoken.c_str());
+           int s     = atoi(x.c_str());
+           if(value == instanceModel->mice[j].getEntityId())
+            {
+              instanceModel->mice[j].setState(s);
+              cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
+            }
+         }       
       }
     }
-   }
-
-
-
-
-
-
-    sleep(3); 
     
-   }
+   if(miceTwoNStates.size()>0 && allMiceSize>0)
+    {
+     for(unsigned int i=0; i<miceTwoNStates.size();i++)
+      {
+       string x = miceTwoNStates[i];
+       string delimiter = ":";
+       size_t pos = 0;
+       string etoken;   
+       while ((pos = x.find(delimiter)) != string::npos) 
+        {
+         etoken = x.substr(0, pos);
+         x.erase(0, pos + delimiter.length());
+        }
+        for(int j = 0; j<allMiceSize;j++)
+         { 
+           int value = atoi(etoken.c_str());
+           int s     = atoi(x.c_str());
+           if(value == instanceModel->mice[j].getEntityId())
+            {
+              instanceModel->mice[j].setState(s);
+              cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
+            }
+         }       
+      }
+    }
    
    
- 
    
+    
+  }
 
+
+  
+  
+   
+   
 
    
 
@@ -1256,7 +1341,7 @@ void *GameModel::clientHandler(void *client)
         //fflush(stdout);
         close(socket);   
     }
-   
+   sleep(3);
 
    return 0;
 }

@@ -75,7 +75,11 @@ class GameModel
    float getCameraAngle();
    int   getNumOfAnimals();
    int   getNumOfCats();
+   int   getNumOfCatsOne();
+   int   getNumOfCatsTwo();
    int   getNumOfMice();
+   int   getNumOfMiceOne();
+   int   getNumOfMiceTwo();
    int   getNumOfMiceEaten();
    int   getNumOfCatAteMice();
    void getWallsPos();
@@ -144,7 +148,11 @@ class GameModel
    //create static functions for the thread to get something from the model to pass to client.
    static int getAnimalSize();
    static int getCatsSize();
+   static int getCatsOneSize();
+   static int getCatsTwoSize();
    static int getMiceSize();
+   static int getMiceOneSize();
+   static int getMiceTwoSize();
    static int getMiceEatenSize();
    static int getCatAteMiceSize();
    //needa send information to clients

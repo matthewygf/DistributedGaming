@@ -198,7 +198,7 @@ int main(int argc , char *argv[])
     while(!c.send_int(id))
     {
     }
-   cout<<id<<" send"<<endl;
+    cout<<id<<" send"<<endl;
    
     
     sleep(2);
@@ -217,7 +217,7 @@ int main(int argc , char *argv[])
     //give the mice the mice ID.
     createMice(mice,miceId);
     ///////////////////////////////////////////////////////////////
-    /*
+    
     sleep(1);
     //should be in a while loop keep updating how many animals are left.
     while(1){
@@ -228,7 +228,48 @@ int main(int argc , char *argv[])
     //just to keep connection going. and first make this to set the cats n mice to starts walkin.
     c.keepConnection();
 
-
+    sleep(2);
+    //keep updating mice size. or update which one has got eaten.
+    b = c.receiveInt();
+    cout<<"mice size is "<<b<<" successfully received in client"<<endl;
+    sleep(1);
+    a = c.receiveInt();
+    cout<<"Numof Mice has been eaten "<<a<<" successfully received in client"<<endl;
+    
+    if(a!=0 && (abs(temp-a))!=0){
+      data = c.receive(512);
+      sleep(1);
+      miceEaten = data.substr(0, data.find(splitC));
+      catAte = data.substr(data.find(splitC)+1, data.find(splitH)-2);
+      cout<<"cat that has eaten "<<catAte<<endl;
+      getEntitiesIdFromServer(m_eatenId,miceEaten);
+      getEntitiesIdFromServer(catAteMouseId,catAte);
+      deleteMiceFromVector(mice,m_eatenId);
+      cout<<"num of mice that has been eaten "<<m_eatenId.size()<<endl;
+      cout<<"cat's entity ID has been added to the vector "<<catAteMouseId.size()<<endl;
+    }
+    
+    sleep(1);
+    mac=c.receiveInt();
+    cout<<"mice that ate cheese has been received and it is : "<<mac<<endl;
+    if(mac!=0 && (abs(temp_mac - mac))!=0)
+    {
+     miceAteCheese = c.receive(512);
+     getEntitiesIdFromServer(mice_ate_cheese,miceAteCheese);
+     cout<<"received "<<mice_ate_cheese.size()<< " mice that ate cheese"<<endl;
+    }
+    
+    //calculate Ai
+    calculateAi(cats,mice,catAteMouseId,mice_ate_cheese,stateResults);
+    
+    //send back to server.
+    //send the number of bytes first
+    c.sendAiResultStringSize(stateResults);
+    if(stateResults.length()>0){
+     c.send_data(stateResults);
+    }
+    
+   /*
    // if(c.send_data(stateResults)){
     
     sleep(2);
@@ -272,13 +313,14 @@ int main(int argc , char *argv[])
     if(stateResults.length()>0){
      c.send_data(stateResults);
     }
-
+    
+    */
+    
     temp = a;
     temp_mac = mac;
     b=0;
     a=0;
-    
-   }*/
+   }
     
     sleep(1);
     //done
