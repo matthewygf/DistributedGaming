@@ -18,8 +18,8 @@
 #include <GL/glut.h>
 #endif
 
-#define MAP_SIZEX 100
-#define MAP_SIZEY 100
+#define MAP_SIZEX 500
+#define MAP_SIZEY 500
 
 
 
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
    //model-view-controller
    
    GameModel *model = new GameModel(camera,tmap);
-   model->createThreads();
+   //model->createThreads();
 
    //controller modifed the model.
    GameController *controller = new GameController(model);

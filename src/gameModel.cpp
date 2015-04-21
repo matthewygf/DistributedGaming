@@ -385,6 +385,7 @@ void GameModel::drawCats()
     glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
     cats[i].render();
     //ai update to check its states
+    //cats[i].update();
     cats[i].goToState();
     glPopMatrix();
   }
@@ -398,6 +399,7 @@ void GameModel::drawMouse()
     glPushMatrix();
     glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
     mice[i].render();
+    //mice[i].update();
     mice[i].goToState();
     glPopMatrix();
   }

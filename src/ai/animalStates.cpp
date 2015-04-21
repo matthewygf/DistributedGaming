@@ -33,13 +33,11 @@ void Patrol::Execute(Animal* animal)
     animal->changeDirection();
     animal->setBoredLevel(0.01);
   }
+
   /* this should now only be calculated in Client
   //only tired when patrolling
   //animal->increaseFatigue();
   //animal->increaseHunger();
-  
-  
-
   if (animal->tired())
   {
     animal->changeState(Tired::Instance());
