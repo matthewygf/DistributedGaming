@@ -134,8 +134,26 @@ vector <Cat> GameModel::getCats(){
  return cats;
 }
 
+vector<Cat> GameModel::getCatsOne()
+{
+  return cats_one;
+}
+
+vector<Cat> GameModel::getCatsTwo()
+{
+  return cats_two;
+}
+
 vector <Mouse> GameModel::getMice(){
   return mice;
+}
+
+vector <Mouse> GameModel::getMiceOne(){
+  return mice_one;
+}
+
+vector <Mouse> GameModel::getMiceTwo(){
+  return mice_two;
 }
 
 vector <int> GameModel::getMiceEaten()
@@ -705,7 +723,25 @@ void GameModel::registerClient()
   return instanceModel->increaseClient();
 }
 
+vector<Cat> GameModel::getCatsOneForClient()
+{
+  return instanceModel->getCatsOne();
+}
 
+vector<Cat> GameModel::getCatsTwoForClient()
+{
+  return instanceModel->getCatsTwo();
+}
+
+vector<Mouse> GameModel::getMiceOneForClient()
+{
+  return instanceModel->getMiceOne();
+}
+
+vector<Mouse> GameModel::getMiceTwoForClient()
+{
+  return instanceModel->getMiceTwo();
+}
 
 //modified from C++ tutorial point
 void *GameModel::serverHandler(void *)
@@ -836,9 +872,20 @@ void *GameModel::clientHandler(void *client)
   int b = 0;
   int net_b = htonl(b);
   int socket = *(int*)client;
+  vector<Cat>   c;
+  vector<Mouse> m;
   vector<int>   current_mice_eaten; 
   vector<int>   current_cat_has_eaten_mice;
   vector<int>   current_mice_ate_cheese;
+  current_mice_eaten = getMiceEatenForClient(); //get mice eaten in the model.
+  current_cat_has_eaten_mice = getCatAteMiceForClient();
+  current_mice_ate_cheese = getMiceAteCheeseForClient();
+  string entity_ids_for_cats;
+  string entity_ids_for_mice = "m";
+  string entity_Cat_Eaten_Mice = "c";
+  string entity_mice_ate_cheese;
+  char const *e_cats;
+  char const *e_mice;
 
   while(instanceModel->client<2)
   {
@@ -872,17 +919,54 @@ void *GameModel::clientHandler(void *client)
   {
     case(1):
      cout<<"client pick 1"<<endl;
-     //c = getCatsOneForClient();
-     //m = getMiceOneForClient();
+     c = getCatsOneForClient();
+     m = getMiceOneForClient();
      break;
     case(2):
      cout<<"client pick 2"<<endl;
-     //c = getCatsTwoForClient();
-     //m = getMiceTwoForClient();
+     c = getCatsTwoForClient();
+     m = getMiceTwoForClient();
      break;
     default:
      break;
   }
+
+
+     //send all the cats entity ID to client
+   for(unsigned int i = 0; i<c.size();i++){
+      int j = c[i].getEntityId();
+      stringstream ss;
+      ss << j;
+      string str = ss.str();
+      entity_ids_for_cats.append(str);
+     if(i != c.size()-1){
+      entity_ids_for_cats.append(",");}
+   }
+   //cout<<"entity_ids_for_cats = "<<entity_ids_for_cats<<endl;
+   e_cats = entity_ids_for_cats.c_str();
+
+   for(unsigned int i = 0; i<m.size();i++){
+      int j = m[i].getEntityId();
+      stringstream ss;
+      ss << j;
+      string str = ss.str();
+      entity_ids_for_mice.append(str);
+     if(i != m.size()-1){
+      entity_ids_for_mice.append(",");}
+     }
+   // cout<<"entity_ids_for_mice = "<<entity_ids_for_mice<<endl;
+ 
+   e_mice = entity_ids_for_mice.c_str();
+   sleep(1);
+   
+   //send all the mice entity ID to client
+   
+   write(socket , e_cats , strlen(e_cats));
+   cout<<"sending cats entitys id"<<endl;
+   write(socket , e_mice , strlen(e_mice));
+   cout<<"sending mice entitys id"<<endl;
+
+
   
   //recv client id;
     /*

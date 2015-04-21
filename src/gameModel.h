@@ -83,6 +83,10 @@ class GameModel
    void getTileSettings();
    int  generateRandom(int start, int end);
    vector<Cat> getCats();
+   vector<Cat> getCatsOne();
+   vector<Cat> getCatsTwo();
+   vector<Mouse> getMiceOne();
+   vector<Mouse> getMiceTwo();
    vector<Mouse> getMice();
    vector<int>   getMiceEaten();
    vector<int>   getCatAteMiceVector();
@@ -145,7 +149,11 @@ class GameModel
    static int getCatAteMiceSize();
    //needa send information to clients
    static vector<Cat> getCatsForClient();
+   static vector<Cat> getCatsOneForClient();
+   static vector<Cat> getCatsTwoForClient();
    static vector<Mouse> getMiceForClient();
+   static vector<Mouse> getMiceOneForClient();
+   static vector<Mouse> getMiceTwoForClient();
    static vector<int>  getMiceEatenForClient();
    static vector<int>  getCatAteMiceForClient();
    static vector<int>  getMiceAteCheeseForClient();

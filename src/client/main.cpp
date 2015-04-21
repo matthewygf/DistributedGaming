@@ -200,7 +200,7 @@ int main(int argc , char *argv[])
     }
    cout<<id<<" send"<<endl;
    
-    /*
+    
     sleep(2);
     
     ////////////////////////////////////////////////////////////
@@ -217,7 +217,7 @@ int main(int argc , char *argv[])
     //give the mice the mice ID.
     createMice(mice,miceId);
     ///////////////////////////////////////////////////////////////
-    
+    /*
     sleep(1);
     //should be in a while loop keep updating how many animals are left.
     while(1){
