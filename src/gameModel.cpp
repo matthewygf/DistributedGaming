@@ -385,8 +385,8 @@ void GameModel::drawCats()
     glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
     cats[i].render();
     //ai update to check its states
-    //cats[i].update();
-    cats[i].goToState();
+    //cats[i].update(); //uncomment for running in single machine.
+    cats[i].goToState(); // uncomment for server ai.
     glPopMatrix();
   }
  }else{}
@@ -399,8 +399,8 @@ void GameModel::drawMouse()
     glPushMatrix();
     glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
     mice[i].render();
-    //mice[i].update();
-    mice[i].goToState();
+    //mice[i].update();//uncomment for running in single machine.
+    mice[i].goToState(); // uncomment for server ai.
     glPopMatrix();
   }
 }else{cout<<"all mouse are eaten"<<endl;}
@@ -1128,15 +1128,17 @@ void *GameModel::clientHandler(void *client)
     //recv the ai size;
     recv(socket, &net_ai, sizeof(net_ai), 0);
     aiSize = ntohl(net_ai);
-    
+  
     char s[aiSize+1];
-    string a;
+    string a = "";
     int bufRead;
     memset(s,0,sizeof(s));
     if(aiSize>0){
+      sleep(1);
       bufRead=(recv(socket,&s,aiSize,0)); 
       s[bufRead] = '\0';   
       a = s;
+      memset(s, 0, sizeof(s));
     }
  
      vector<string> catsOneNStates;
@@ -1178,7 +1180,6 @@ void *GameModel::clientHandler(void *client)
          //cout<<"cats one n states size "<<catsOneNStates.size()<<endl;
          //cout<<"mice one n states size "<<miceOneNStates.size()<<endl;
 ///////////////////////////////////////////////////////////////////////////
-         
          break;
       case 2:
          catsTwoStates = a.substr(0, a.find(split));

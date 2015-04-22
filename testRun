@@ -1,0 +1,68 @@
+ServerMachine:
+cslin080:129.11.146.80
+Intel I5, 3.10 Ghz, 2 x 8 GB Memory
+500GB hard Drive
+
+ClientMachines: 1st client
+cslin079:129.11.146.79
+Intel I5, 3.10 Ghz, 2 x 8 GB Memory
+500GB hard Drive
+
+ClientMachines: 2nd client
+cslin079:129.11.146.78
+Intel I5, 3.10 Ghz, 2 x 8 GB Memory
+500GB hard Drive
+
+1st run on only local Machine:
+100 x 100 mapsize
+50 animals (50 ai cal)
+
+2nd run on only local Machine:
+500x500 mapsize
+250 animals (250 ai cal)
+
+3rd run on only local Machine:
+1000x1000 mapsize
+500 animals (500 ai cal)
+
+4th run on only local Machine:
+1500x1500 mapsize
+750 animals (750 ai cal)
+
+-------------------------------------------------------------------------------
+
+1st run on 1 machine distributed
+100x100 mapsize
+50 animals (50 ai cal in the client machine)
+
+2nd run on 1 machine distributed
+500x500
+100 animals (100 ai cal in the client machine)
+
+3rd run on 1 machine distributed
+1000x1000
+500 animals (500 ai cal in the client machine)
+
+4th run on 1 machine distributed
+1500x1500
+750 animals (750 ai cal in the client machine)
+
+
+------------------------------------------------------------------------------
+1st run on 2 machine distributed
+100x100 mapsize
+50 animals (25 ai cal in each client machine)
+
+2nd run on 1 machine distributed
+500x500
+100 animals (50 ai cal in each client machine)
+
+3rd run on 1 machine distributed
+1000x1000
+500 animals (250 ai cal in each client machine)
+
+4th run on 1 machine distributed
+1500x1500
+750 animals (325 ai cal in the client machine)
+
+

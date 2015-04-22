@@ -33,11 +33,12 @@ void Patrol::Execute(Animal* animal)
     animal->changeDirection();
     animal->setBoredLevel(0.01);
   }
-
-  /* this should now only be calculated in Client
+  /*
+////////////////////////////////////////////////////////
+  // this should now only be calculated in Client
   //only tired when patrolling
-  //animal->increaseFatigue();
-  //animal->increaseHunger();
+  animal->increaseFatigue();
+  animal->increaseHunger();
   if (animal->tired())
   {
     animal->changeState(Tired::Instance());
@@ -47,7 +48,7 @@ void Patrol::Execute(Animal* animal)
   {
     animal->changeState(Hungry::Instance());
   }
-  */
+ //*/
 }
 
 
@@ -81,17 +82,18 @@ void Tired::Execute(Animal* animal)
   }
 
   else 
-  {*/
-  
+  {
+  ///
   if(animal->bored()) //not a state, so i will leave this here
   {
     animal->changeDirection();
     animal->setBoredLevel(0.01);
-  }
+  }*/
   
     Vector3 currentPos = animal -> getPosition();
     animal -> setPosition(currentPos);
-    animal->decreaseFatigue();
+    animal->decreaseFatigue(); 
+  //}
   
 }
 
@@ -117,7 +119,8 @@ void Hungry::Execute(Animal* animal)
 { 
   animal->setSpeed(0.03);
   animal->patrol();
-  /*if(!animal->hungry()){ now should be in the client code.
+  /*
+  if(!animal->hungry()){ //now should be in the client code.
     animal->changeState(Patrol::Instance());
   }*/
  

@@ -265,6 +265,7 @@ int main(int argc , char *argv[])
     //send back to server.
     //send the number of bytes first
     c.sendAiResultStringSize(stateResults);
+    sleep(2);
     if(stateResults.length()>0){
      c.send_data(stateResults);
     }
