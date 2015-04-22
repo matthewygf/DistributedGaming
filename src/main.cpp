@@ -18,8 +18,8 @@
 #include <GL/glut.h>
 #endif
 
-#define MAP_SIZEX 100
-#define MAP_SIZEY 100
+#define MAP_SIZEX 1500
+#define MAP_SIZEY 1500
 
 
 
