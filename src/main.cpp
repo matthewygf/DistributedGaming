@@ -4,7 +4,7 @@
 #include "gameController.h"
 #include "camera/camera.h"
 #include "tileMap/tileMap.h"
-#include "../supports/vbo/src/Timer.h"
+#include "../include/vbo/src/Timer.h"
 #include <pthread.h>
 #include <iostream>
 
@@ -18,8 +18,8 @@
 #include <GL/glut.h>
 #endif
 
-#define MAP_SIZEX 1500
-#define MAP_SIZEY 1500
+#define MAP_SIZEX 100
+#define MAP_SIZEY 100
 
 
 

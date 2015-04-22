@@ -8,10 +8,10 @@
 #endif
 #include "gameModel.h"
 #include "gameController.h"
-#include "../supports/vbo/src/Timer.h"
+#include "../include/vbo/src/Timer.h"
 #include <sstream>
 #include <vector>
-#include "../supports/matrix/src/Vectors.h"
+#include "../include/matrix/src/Vectors.h"
 #include "bots/animal.h"
 #include "bots/cat.h"
 #include "bots/mouse.h"

@@ -7,7 +7,7 @@
 #else
 #include <GL/glut.h>
 #endif
-#include "../supports/glext.h"
+#include "../include/glext.h"
 #include <stdio.h>
 #include <iostream>
 #include <sstream>

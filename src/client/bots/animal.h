@@ -7,7 +7,7 @@
 #include <GL/glut.h>
 #endif
 #include <vector>
-#include "../../../supports/matrix/src/Vectors.h"
+#include "../../../include/matrix/src/Vectors.h"
 //baseclass for the animal
 
 using namespace std;

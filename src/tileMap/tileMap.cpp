@@ -1,10 +1,10 @@
 #include "tileMap.h"
-#include "../../supports/stb_image.h"
+#include "../../include/stb_image.h"
 #include <stdio.h>
 #include <iostream>
 
 #include <vector>
-#include "../../supports/matrix/src/Vectors.h"
+#include "../../include/matrix/src/Vectors.h"
 using namespace std;
 
 TileMap::TileMap(int mapSize_x,int mapSize_y,
