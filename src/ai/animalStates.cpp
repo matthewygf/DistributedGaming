@@ -73,6 +73,7 @@ void Tired::Enter(Animal* animal)
 
 void Tired::Execute(Animal* animal)
 { 
+///////////////////////////////////
   /* calcu
   float t = animal -> getTiredLevel();
   
@@ -83,12 +84,12 @@ void Tired::Execute(Animal* animal)
 
   else 
   {
-  ///
+  ///*/////////////////////////////////////////////////
   if(animal->bored()) //not a state, so i will leave this here
   {
     animal->changeDirection();
     animal->setBoredLevel(0.01);
-  }*/
+  }
   
     Vector3 currentPos = animal -> getPosition();
     animal -> setPosition(currentPos);
@@ -119,11 +120,11 @@ void Hungry::Execute(Animal* animal)
 { 
   animal->setSpeed(0.03);
   animal->patrol();
-  /*
+  /*//////////////////////////
   if(!animal->hungry()){ //now should be in the client code.
     animal->changeState(Patrol::Instance());
-  }*/
- 
+  }
+ *///////////////////////////
  if(animal->bored()) //not a state, so i will leave this here
   {
     animal->changeDirection();

@@ -1134,7 +1134,7 @@ void *GameModel::clientHandler(void *client)
     int bufRead;
     memset(s,0,sizeof(s));
     if(aiSize>0){
-      sleep(1);
+      sleep(3);
       bufRead=(recv(socket,&s,aiSize,0)); 
       s[bufRead] = '\0';   
       a = s;
@@ -1154,6 +1154,7 @@ void *GameModel::clientHandler(void *client)
      size_t pos = 0;
      string token;
     //splitUpthe strings
+    sleep(1);
     switch(handleId)
     {
       case 1:
