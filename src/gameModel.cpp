@@ -3,12 +3,6 @@
 
 using namespace std;
 
-struct arg_struct {
-    int socket;
-    vector<Cat> c;
-    vector<Mouse> m;
-};
-
 
 GameModel::GameModel(Camera *newCamera, TileMap * newTileMap)
 {
