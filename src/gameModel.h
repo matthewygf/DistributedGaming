@@ -63,6 +63,8 @@ class GameModel
    float getAngle();
    float getDeltaAngle();
    float getDeltaMove();
+   float getTileWidth();
+   float getTileHeight();
    //get Camera variables to store in private
    float getCameraPos_x();
    float getCameraPos_y();
@@ -155,6 +157,8 @@ class GameModel
    static int getMiceTwoSize();
    static int getMiceEatenSize();
    static int getCatAteMiceSize();
+   static float getTileWidthForClient();
+   static float getTileHeightForClient();
    //needa send information to clients
    static vector<Cat> getCatsForClient();
    static vector<Cat> getCatsOneForClient();

@@ -32,6 +32,7 @@ class Animal
       float hunger;
       int score;
       int state;
+      int mapSize;
       State* currentState;
    public:
       Animal();
@@ -46,6 +47,7 @@ class Animal
       float getTiredLevel();
       int   getScore();
       float getHungerLevel();
+      int   getMapSize();
       int   getId();
       int   getEntityId();
       int   getState();
@@ -55,6 +57,7 @@ class Animal
       void  goToState();
       void  setState(int new_state);
       void  setSpeed(float newSpeed);
+      void  setMapSize(int new_mapSize);
       void  setBoredLevel(float level);
       void  setHungerLevel(float level);
       void  setTiredLevel(float level);
@@ -77,6 +80,8 @@ class Animal
       void  increaseFatigue();
       void  increaseHunger();
       void  decreaseHunger();
+      //simulate heavy ai computation
+      void  calculatePrimeNumbers();
 
       //update the ai
       void  update();

@@ -79,6 +79,11 @@ int Animal::getScore()
   return score;
 }
 
+int Animal::getMapSize()
+{
+  return mapSize;
+}
+
 float Animal::getTiredLevel()
 {
   return tiredLevel;
@@ -88,6 +93,7 @@ float Animal::getHungerLevel()
 {
   return hunger;
 }
+
 
 void Animal::setEntityId(int e_id)
 {
@@ -112,6 +118,11 @@ void Animal::setTiredLevel(float level)
 void Animal::setState(int new_state)
 {
   state = new_state;
+}
+
+void Animal::setMapSize(int new_mapSize)
+{
+  mapSize = new_mapSize;
 }
 
 void Animal::setPosition (Vector3 newPosition)
@@ -406,6 +417,29 @@ void Animal::move(int dir)
      break;
  }
 }
+
+void Animal::calculatePrimeNumbers()
+{
+    int num = 1,primes = 0;
+    int mapSize = getMapSize();
+    int limit = mapSize * mapSize;
+
+    for (num = 1; num <= limit; num++) { 
+        int i = 2; 
+        while(i <= num) { 
+            if(num % i == 0)
+                break;
+            i++; 
+        }
+        if(i == num)
+            primes++;
+      
+    }
+//printf("%d prime numbers calculated\n",primes);
+
+}
+
+
 
 int Animal::generateRandom(int start, int end)
 {

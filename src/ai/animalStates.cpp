@@ -28,15 +28,19 @@ void Patrol::Execute(Animal* animal)
 {  
   animal->setSpeed(0.01);
   animal->patrol();
+  /////////////////////////////////////////////////////
   if(animal->bored()) //not a state, so i will leave this here
   {
     animal->changeDirection();
     animal->setBoredLevel(0.01);
   }
-  /*
+  
 ////////////////////////////////////////////////////////
-  // this should now only be calculated in Client
+  //comment from here to show single threaded
+  /*// this should now only be calculated in Client
   //only tired when patrolling
+    //simulate heavy ai computation
+  animal->calculatePrimeNumbers();
   animal->increaseFatigue();
   animal->increaseHunger();
   if (animal->tired())
@@ -48,6 +52,8 @@ void Patrol::Execute(Animal* animal)
   {
     animal->changeState(Hungry::Instance());
   }
+  
+  
  //*/
 }
 
@@ -73,10 +79,10 @@ void Tired::Enter(Animal* animal)
 
 void Tired::Execute(Animal* animal)
 { 
-///////////////////////////////////
-  /* calcu
+  /*///////////////////////////////////
+  // calcu
   float t = animal -> getTiredLevel();
-  
+  animal->calculatePrimeNumbers();
   if (t<=0 )
   {
      animal->changeState(Patrol::Instance());
@@ -94,7 +100,7 @@ void Tired::Execute(Animal* animal)
     Vector3 currentPos = animal -> getPosition();
     animal -> setPosition(currentPos);
     animal->decreaseFatigue(); 
-  //}
+  //}//uncomment out this for single threaded
   
 }
 
@@ -120,11 +126,17 @@ void Hungry::Execute(Animal* animal)
 { 
   animal->setSpeed(0.03);
   animal->patrol();
-  /*//////////////////////////
+    /*//////////////////////////
+  animal->calculatePrimeNumbers();
   if(!animal->hungry()){ //now should be in the client code.
     animal->changeState(Patrol::Instance());
   }
- *///////////////////////////
+   if (animal->tired()&&animal->hungry())
+  {
+    animal->changeState(Tired::Instance());
+  }
+  
+ //////////////////////////*/
  if(animal->bored()) //not a state, so i will leave this here
   {
     animal->changeDirection();

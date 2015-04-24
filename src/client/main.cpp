@@ -53,22 +53,27 @@ void getEntitiesIdFromServer(vector<int>&e, string entities)
 
 
 
-void createCats(vector<Cat>&cats,vector<int> c_id)
+void createCats(vector<Cat>&cats,vector<int> c_id,int tWidth)
 {
     for(unsigned int i = 0;i<c_id.size();i++){
       Cat c;
       c.setEntityId(c_id[i]);
+      c.setMapSize(tWidth);
+      c.setHungerLevel(0);
       cats.push_back(c);
     } 
     cout<<"CATS VECTOR NOW HAVE "<<cats.size()<<endl;
     
 }
 
-void createMice(vector<Mouse>&mice,vector<int> id)
+void createMice(vector<Mouse>&mice,vector<int> id,int tWidth)
 {
     for(unsigned int i = 0;i<id.size();i++){
       Mouse m;
       m.setEntityId(id[i]);
+      m.setMapSize(tWidth);
+
+      m.setHungerLevel(0);
       mice.push_back(m);
     } 
     cout<<"MICE VECTOR NOW HAVE "<<mice.size()<<endl;
@@ -161,7 +166,9 @@ int main(int argc , char *argv[])
 {
     Client c;
     string host;
-    int a,b,temp,mac,temp_mac;
+    int a,b,temp,mac,temp_mac,tWidth;
+    int catAteMiceSize;
+    int old_catAteMiceSize = 0;
     string entities;
     string splitM = "m";
     string splitC = "c";
@@ -199,10 +206,10 @@ int main(int argc , char *argv[])
     {
     }
     cout<<id<<" send"<<endl;
-   
     
-    sleep(2);
-    
+    tWidth = c.receiveInt();
+    cout<<"tWidth = "<<tWidth<<endl;
+    sleep(1);
     ////////////////////////////////////////////////////////////
     //here to receive all the require information before calculating Ai.
     entities = c.receive(2000);
@@ -213,48 +220,51 @@ int main(int argc , char *argv[])
     getEntitiesIdFromServer(miceId,e_mice);
     
     //give the cats the cats ID.
-    createCats(cats,catsId);
+    createCats(cats,catsId,tWidth);
     //give the mice the mice ID.
-    createMice(mice,miceId);
+    createMice(mice,miceId,tWidth);
     ///////////////////////////////////////////////////////////////
-    
-    sleep(1);
+
     //should be in a while loop keep updating how many animals are left.
     while(1){
     string stateResults = "";
     vector<int> catAteMouseId;//cat that ate a mouse for AI hungry state
     vector<int> mice_ate_cheese;//startover everyframe
-    
     //just to keep connection going. and first make this to set the cats n mice to starts walkin.
     c.keepConnection();
-
-    sleep(2);
+    sleep(1);
     //keep updating mice size. or update which one has got eaten.
     b = c.receiveInt();
     cout<<"mice size is "<<b<<" successfully received in client"<<endl;
     sleep(1);
-    a = c.receiveInt();
+    a = c.receiveInt(); // number of mice has been eaten, and the number of cat has eaten
     cout<<"Numof Mice has been eaten "<<a<<" successfully received in client"<<endl;
     
-    if(a!=0 && (abs(temp-a))!=0){
-      data = c.receive(512);
+    //only run when some mouse has been eaten
+    if(a>0 && (abs(temp-a))>0){
       sleep(1);
+      data = c.receive(512);
       miceEaten = data.substr(0, data.find(splitC));
+      cout<<"mice that has eaten"<<miceEaten<<endl;
       catAte = data.substr(data.find(splitC)+1, data.find(splitH)-2);
       cout<<"cat that has eaten "<<catAte<<endl;
       getEntitiesIdFromServer(m_eatenId,miceEaten);
       getEntitiesIdFromServer(catAteMouseId,catAte);
+      catAteMiceSize = catAteMouseId.size();
       deleteMiceFromVector(mice,m_eatenId);
       cout<<"num of mice that has been eaten "<<m_eatenId.size()<<endl;
-      cout<<"cat's entity ID has been added to the vector "<<catAteMouseId.size()<<endl;
+      cout<<"cat's entity ID has been added to the vector catAteMouse "<<catAteMiceSize-     
+      old_catAteMiceSize<<endl;
     }
     
     sleep(1);
     mac=c.receiveInt();
     cout<<"mice that ate cheese has been received and it is : "<<mac<<endl;
-    if(mac!=0 && (abs(temp_mac - mac))!=0)
+    if(mac!=0 && (abs(temp_mac - mac))!=0)//if mice ate cheese size has been changed
     {
+    //then receive who ate some cheese
      miceAteCheese = c.receive(512);
+     //store to the vector
      getEntitiesIdFromServer(mice_ate_cheese,miceAteCheese);
      cout<<"received "<<mice_ate_cheese.size()<< " mice that ate cheese"<<endl;
     }
@@ -265,65 +275,19 @@ int main(int argc , char *argv[])
     //send back to server.
     //send the number of bytes first
     c.sendAiResultStringSize(stateResults);
-    sleep(2);
+    sleep(1);
     if(stateResults.length()>0){
      c.send_data(stateResults);
     }
     
-   /*
-   // if(c.send_data(stateResults)){
-    
-    sleep(2);
-    //keep updating mice size. or update which one has got eaten.
-    b = c.receiveInt();
-    cout<<"mice size is "<<b<<" successfully received in client"<<endl;
-    sleep(1);
-    a = c.receiveInt();
-    cout<<"Numof Mice has been eaten "<<a<<" successfully received in client"<<endl;
-    //catEatenMiceSize=c.receiveInt();
-    //cout<<"Num cat has eaten mice "<<catEatenMiceSize<<endl;
-
-    //receive the mice that has been eaten and cat that has eaten.
-    if(a!=0 && (abs(temp-a))!=0){
-      data = c.receive(512);
-      sleep(1);
-      miceEaten = data.substr(0, data.find(splitC));
-      catAte = data.substr(data.find(splitC)+1, data.find(splitH)-2);
-      cout<<"cat that has eaten "<<catAte<<endl;
-      getEntitiesIdFromServer(m_eatenId,miceEaten);
-      getEntitiesIdFromServer(catAteMouseId,catAte);
-      deleteMiceFromVector(mice,m_eatenId);
-      cout<<"num of mice that has been eaten "<<m_eatenId.size()<<endl;
-      cout<<"cat's entity ID has been added to the vector "<<catAteMouseId.size()<<endl;
-    }
-    sleep(1);
-    mac=c.receiveInt();
-    if(mac!=0 && (abs(temp_mac - mac))!=0)
-    {
-     miceAteCheese = c.receive(512);
-     getEntitiesIdFromServer(mice_ate_cheese,miceAteCheese);
-     cout<<"received "<<mice_ate_cheese.size()<< " mice that ate cheese"<<endl;
-    }
-   
-    //calculate Ai
-    calculateAi(cats,mice,catAteMouseId,mice_ate_cheese,stateResults);
-    
-    //send back to server.
-    //send the number of bytes first
-    c.sendAiResultStringSize(stateResults);
-    if(stateResults.length()>0){
-     c.send_data(stateResults);
-    }
-    
-    */
-    
+    old_catAteMiceSize = catAteMiceSize;
     temp = a;
     temp_mac = mac;
     b=0;
     a=0;
+    sleep(2);
    }
-    
-    sleep(1);
+
     //done
     return 0;
 }

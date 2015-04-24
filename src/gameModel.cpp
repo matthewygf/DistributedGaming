@@ -115,6 +115,16 @@ float GameModel::getCameraAngle(){
   return angle;
 }
 
+float GameModel::getTileWidth()
+{
+  return tileWidth;
+}
+
+float GameModel::getTileHeight()
+{
+  return tileHeight;
+}
+
 void GameModel::getWallsPos(){
   wallsPos = tile->getWallsPos();
 }
@@ -273,6 +283,7 @@ void GameModel::initCnM()
       c.setMovingDirection(dir);
       c.setEntityId(e);
       c.setPosition(x,y,0.5);
+      c.setMapSize(tileWidth);
       //c.setState(0);
       c.setSpeed(speed);
       cats.push_back(c);
@@ -293,6 +304,7 @@ void GameModel::initCnM()
       m.setMovingDirection(dir);
       m.setEntityId(e);
       m.setPosition(x,y,0.5);
+      m.setMapSize(tileWidth);
       m.setSpeed(0.02);
       //m.setState(0);
       mice.push_back(m);
@@ -736,7 +748,15 @@ int GameModel::getCatAteMiceSize()
   return catAteMiceS;
 }
 
+float GameModel::getTileWidthForClient()
+{
+  return instanceModel->getTileWidth();
+}
 
+float GameModel::getTileHeightForClient()
+{
+  return instanceModel->getTileHeight();
+}
 
 vector<Cat> GameModel::getCatsForClient()
 {
@@ -920,14 +940,16 @@ void *GameModel::clientHandler(void *client)
   int a = 0;
   int old_a=0;
   int aiSize=0;
-  int net_ai;
-  int temp;
+  int net_ai,net_tWidth;
+  int temp=0;
   int net_a;
   int socket = *(int*)client;
   int Buf;
   int net_Buf;
   int tempCheese=0;
   int catAteMiceSize=0;
+  int tWidth = getTileWidthForClient(); 
+  
   vector<Cat>   c;
   vector<Mouse> m;
   vector<int>   current_mice_eaten; 
@@ -959,12 +981,11 @@ void *GameModel::clientHandler(void *client)
   sleep(1);
   if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
       {perror("error");}
-  
+      
   //protocol to distribute the half of the cats, and mice
   //since my project involve distributing two right now.
   char const *message; 
   message = "Hey there! you are now connected to the server.\n Please Enter 1 or 2. ";
-  sleep(1);
   write(socket , message , strlen(message));
    
   int net_client_id;
@@ -972,7 +993,6 @@ void *GameModel::clientHandler(void *client)
   while((read_size = recv(socket, &net_client_id, sizeof(net_client_id), 0))<0){
   }
   int i = ntohl(net_client_id);
-  cout<<i<<endl;
 
   switch(i)
   {
@@ -991,8 +1011,12 @@ void *GameModel::clientHandler(void *client)
     default:
      break;
   }
-
-
+  sleep(1);  
+  //send the size of the map to clients
+  net_tWidth = htonl(tWidth);
+  if(send(socket, (const char*)&net_tWidth, sizeof(tWidth), MSG_NOSIGNAL)<0)
+      {perror("error");}    
+  
      //send all the cats entity ID to client
    for(unsigned int i = 0; i<c.size();i++){
       int j = c[i].getEntityId();
@@ -1018,7 +1042,6 @@ void *GameModel::clientHandler(void *client)
    // cout<<"entity_ids_for_mice = "<<entity_ids_for_mice<<endl;
  
    e_mice = entity_ids_for_mice.c_str();
-   sleep(1);
    
    //send all the mice entity ID to client
    
@@ -1027,14 +1050,14 @@ void *GameModel::clientHandler(void *client)
    write(socket , e_mice , strlen(e_mice));
    cout<<"sending mice entitys id"<<endl;
 
-   sleep(1);
+   sleep(2);
     //start the loop here to send n recv from client
     //first update how many cats n mice in the model.
     while((read_size = recv(socket, &Buf, sizeof(Buf), 0))>0){
      current_mice_eaten = getMiceEatenForClient(); //get mice eaten in the model.
      current_cat_has_eaten_mice = getCatAteMiceForClient();
      current_mice_ate_cheese = getMiceAteCheeseForClient();
-     catAteMiceSize = getCatAteMiceSize();
+
     //net_catAteMiceSize = htonl(catAteMiceSize);
      string mice_eaten;
      net_Buf = ntohl(Buf);
@@ -1046,20 +1069,26 @@ void *GameModel::clientHandler(void *client)
             net_b =  htonl(b);
             a = getMiceEatenSize();
             net_a = htonl(a);
+            catAteMiceSize = getCatAteMiceSize();
             break;
        case 2:
             b = getMiceTwoSize();
             net_b =  htonl(b);
             a = getMiceEatenSize();
             net_a = htonl(a);
+            catAteMiceSize = getCatAteMiceSize();
             break;     
       } 
+      
+      
+      sleep(2);
     if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
       {perror("error");}
 
      //send the size of the mice eaten.
     if(send(socket, (const char*)&net_a, sizeof(a), MSG_NOSIGNAL)<0)
       {perror("error");}
+      sleep(1);
       
      if(a != 0 && (abs(a-old_a))!=0){
      for(unsigned int i = old_a; i<current_mice_eaten.size();i++){
@@ -1068,23 +1097,26 @@ void *GameModel::clientHandler(void *client)
       ss << j;
       string str = ss.str();
       mice_eaten.append(str);
-     if(i != current_mice_eaten.size()-1){
-       mice_eaten.append(",");}
+    // if(i != current_mice_eaten.size()-1){
+       mice_eaten.append(",");//}
      }
     client_mice_eaten = mice_eaten.c_str();
     write(socket , client_mice_eaten , strlen(client_mice_eaten));
     cout<<"mice that got eaten sent"<<endl;
     }else{cout<<"current no mouse has been eaten"<<endl;}
 
-     if(catAteMiceSize != 0 && (abs(catAteMiceSize - temp))!=0){
-     for(int i = temp; i<catAteMiceSize;i++){
-      int j = current_cat_has_eaten_mice[i];
-      stringstream ss;
-      ss << j;
-      string str = ss.str();
-      entity_Cat_Eaten_Mice.append(str);
-     if(i != catAteMiceSize-1){
-       entity_Cat_Eaten_Mice.append(",");}
+////////////////////////////////////////////////////////////////////////////
+     if(catAteMiceSize != 0 && (abs(catAteMiceSize - temp))!=0)
+     {
+       for(unsigned int i = temp; i<current_cat_has_eaten_mice.size();i++)
+       {
+        int j = current_cat_has_eaten_mice[i];
+        stringstream ss;
+        ss << j;
+        string str = ss.str();
+        entity_Cat_Eaten_Mice.append(str);
+     //if(i != catAteMiceSize-1){
+       entity_Cat_Eaten_Mice.append(",");//}
      }
      client_cat_eaten_mice = entity_Cat_Eaten_Mice.c_str();
      write(socket , client_cat_eaten_mice , strlen(client_cat_eaten_mice));
@@ -1304,18 +1336,9 @@ void *GameModel::clientHandler(void *client)
       }
     }
    
-   
-   
     
   }
 
-
-  
-  
-   
-   
-
-   
 
     /**In the while loop constantly receiving message from client
      Ai calculations for which states to go in.

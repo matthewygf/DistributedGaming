@@ -15,6 +15,7 @@ using namespace std;
 Animal::Animal():tiredLevel(0),score(0),currentState(Patrol::Instance())
 {
  boredLevel = 0;
+ mapSize = 0;
 }
 
 Animal::Animal(int i)
@@ -75,6 +76,10 @@ int Animal::getScore()
 {
   return score;
 }
+int Animal::getMapSize()
+{
+  return mapSize;
+}
 
 float Animal::getTiredLevel()
 {
@@ -84,6 +89,16 @@ float Animal::getTiredLevel()
 float Animal::getHungerLevel()
 {
   return hunger;
+}
+
+void Animal::setScore(int newScore)
+{
+  score = newScore;
+}
+
+void Animal::setHungerLevel(float newHunger)
+{
+  hunger = newHunger;
 }
 
 void Animal::setEntityId(int e_id)
@@ -133,6 +148,11 @@ void Animal::setMovingDirection(int new_dir)
 void Animal::setSpeed(float newSpeed)
 {
   speed = newSpeed;
+}
+
+void Animal::setMapSize(int new_mapSize)
+{
+  mapSize = new_mapSize;
 }
 
 void Animal::drawBox()
@@ -398,4 +418,28 @@ int Animal::generateRandom(int start, int end)
     int result = start + (rand() % (int)(end - start + 1));
     return result;
 }
+
+void Animal::calculatePrimeNumbers()
+{
+    int num = 1,primes = 0;
+    int mapSize = getMapSize();
+    int limit = mapSize * mapSize;
+
+    for (num = 1; num <= limit; num++) { 
+        int i = 2; 
+        while(i <= num) { 
+            if(num % i == 0)
+                break;
+            i++; 
+        }
+        if(i == num)
+            primes++;
+      
+    }
+printf("%d prime numbers calculated\n",primes);
+
+}
+
+
+
 
