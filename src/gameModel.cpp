@@ -12,6 +12,7 @@ GameModel::GameModel(Camera *newCamera, TileMap * newTileMap)
   cout<<"modelInitialised"<<endl;
   setInstance();
   client = 0;
+  setStructure(singleThreaded);
   
 }
 
@@ -327,6 +328,17 @@ void GameModel::gameSetUp(){
     
 }
 
+void GameModel::setStructure(bool structure)
+{
+  singleThread = structure;
+}
+
+
+bool GameModel::getStructure()
+{
+  return singleThread;
+}
+
 int GameModel::getNumOfAnimals()
 {
    return animals.size();
@@ -390,9 +402,12 @@ void GameModel::drawCats()
     glPushMatrix();
     glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
     cats[i].render();
-    //ai update to check its states
-    //cats[i].update(); //uncomment for running in single machine.
-    cats[i].goToState(); // uncomment for server ai.
+    if(singleThreaded)
+    {
+      cats[i].update();
+     }else{
+     cats[i].goToState();
+     }
     glPopMatrix();
   }
  }else{}
@@ -405,8 +420,12 @@ void GameModel::drawMouse()
     glPushMatrix();
     glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
     mice[i].render();
-    //mice[i].update();//uncomment for running in single machine.
-    mice[i].goToState(); // uncomment for server ai.
+    if(singleThreaded)
+    {
+      mice[i].update();
+    }else{
+      mice[i].goToState();
+      }
     glPopMatrix();
   }
 }else{cout<<"all mouse are eaten"<<endl;}

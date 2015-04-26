@@ -18,9 +18,10 @@
 #include <GL/glut.h>
 #endif
 
-#define MAP_SIZEX 180
-#define MAP_SIZEY 180
-
+#define MAP_SIZEX 140
+#define MAP_SIZEY 140
+//also need to set in gameModel.h and animalStates.cpp
+#define singleThreaded false
 
 
 // angle of rotation for the camera direction
@@ -53,8 +54,9 @@ int main(int argc, char **argv)
    
    GameModel *model = new GameModel(camera,tmap);
    //start server.
+   if(!singleThreaded){
    model->createThreads(); //comment out for running on local machine
-
+   }
    //controller modifed the model.
    GameController *controller = new GameController(model);
 

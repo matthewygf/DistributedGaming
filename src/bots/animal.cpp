@@ -436,7 +436,7 @@ void Animal::calculatePrimeNumbers()
             primes++;
       
     }
-printf("%d prime numbers calculated\n",primes);
+//printf("%d prime numbers calculated\n",primes);
 
 }
 

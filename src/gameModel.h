@@ -40,9 +40,11 @@ using namespace std;
 
 #define PORT "3490"  // the port users will be connecting to
 
-#define BACKLOG 10     // how many pending connections queue will hold
+#define BACKLOG 10
 
 #define NUMCLIENT 2    //2 machines connect to the server.
+
+#define singleThreaded false
 
 
 class GameModel
@@ -73,6 +75,7 @@ class GameModel
    float getCameraLookAtPos_x();
    float getCameraLookAtPos_y();
    float getCameraLookAtPos_z();
+   bool  getStructure();
    void  getCameraLookAtPos();
    float getCameraAngle();
    int   getNumOfAnimals();
@@ -112,6 +115,7 @@ class GameModel
    void setCameraAngle(float newAngle);
    void setDeltaAngle(float dAngle);
    void setDeltaMove (float move);
+   void setStructure (bool structure);
   
    //gameSetting
    //void setBots();
@@ -179,7 +183,7 @@ class GameModel
    
 
    private:
-   
+   bool singleThread;
    static GameModel *instanceModel;
    int width, height;
    int client;
