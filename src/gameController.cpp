@@ -1,4 +1,5 @@
 #include "gameController.h"
+#include "../include/matrix/src/Vectors.h"
 #include <stdio.h>
 #include <iostream>
 #include <cmath>
@@ -16,9 +17,9 @@ GameController::~GameController()
 }
 
 void GameController::getModelCameraSetting(){
-    x = theGameModel->getPosition_x();
-    y = theGameModel->getPosition_y();
-    z = theGameModel->getPosition_z();
+    px = theGameModel->getPosition_x();
+    py = theGameModel->getPosition_y();
+    pz = theGameModel->getPosition_z();
     lx = theGameModel->getLPosition_x();
     ly = theGameModel->getLPosition_y();
     lz = theGameModel->getLPosition_z();
@@ -30,15 +31,51 @@ void GameController::getModelCameraSetting(){
 
 void GameController::keyboard(unsigned char key, int x, int y){
     getModelCameraSetting();
+    Vector3 p (px,py,pz);
+    Vector3 l (lx,ly,lz);
+    Vector3 v;
     switch(key){
-        case 'w': //look up
-             ly += 0.01;
-             theGameModel->setLPosition_y(ly);
+        case 'w':
+            
+             v.set(0,1,0);
+	     p = p + v*0.1;
+	     l = l + v*0.1;
+             theGameModel->setPosition_x(p.x);
+             theGameModel->setPosition_y(p.y);
+             theGameModel->setPosition_z(p.z);
+             theGameModel->setLPosition_x(l.x);
+             theGameModel->setLPosition_y(l.y);
+             theGameModel->setLPosition_z(l.z);
+             theGameModel->setCameraPos(p.x,p.y,p.z);
+             theGameModel->setCameraLookAtPos(l.x,l.y,l.z);
              break;
          case 's': //look down
-             ly -= 0.01;
-             theGameModel->setLPosition_y(ly);
+             v.set(0,1,0);
+	     p = p - v*0.1;
+	     l = l - v*0.1;
+	     theGameModel->setPosition_x(p.x);
+             theGameModel->setPosition_y(p.y);
+             theGameModel->setPosition_z(p.z);
+             theGameModel->setLPosition_x(l.x);
+             theGameModel->setLPosition_y(l.y);
+             theGameModel->setLPosition_z(l.z);
+             theGameModel->setCameraPos(p.x,p.y,p.z);
+             theGameModel->setCameraLookAtPos(l.x,l.y,l.z);
              break;    
+         case 'd': 
+	     px += 0.1;
+	      theGameModel->setPosition_x(px);
+	      theGameModel->setCameraPos(p.x,p.y,p.z);
+             theGameModel->setCameraLookAtPos(l.x,l.y,l.z);
+	     break;    
+         case 'a': 
+	      px -= 0.1;
+	      theGameModel->setPosition_x(px);
+	      theGameModel->setCameraPos(p.x,p.y,p.z);
+              theGameModel->setCameraLookAtPos(l.x,l.y,l.z);
+	      break;
+             
+             
         case 27: //escape
               exit(0);
           break;
@@ -49,21 +86,28 @@ void GameController::keyboard(unsigned char key, int x, int y){
 void GameController::computePos(float newDeltaMove)
 {
         getModelCameraSetting();
-        x+=deltaMove*lx*0.1;
-        z+=deltaMove*lz*0.1;
-        theGameModel->setPosition_x(x);
-        theGameModel->setPosition_z(z);
+         Vector3 p (px,py,pz);
+         Vector3 l (lx,ly,lz);
+        p.x+=deltaMove*l.x*0.1;
+        p.z+=deltaMove*l.z*0.1;
+        theGameModel->setPosition_x(p.x);
+        theGameModel->setPosition_z(p.z);
+        theGameModel->setCameraPos(p.x,p.y,p.z);
+        theGameModel->setCameraLookAtPos(l.x,l.y,l.z);
+        
 }
 
 void GameController::computeDir(float newDeltaAngle)
 {
         getModelCameraSetting();
+        Vector3 l (lx,ly,lz);
         angle += deltaAngle;
-	lx = sin(angle);
-	lz = -cos(angle);
+	l.x = sin(angle);
+	l.z = -cos(angle);
 	theGameModel->setAngle(angle);
-	theGameModel->setLPosition_x(lx);
-	theGameModel->setLPosition_z(lz);
+	theGameModel->setLPosition_x(l.x);
+	theGameModel->setLPosition_z(l.z);
+	theGameModel->setCameraLookAtPos(l.x,l.y,l.z);
 	
 }
 

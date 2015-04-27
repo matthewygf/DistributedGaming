@@ -11,6 +11,7 @@
 #include "tileMap/tileMap.h"
 #include <vector>
 #include "../include/matrix/src/Vectors.h"
+#include "../include/vbo/src/Timer.h"
 #include "bots/animal.h"
 #include "bots/cat.h"
 #include "bots/mouse.h"
@@ -44,7 +45,7 @@ using namespace std;
 
 #define NUMCLIENT 2    //2 machines connect to the server.
 
-#define singleThreaded false
+#define singleThreaded true
 
 
 class GameModel
@@ -75,6 +76,11 @@ class GameModel
    float getCameraLookAtPos_x();
    float getCameraLookAtPos_y();
    float getCameraLookAtPos_z();
+   float getCameraNearPlane();
+   float getCameraFarPlane();
+   float getCameraFOV();
+   float getCameraAspect();
+   
    bool  getStructure();
    void  getCameraLookAtPos();
    float getCameraAngle();
@@ -113,6 +119,7 @@ class GameModel
    void setCameraPos(float new_x, float new_y, float new_z);
    void setCameraLookAtPos(float newLookAt_x, float newLookAt_y, float newLookAt_z);
    void setCameraAngle(float newAngle);
+   void setCameraAspect(float new_aspect);
    void setDeltaAngle(float dAngle);
    void setDeltaMove (float move);
    void setStructure (bool structure);
@@ -139,6 +146,8 @@ class GameModel
    void runCollision();
    void increaseClient();
    void splitAnimals();
+   
+   bool calculateFrustum(Vector3 &p);
    
    //networks 
    //sockets methods
@@ -194,6 +203,8 @@ class GameModel
    float tileWidth, tileHeight;
    Camera *theCamera;
    TileMap *tile;
+   Timer catTimer,mouseTimer;
+   float aiTime, cTime,mTime;
    vector <Vector3> wallsPos;
    vector <Vector3> cheesePos;
    vector <Animal>  animals;
@@ -203,7 +214,6 @@ class GameModel
    vector <Mouse>   mice;
    vector <Mouse>   mice_one;
    vector <Mouse>   mice_two;
-   
    vector <int>     miceEatenId;
    vector <int>     catAteMice;
    vector <int>     miceAteCheese;

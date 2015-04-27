@@ -32,7 +32,7 @@ class GameController
    GameModel *theGameModel;
    
    //camera variables
-   float x, y, z,
+   float px, py, pz,
          lx, ly, lz,
           angle, deltaAngle, deltaMove;
   

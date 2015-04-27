@@ -18,10 +18,10 @@
 #include <GL/glut.h>
 #endif
 
-#define MAP_SIZEX 140
-#define MAP_SIZEY 140
+#define MAP_SIZEX 20
+#define MAP_SIZEY 20
 //also need to set in gameModel.h and animalStates.cpp
-#define singleThreaded false
+//#define singleThreaded true
 
 
 // angle of rotation for the camera direction
@@ -29,7 +29,9 @@ float ang=0.0;
 // actual vector representing the camera's lookat direction
 float lx=0.0f,ly=1.1,lz=-1.0f;
 // XYZ position of the camera
-float px=10.0f,py=1.0f,pz=14.0f;
+float px=15.0f,py=1.0f,pz=14.0f;
+//near plane, far plane, and Field Of View
+float near = 0.1f,far=100.f,FOV=60.0f;
 
 Timer t;
 float updateTime;
@@ -47,9 +49,11 @@ void GameLoop(GameView *view,int argc, char *argv[]){
 int main(int argc, char **argv)
 {
 
-   TileMap *tmap = new TileMap(MAP_SIZEY,MAP_SIZEX,texture_one,texture_two);
+   Camera *camera = new Camera(px,py,pz+5,lx,ly,lz,ang,near,far,FOV);
+
+   TileMap *tmap = new TileMap(MAP_SIZEY,MAP_SIZEX,texture_one,texture_two,camera);
    
-   Camera *camera = new Camera(px,py,pz+5,lx,ly,lz,ang);
+   
    //model-view-controller
    
    GameModel *model = new GameModel(camera,tmap);

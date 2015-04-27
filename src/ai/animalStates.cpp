@@ -1,11 +1,12 @@
 #include "animalStates.h"
 #include "state.h"
+#include "../gameModel.h"
 #include "../bots/animal.h"
 #include <iostream>
 #include <stdio.h>
 #include "../../include/matrix/src/Vectors.h"
 
-#define singleThreaded false
+//#define singleThreaded true
 
 using namespace std;
 

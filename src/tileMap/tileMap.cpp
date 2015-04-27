@@ -2,15 +2,17 @@
 #include "../../include/stb_image.h"
 #include <stdio.h>
 #include <iostream>
-
+#include <math.h>
 #include <vector>
 #include "../../include/matrix/src/Vectors.h"
 using namespace std;
 
-TileMap::TileMap(int mapSize_x,int mapSize_y,
-                  const char *texture_one,const char *texture_two)
-{
+const float DEG2RAD = 3.141593f/180;
 
+TileMap::TileMap(int mapSize_x,int mapSize_y,
+                  const char *texture_one,const char *texture_two,Camera *cam)
+{
+    theCam = cam;
     x_size = mapSize_x;
     y_size = mapSize_y;
    //set to private
@@ -33,6 +35,7 @@ TileMap::~TileMap()
   delete mdata;
   delete textureOne;
   delete textureTwo;
+  delete theCam;
 }
 
 int TileMap::getWidth()
@@ -180,10 +183,13 @@ void TileMap::drawWalls()
 {
   for(unsigned int i = 0; i<wallsPos.size();i++)
   {
+    Vector3 w (wallsPos[i].x,wallsPos[i].y,wallsPos[i].z-10);
+    bool t = calculateFrustum(w);
+    if(t){
     glPushMatrix();
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texturesID[1]);
-    glTranslatef(wallsPos[i].x,wallsPos[i].y,wallsPos[i].z);
+    glTranslatef(wallsPos[i].x,wallsPos[i].y,wallsPos[i].z-10);
 
           glBegin(GL_TRIANGLES);
          glTexCoord2f(0.0,1.0);    glVertex3f(-1.0/2,-1.0/2,-1.0/2); // triangle 1 : begin
@@ -236,6 +242,7 @@ void TileMap::drawWalls()
         glEnd();
     glPopMatrix();
   }
+  }
 
 }
 
@@ -245,8 +252,8 @@ void TileMap::drawCheese()
   for(unsigned int i = 0; i<cheesePos.size();i++)
   {
     glPushMatrix();
-   
-    glTranslatef(cheesePos[i].x,cheesePos[i].y,cheesePos[i].z);
+    
+    //glTranslatef(cheesePos[i].x,cheesePos[i].y,cheesePos[i].z);
     
     glColor3f(1.0,1.0,0.0);
     cheese();
@@ -255,28 +262,101 @@ void TileMap::drawCheese()
   }
 }
 
+/*
+ modified from lighthouse3d Frustum tutorial. and is included 
+*/
+bool TileMap::calculateFrustum(Vector3 &p)
+{
+
+Vector3 camP (theCam->getPos_x(),theCam->getPos_y(),theCam->getPos_z());
+   Vector3 camLP (theCam->getLookAtPos_x(),theCam->getLookAtPos_y(),theCam->getLookAtPos_z());
+   Vector3 u (0,1,0);
+   float near = theCam->getNearPlane();
+   float far = theCam->getFarPlane();
+   //float FOV = theCam->getFOV();
+   //float ratio = theCam->getAspect();
+   //float tang = tan(DEG2RAD * FOV * 0.5) ;
+   //float heigth = near * tang;
+   //float width = heigth * ratio;
+   
+// compute the Z axis of the camera referential
+// this axis points in the same direction from
+// the looking direction
+    Vector3 Z = camLP - camP;
+    Z.normalize();
+
+   // X axis of camera is the cross product of Z axis and given "up" vector 
+   Vector3 X = Z * u;
+   X.normalize();
+
+   // the real "up" vector is the cross product of X and Z
+   Vector3 Y = X * Z;
+   
+   Vector3 v = p-camP;
+   float pcz;//,pcx,pcy,aux;
+   
+   pcz = v.dot(-Z);
+   if (pcz < near-25||pcz>far){
+	  return false;
+    }
+	// compute and test the Y coordinate
+   /*pcy = v.dot(Y);
+   cout<<"pcy "<<pcy<<endl;
+   aux = pcz * tang;
+   cout<<"aux "<<aux<<endl;
+   if (pcy > aux-10 || pcy < -aux-10){
+    cout<<"outside Y"<<endl;
+      return false;
+      }
+      cout<<"inside Y"<<endl;
+      
+      
+   // compute and test the X coordinate
+    pcx = v.dot(X);
+    cout<<"pcx "<<pcx<<endl;
+    aux = aux * ratio;
+    cout<<"aux "<<aux<<endl;
+      if (pcx > aux || pcx < -aux){
+       cout<<"outside X"<<endl;
+	return false;
+   }*/
+
+ return true;
+
+   
+}
+
 void TileMap::render()
 {
    //walls
    drawWalls();
 
-   
-   //floor
    for (int y = 0 ; y < y_size; y++)
    {
      for(int x = 0; x < x_size; x++)
      {
+        Vector3 p1(x,y-3,-10);
+        Vector3 p2(x+1,y-3,-10);
+        Vector3 p3(x+1,y-2,-10);
+        Vector3 p4(x,y-2,-10);
+        //center point is p5.
+        Vector3 p5(p1.x+p2.x/2,p1.y+p3.y/2,-10);
+        bool t1 = calculateFrustum(p5);
+       if(t1){
+       //cout<<"t2 "<<t2<<endl; 
+       //cout<<"t3 "<<t3<<endl; 
+       //cout<<"t4 "<<t4<<endl; 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, texturesID[0]);
         glBegin(GL_QUADS);
         //each tile have a x n y coordinate of 1 apart
-        glTexCoord2f(0.0f, 0.0f); glVertex3f(float(x), float(y-3), 0.0f);
-        glTexCoord2f(1.0f, 0.0f); glVertex3f(float(x + 1), float(y-3), 0.0f);
-        glTexCoord2f(1.0f, 1.0f); glVertex3f(float(x + 1), float(y -2), 0.0f);
-        glTexCoord2f(0.0f, 1.0f); glVertex3f(float(x), float(y -2), 0.0f);
+        glTexCoord2f(0.0f, 0.0f); glVertex3f(p1.x, p1.y, p1.z);
+        glTexCoord2f(1.0f, 0.0f); glVertex3f(p2.x, p2.y, p2.z);
+        glTexCoord2f(1.0f, 1.0f); glVertex3f(p3.x, p3.y, p3.z);
+        glTexCoord2f(0.0f, 1.0f); glVertex3f(p4.x, p4.y, p4.z);
         glEnd();
         }
-     
+     }
    }
    
    glDisable(GL_TEXTURE_2D);

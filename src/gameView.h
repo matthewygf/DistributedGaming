@@ -12,6 +12,7 @@
 #include <sstream>
 #include <vector>
 #include "../include/matrix/src/Vectors.h"
+#include "../include/frustumG/frustumG.h"
 #include "bots/animal.h"
 #include "bots/cat.h"
 #include "bots/mouse.h"
@@ -77,6 +78,11 @@ class GameView
     //camera
     float pos_x, pos_y, pos_z;
     float lpos_x,lpos_y,lpos_z;
+    float a;
+    float nearP;
+    float farP;
+    float angle; 
+    float aspect;
     float ang;
     float deltaAngle;
     float deltaMove;
@@ -86,10 +92,11 @@ class GameView
     void update();
     void reset();
     //for the measuring time
-    Timer t1;
-    float drawTime, updateTime;
+    Timer t1,t2,total;
+    float drawAndAiTime, physicsTime,totalTime;
     vector<Cat> cats;
     vector<Mouse> mice;
+
 
 };
 

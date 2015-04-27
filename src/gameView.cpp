@@ -32,6 +32,13 @@ GameView::GameView(GameController *newGameController, GameModel *newGameModel)
   winTitle = "GAME_TEST";
   font = GLUT_BITMAP_8_BY_13;
   cout<<"viewInitialised"<<endl;
+  a = 0;
+  nearP = theGameModel->getCameraNearPlane(); //nearplane at 0.1
+  farP = theGameModel->getCameraFarPlane(); //far plane at 100
+  angle = theGameModel->getCameraFOV();  //vertical FOV
+  aspect = 1;
+  
+  
 }
 
 GameView::~GameView()
@@ -91,7 +98,6 @@ void GameView::display()
    update();
  
    //camera lookAt
-
    gluLookAt(pos_x, pos_y, pos_z,
 	    pos_x + theGameModel->getLPosition_x(),
 	    theGameModel->getLPosition_y(),
@@ -101,17 +107,25 @@ void GameView::display()
    glRotatef(theGameModel->getAngle(),0.0,1.0,0.0); //camera angle
    
    //worlds objects
+   total.start();
    t1.start();
    theGameModel->drawTile();
    theGameModel->drawCheese();
    theGameModel->drawBots();
-   showScores();
+   t1.stop(); // graphics & Ai component rendering time.
+   t2.start();
    theGameModel->runCollision(); //physics collision
-   t1.stop();
-   drawTime = (float) t1.getElapsedTimeInMilliSec();
+   t2.stop();
+   total.stop();
+   drawAndAiTime = (float) t1.getElapsedTimeInMilliSec();
+   cout<<"RenderTime + Ai "<<drawAndAiTime<<endl;
+   physicsTime = (float) t2.getElapsedTimeInMilliSec();
+   cout<<"physicsTime "<<physicsTime<<endl;
+   totalTime = (float) total.getElapsedTimeInMilliSec();
+   cout<<"totalTime "<<totalTime<<endl;
+   showScores();
    countFPS();
    showInfo();
-
    glutSwapBuffers();    
 }
 
@@ -126,13 +140,12 @@ void GameView::countFPS()
   elapsedTime = timer.getElapsedTime();
   if(elapsedTime>1.0)
   {
-
+    cout<<"FPS "<< (count / elapsedTime)<<endl;
     stringstream ss;
         ss << fixed << setprecision(1);
         ss << (count / elapsedTime) << " FPS" << ends; // update fps string
         ss << resetiosflags(ios_base::fixed | ios_base::floatfield);
         fps = ss.str();
-    //cout<<(count/elapsedTime)<<" FPS"<<endl;
     count = 0;
     timer.start();
   }
@@ -251,7 +264,7 @@ void GameView::showInfo()
 
     stringstream ss;
     ss << fixed << setprecision(3);
-    ss << "Updating Time: " << drawTime<<" ms" <<ends;
+    ss << "Updating Time: " << totalTime<<" ms" <<ends;
     drawString(ss.str().c_str(), 1, height-TEXT_HEIGHT, color, font);
     ss.str("");
 
@@ -271,12 +284,14 @@ void GameView::reshape(int w, int h) {
   
   if(h==0)
       h = 1;
-  float aspect = w * 1.0/h;
+  aspect = w * 1.0/h;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glViewport(0, 0, w, h);
-  gluPerspective(45.0,aspect,0.1,100);
+  gluPerspective(angle,aspect,nearP,farP);
+  theGameModel->setCameraAspect(aspect);
   glMatrixMode(GL_MODELVIEW);
+  //frustum.setCamInternals(angle,aspect,nearP,farP);
 }
 
 void GameView::setWindowResolution(int w, int h) {
@@ -353,7 +368,7 @@ int GameView::render(int argc, char *argv[])
   glutTimerFunc(16,timerWrapper,0);
   
   //add keyboard/mouse listener
-  glutIgnoreKeyRepeat(1);
+  glutIgnoreKeyRepeat(0);
   glutKeyboardFunc(keyboardWrapper);
   glutSpecialFunc(specialInputWrapper);
   glutSpecialUpFunc(upFunctionInputWrapper);

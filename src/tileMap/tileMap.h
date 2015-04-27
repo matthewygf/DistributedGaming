@@ -10,6 +10,7 @@
 #endif
 #include <iostream>
 #include <vector>
+#include "../camera/camera.h"
 #include "../../include/matrix/src/Vectors.h"
 #include "box.h"
 
@@ -17,7 +18,7 @@ class TileMap
 {
    public:
    TileMap(int mapSize_x, int mapSize_y,
-                 const char *texture_one, const char *texture_two);
+                 const char *texture_one, const char *texture_two,Camera *cam);
    ~TileMap();
  
    //return the map array to theGameModel.
@@ -36,6 +37,7 @@ class TileMap
    int generateRandom(int start, int end);
    void calculateWallsPos();
    void calculateCheesePos();
+   bool calculateFrustum(Vector3 &p);
    vector <Vector3> getWallsPos();
    vector <Vector3> getCheesePos();
    //need to make a method for storing walls information
@@ -50,6 +52,7 @@ class TileMap
    const char *textureTwo;
    int **m;
    const int *mdata;
+   Camera *theCam;
    const static GLsizei textureSize = 2;
    vector <Vector3> wallsPos;
    vector <Vector3> cheesePos;

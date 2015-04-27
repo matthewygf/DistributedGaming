@@ -17,7 +17,7 @@ Camera::Camera()
 
 Camera::Camera(float new_x,float new_y,float new_z,
            float newLookAt_x, float newLookAt_y, float newLookAt_z,
-           float newAngle)
+           float newAngle,float new_near, float new_far,float new_FOV)
 {
     x = new_x;
     y = new_y;
@@ -26,6 +26,9 @@ Camera::Camera(float new_x,float new_y,float new_z,
     ly=newLookAt_y;
     lz=newLookAt_z;
     angle=newAngle;
+    near = new_near;
+    far = new_far;
+    FOV = new_FOV;
 }
 
 float Camera::getPos_x()
@@ -63,6 +66,31 @@ float Camera::getCameraAngle()
   return angle;
 }
 
+float Camera::getNearPlane()
+{
+ return near;
+}
+
+float Camera::getFarPlane()
+{
+ return far;
+}
+
+float Camera::getFOV()
+{
+  return FOV;
+}
+
+float Camera::getAspect()
+{
+  return aspect;
+}
+
+void Camera::setAspect(float new_aspect)
+{
+  aspect = new_aspect;
+}
+
 void Camera::setPos_x(float new_x)
 {
   x = new_x;
@@ -77,6 +105,21 @@ void Camera::setPos_z(float new_z)
 {
   z = new_z;
 }  
+
+void Camera::setNearPlane(float new_near)
+{
+  near = new_near;
+}
+
+void Camera::setFarPlane(float new_far)
+{
+  far = new_far;
+}
+
+void Camera::setFOV(float new_FOV)
+{
+  FOV = new_FOV;
+}
   
 void Camera::setLookAtPos_x(float newLookAt_x)
 {

@@ -84,6 +84,21 @@ float GameModel::getCameraPos_z(){
   return position_z;
 }
 
+float GameModel::getCameraNearPlane(){
+  return theCamera->getNearPlane();
+}
+float GameModel::getCameraFarPlane(){
+  return theCamera->getFarPlane();
+}
+float GameModel::getCameraFOV(){
+  return theCamera->getFOV();
+}
+
+float GameModel::getCameraAspect()
+{
+  return theCamera->getAspect();
+}
+
 void GameModel::getCameraPos(){
   getCameraPos_x();
   getCameraPos_y();
@@ -231,6 +246,11 @@ void GameModel::setCameraLookAtPos(float newLookAt_x, float newLookAt_y, float n
 
 void GameModel::setCameraAngle(float newAngle){
     theCamera->setCameraAngle(newAngle);
+}
+
+void GameModel::setCameraAspect(float new_aspect)
+{
+  theCamera->setAspect(new_aspect);
 }
 
 void GameModel::initCamera(){
@@ -400,16 +420,23 @@ void GameModel::drawCats()
    if(cats.size()>0){
     for (unsigned int i = 0; i<cats.size();i++){   
     glPushMatrix();
-    glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ());
+    Vector3 c(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ()-10);
+    bool t = calculateFrustum(c);
+    if (t){
+    glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ()-10);
     cats[i].render();
+    catTimer.start();
     if(singleThreaded)
     {
       cats[i].update();
      }else{
      cats[i].goToState();
      }
+     catTimer.stop();
+     cTime =(float) catTimer.getElapsedTimeInMilliSec();
     glPopMatrix();
   }
+ }
  }else{}
 }
 
@@ -418,16 +445,23 @@ void GameModel::drawMouse()
  if(mice.size()>0){
  for (unsigned int i = 0; i<mice.size();i++){ 
     glPushMatrix();
-    glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ());
+    Vector3 m(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ()-10);
+    bool t = calculateFrustum(m);
+    if (t){
+    glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ()-10);
     mice[i].render();
+    mouseTimer.start();
     if(singleThreaded)
     {
       mice[i].update();
     }else{
       mice[i].goToState();
       }
+    mouseTimer.stop();
+    mTime = (float) mouseTimer.getElapsedTimeInMilliSec();  
     glPopMatrix();
   }
+ } 
 }else{cout<<"all mouse are eaten"<<endl;}
 }
 
@@ -437,10 +471,14 @@ void GameModel::drawCheese()
   if(cheesePos.size()>0){
     for(unsigned int i = 0; i<cheesePos.size();i++){
        glPushMatrix();
-       glTranslatef(cheesePos[i].x,cheesePos[i].y,cheesePos[i].z);
+       Vector3 ch (cheesePos[i].x,cheesePos[i].y,cheesePos[i].z-10);
+       bool t = calculateFrustum(ch);
+       if(t){
+       glTranslatef(cheesePos[i].x,cheesePos[i].y,cheesePos[i].z-10);
        glColor3f(1.0,1.0,0.0);
        tile->cheese();
       glPopMatrix();
+    }
     }
   }
 }
@@ -456,6 +494,8 @@ void GameModel::drawBots()
   if(mice.size() >0){
    drawMouse();
   }else{}
+  aiTime = cTime + mTime;
+  cout<<"AiTime is "<<aiTime<<endl;
 }
 
 void GameModel::runCollision()
@@ -1385,6 +1425,38 @@ void *GameModel::clientHandler(void *client)
 
    return 0;
 }
+
+bool GameModel::calculateFrustum(Vector3 &p)
+{
+Vector3 camP (theCamera->getPos_x(),theCamera->getPos_y(),theCamera->getPos_z());
+   Vector3 camLP (theCamera->getLookAtPos_x(),theCamera->getLookAtPos_y(),theCamera->getLookAtPos_z());
+   Vector3 u (0,1,0);
+   float near = theCamera->getNearPlane();
+   float far = theCamera->getFarPlane();
+
+    Vector3 Z = camLP - camP;
+    Z.normalize();
+
+   // X axis of camera is the cross product of Z axis and given "up" vector 
+   Vector3 X = Z * u;
+   X.normalize();
+
+   // the real "up" vector is the cross product of X and Z
+   Vector3 Y = X * Z;
+   
+   Vector3 v = p-camP;
+   float pcz;//,pcx,pcy,aux;
+   
+   pcz = v.dot(-Z);
+   if (pcz < near-25||pcz>far){
+	  return false;
+    }
+
+ return true;
+
+   
+}
+
 
 
 //server thread
