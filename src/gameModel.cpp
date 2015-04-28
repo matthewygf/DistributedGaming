@@ -264,6 +264,7 @@ void GameModel::initAnimals()
   //distribute these animals.
   //random generate some animals
   //generates cats n mouse according to ID.
+  
   for(int i = 0 ; i<(tileWidth/2); i++){
   int r = generateRandom(0,1);
   Animal a(r);
@@ -417,51 +418,74 @@ void GameModel::drawTile()
 
 void GameModel::drawCats()
 {
-   if(cats.size()>0){
-    for (unsigned int i = 0; i<cats.size();i++){   
-    glPushMatrix();
-    Vector3 c(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ()-10);
-    bool t = calculateFrustum(c);
-    if (t){
-    glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ()-10);
-    cats[i].render();
-    catTimer.start();
-    if(singleThreaded)
-    {
-      cats[i].update();
-     }else{
-     cats[i].goToState();
+   if(cats.size()>0)
+   {
+      for (unsigned int i = 0; i<cats.size();i++)
+      {   
+        glPushMatrix();
+        Vector3 c(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ()-10);
+        bool t = calculateFrustum(c);
+        if (t)
+         {
+          glTranslatef(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ()-10);
+          cats[i].render();
+         }
+        glPopMatrix();
+      }
+   //AI for cats
+   catTimer.start();
+   for (unsigned int i = 0; i<cats.size();i++)
+   { 
+      Vector3 c(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ()-10);
+      bool t = calculateFrustum(c);
+     if (t)
+     {
+      if(singleThreaded)
+      {
+       cats[i].update();
+       }else{
+        cats[i].goToState();
+       }
      }
-     catTimer.stop();
-     cTime =(float) catTimer.getElapsedTimeInMilliSec();
-    glPopMatrix();
-  }
- }
- }else{}
+   }
+   catTimer.stop();
+   cTime =(float) catTimer.getElapsedTimeInMilliSec();
+  }else{}
 }
 
 void GameModel::drawMouse()
 {
- if(mice.size()>0){
- for (unsigned int i = 0; i<mice.size();i++){ 
+ if(mice.size()>0)
+ {
+   for (unsigned int i = 0; i<mice.size();i++)
+   { 
     glPushMatrix();
     Vector3 m(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ()-10);
     bool t = calculateFrustum(m);
-    if (t){
-    glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ()-10);
-    mice[i].render();
-    mouseTimer.start();
-    if(singleThreaded)
-    {
-      mice[i].update();
-    }else{
-      mice[i].goToState();
-      }
+     if (t)
+     {
+       glTranslatef(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ()-10);
+       mice[i].render();
+       glPopMatrix();
+     }
+   } 
+   mouseTimer.start();
+   for(unsigned int i = 0; i<mice.size();i++)
+   {
+     Vector3 m(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ()-10);
+     bool t = calculateFrustum(m);
+     if (t)
+     {  
+       if(singleThreaded)
+       {
+         mice[i].update();
+       }else{
+        mice[i].goToState();
+       }
+     }
+   }
     mouseTimer.stop();
     mTime = (float) mouseTimer.getElapsedTimeInMilliSec();  
-    glPopMatrix();
-  }
- } 
 }else{cout<<"all mouse are eaten"<<endl;}
 }
 
@@ -495,7 +519,11 @@ void GameModel::drawBots()
    drawMouse();
   }else{}
   aiTime = cTime + mTime;
-  cout<<"AiTime is "<<aiTime<<endl;
+  ofstream myf("updateTime.txt" ,std::ios_base::app);
+   if(myf.is_open())
+   {
+     myf<<"AiTime,"<<aiTime<<endl;
+   }
 }
 
 void GameModel::runCollision()
@@ -653,7 +681,7 @@ void GameModel::catsCaughtMice(vector<Cat>& cats, vector<Mouse>& mice)
          catAteMice.push_back(c_id);
          miceEatenId.push_back(m_id);
          mice.erase(mice.begin() + j);
-         cout<<"cat  "<<c_id<<" caught Mouse "<<m_id<<endl;
+         //cout<<"cat  "<<c_id<<" caught Mouse "<<m_id<<endl;
          cats[i].setOppositeDirection();
          int d = cats[i].getMovingDirection();
          int new_d = generateRandom(0,3);
@@ -677,7 +705,7 @@ void GameModel::mouseAteCheese(vector<Vector3>& cheese, vector<Mouse>& mice)
       int d = mice[i].getMovingDirection();
       if(c==1){
          //cheese ate
-         cout<<"mice "<<mice[i].getEntityId()<<" ate cheese"<<endl;
+         //cout<<"mice "<<mice[i].getEntityId()<<" ate cheese"<<endl;
          mice[i].ateCheese();
          miceAteCheese.push_back(mice[i].getEntityId());
          cheese.erase(cheese.begin() + j);
@@ -747,7 +775,7 @@ void GameModel::setInstance()
 int GameModel::getAnimalSize()
 {
   int animalSize = instanceModel->getNumOfAnimals();
-  cout<<"animal Size is "<<animalSize<<endl;
+  //cout<<"animal Size is "<<animalSize<<endl;
   return animalSize;
 }
 
@@ -1105,9 +1133,9 @@ void *GameModel::clientHandler(void *client)
    //send all the mice entity ID to client
    
    write(socket , e_cats , strlen(e_cats));
-   cout<<"sending cats entitys id"<<endl;
+   //cout<<"sending cats entitys id"<<endl;
    write(socket , e_mice , strlen(e_mice));
-   cout<<"sending mice entitys id"<<endl;
+   //cout<<"sending mice entitys id"<<endl;
 
    sleep(2);
     //start the loop here to send n recv from client
@@ -1161,8 +1189,9 @@ void *GameModel::clientHandler(void *client)
      }
     client_mice_eaten = mice_eaten.c_str();
     write(socket , client_mice_eaten , strlen(client_mice_eaten));
-    cout<<"mice that got eaten sent"<<endl;
-    }else{cout<<"current no mouse has been eaten"<<endl;}
+    //cout<<"mice that got eaten sent"<<endl;
+    }else{//cout<<"current no mouse has been eaten"<<endl;
+    }
 
 ////////////////////////////////////////////////////////////////////////////
      if(catAteMiceSize != 0 && (abs(catAteMiceSize - temp))!=0)
@@ -1179,13 +1208,14 @@ void *GameModel::clientHandler(void *client)
      }
      client_cat_eaten_mice = entity_Cat_Eaten_Mice.c_str();
      write(socket , client_cat_eaten_mice , strlen(client_cat_eaten_mice));
-     cout<<"cat that ate mouse sent"<<endl;
-     }else{cout<<"current no cat has eaten a mouse"<<endl;}  
+     //cout<<"cat that ate mouse sent"<<endl;
+     }else{//cout<<"current no cat has eaten a mouse"<<endl;
+     }  
      
      sleep(3);
      int mac_size = current_mice_ate_cheese.size();
      int net_mac_size = htonl(mac_size);;
-     cout<<"mac_size "<<mac_size<< " send"<<endl;
+     //cout<<"mac_size "<<mac_size<< " send"<<endl;
      if(send(socket, (const char*)&net_mac_size, sizeof(mac_size), MSG_NOSIGNAL)<0)
       {perror("error");}
       
@@ -1203,12 +1233,14 @@ void *GameModel::clientHandler(void *client)
     }
     client_mice_ate_cheese = entity_mice_ate_cheese.c_str();
     write(socket,client_mice_ate_cheese,strlen(client_mice_ate_cheese));
-   }else{cout<<"current no cheese has been eaten"<<endl;}    
+   }else{//cout<<"current no cheese has been eaten"<<endl;
+   }    
     
     old_a = a;
     temp = catAteMiceSize;
     tempCheese = current_mice_ate_cheese.size();
     //doAiCalculation
+    
     
     //recv the ai size;
     recv(socket, &net_ai, sizeof(net_ai), 0);
@@ -1220,12 +1252,14 @@ void *GameModel::clientHandler(void *client)
     memset(s,0,sizeof(s));
     if(aiSize>0){
       sleep(3);
+      //start()
       bufRead=(recv(socket,&s,aiSize,0)); 
       s[bufRead] = '\0';   
       a = s;
       memset(s, 0, sizeof(s));
+      //stop() for receiving ai calculation results
     }
- 
+    
      vector<string> catsOneNStates;
      vector<string> miceOneNStates;
      vector<string> catsTwoNStates;
@@ -1245,8 +1279,8 @@ void *GameModel::clientHandler(void *client)
       case 1:
          catsOneStates = a.substr(0, a.find(split));
          miceOneStates = a.substr(a.find(split)+1, a.length());
-         cout<<"CatsOneStates : "<<catsOneStates<<endl;
-         cout<<"MiceOneStates : "<<miceOneStates<<endl;
+         //cout<<"CatsOneStates : "<<catsOneStates<<endl;
+         //cout<<"MiceOneStates : "<<miceOneStates<<endl;
          ///////////////////////////////////////store the stores to set.
     
          while ((pos = catsOneStates.find(delimiter)) != string::npos) {
@@ -1270,8 +1304,8 @@ void *GameModel::clientHandler(void *client)
       case 2:
          catsTwoStates = a.substr(0, a.find(split));
          miceTwoStates = a.substr(a.find(split)+1, a.length());
-         cout<<"CatsTwoStates : "<<catsTwoStates<<endl;
-         cout<<"MiceTwoStates : "<<miceTwoStates<<endl;
+         //cout<<"CatsTwoStates : "<<catsTwoStates<<endl;
+         //cout<<"MiceTwoStates : "<<miceTwoStates<<endl;
          
          while ((pos = catsTwoStates.find(delimiter)) != string::npos) {
            token = catsTwoStates.substr(0, pos);
@@ -1313,7 +1347,7 @@ void *GameModel::clientHandler(void *client)
           if(value == instanceModel->cats[j].getEntityId())
           {
             instanceModel->cats[j].setState(s);
-            cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
+            //cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
           }
        }  
     }
@@ -1336,7 +1370,7 @@ void *GameModel::clientHandler(void *client)
           if(value == instanceModel->cats[j].getEntityId())
           {
             instanceModel->cats[j].setState(s);
-            cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
+            //cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
           }
        }  
     }
@@ -1363,7 +1397,7 @@ void *GameModel::clientHandler(void *client)
            if(value == instanceModel->mice[j].getEntityId())
             {
               instanceModel->mice[j].setState(s);
-              cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
+              //cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
             }
          }       
       }
@@ -1389,7 +1423,7 @@ void *GameModel::clientHandler(void *client)
            if(value == instanceModel->mice[j].getEntityId())
             {
               instanceModel->mice[j].setState(s);
-              cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
+              //cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
             }
          }       
       }

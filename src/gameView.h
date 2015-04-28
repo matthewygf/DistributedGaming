@@ -14,6 +14,8 @@
 #include "../include/matrix/src/Vectors.h"
 #include "../include/frustumG/frustumG.h"
 #include "bots/animal.h"
+#include <iostream>
+#include <fstream>
 #include "bots/cat.h"
 #include "bots/mouse.h"
 using namespace std;
@@ -75,6 +77,7 @@ class GameView
     static const int   TEXT_HEIGHT     = 13;
     //frame
     int frame;
+    int frameCount;
     //camera
     float pos_x, pos_y, pos_z;
     float lpos_x,lpos_y,lpos_z;
@@ -92,11 +95,11 @@ class GameView
     void update();
     void reset();
     //for the measuring time
-    Timer t1,t2,total;
-    float drawAndAiTime, physicsTime,totalTime;
+    Timer t1,t2,total,run;
+    float drawAndAiTime, physicsTime,totalTime,runTime;
     vector<Cat> cats;
     vector<Mouse> mice;
-
+    
 
 };
 

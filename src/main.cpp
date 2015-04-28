@@ -5,9 +5,9 @@
 #include "camera/camera.h"
 #include "tileMap/tileMap.h"
 #include "../include/vbo/src/Timer.h"
-#include <pthread.h>
 #include <iostream>
-
+#include <iomanip>
+#include <cstdlib>
 
 
 
@@ -18,11 +18,10 @@
 #include <GL/glut.h>
 #endif
 
-#define MAP_SIZEX 20
-#define MAP_SIZEY 20
+#define MAP_SIZEX 40
+#define MAP_SIZEY 40
 //also need to set in gameModel.h and animalStates.cpp
 //#define singleThreaded true
-
 
 // angle of rotation for the camera direction
 float ang=0.0;
@@ -33,9 +32,6 @@ float px=15.0f,py=1.0f,pz=14.0f;
 //near plane, far plane, and Field Of View
 float near = 0.1f,far=100.f,FOV=60.0f;
 
-Timer t;
-float updateTime;
-
 const char *texture_one = "data/grass.jpeg";
 const char *texture_two = "data/wood.jpeg";
 
@@ -44,7 +40,6 @@ const char *texture_two = "data/wood.jpeg";
 void GameLoop(GameView *view,int argc, char *argv[]){
        view->render(argc, argv); //this is the graphics main loop
 }
-
 
 int main(int argc, char **argv)
 {
@@ -66,9 +61,8 @@ int main(int argc, char **argv)
 
    //View 
    GameView *view = new GameView(controller,model);
-   
    GameLoop(view,argc,argv); // will also contain physics, AI
- 
+
 
 
     delete camera;

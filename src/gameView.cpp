@@ -9,10 +9,11 @@
 #endif
 #include "../include/glext.h"
 #include <stdio.h>
-#include <iostream>
 #include <sstream>
 #include <pthread.h>
 #include <iomanip>
+#include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <vector>
 #include "bots/animal.h"
@@ -37,7 +38,7 @@ GameView::GameView(GameController *newGameController, GameModel *newGameModel)
   farP = theGameModel->getCameraFarPlane(); //far plane at 100
   angle = theGameModel->getCameraFOV();  //vertical FOV
   aspect = 1;
-  
+  frameCount=0;
   
 }
 
@@ -83,6 +84,7 @@ void GameView::init()
    glEnable(GL_LIGHTING);
    theGameModel->gameSetUp();
    theGameModel->splitAnimals();
+   
 }
 
 void GameView::display()
@@ -117,16 +119,27 @@ void GameView::display()
    theGameModel->runCollision(); //physics collision
    t2.stop();
    total.stop();
-   drawAndAiTime = (float) t1.getElapsedTimeInMilliSec();
-   cout<<"RenderTime + Ai "<<drawAndAiTime<<endl;
-   physicsTime = (float) t2.getElapsedTimeInMilliSec();
-   cout<<"physicsTime "<<physicsTime<<endl;
-   totalTime = (float) total.getElapsedTimeInMilliSec();
-   cout<<"totalTime "<<totalTime<<endl;
-   showScores();
+   frameCount++;
    countFPS();
+   drawAndAiTime = (float) t1.getElapsedTimeInMilliSec();
+   physicsTime = (float) t2.getElapsedTimeInMilliSec();
+   totalTime = (float) total.getElapsedTimeInMilliSec();
+   ofstream myf("updateTime.txt" ,std::ios_base::app);
+   if(myf.is_open())
+   {
+   myf<<"RenderAndAi,"<<drawAndAiTime<<endl;
+   myf<<"physicsTime,"<<physicsTime<<endl;
+   myf<<"totalUpdateTime,"<<totalTime<<endl;
+   myf<<"totalFrames,"<<frameCount<<endl;
+   }
+   myf.close();
+
+   //1000ms is 1 s.
+   showScores();
    showInfo();
-   glutSwapBuffers();    
+   glutSwapBuffers();  
+
+
 }
 
 
@@ -140,7 +153,11 @@ void GameView::countFPS()
   elapsedTime = timer.getElapsedTime();
   if(elapsedTime>1.0)
   {
-    cout<<"FPS "<< (count / elapsedTime)<<endl;
+   ofstream myf("updateTime.txt" ,std::ios_base::app);
+   if(myf.is_open())
+   {
+    myf<<"FPS,"<< (count / elapsedTime)<<endl;
+    }
     stringstream ss;
         ss << fixed << setprecision(1);
         ss << (count / elapsedTime) << " FPS" << ends; // update fps string

@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream>
-
+#include <fstream>
 #include <cmath>
 #include <cstdlib>
 #include <pthread.h>
