@@ -113,7 +113,7 @@ void GameView::display()
    t1.start();
    theGameModel->drawTile();
    theGameModel->drawCheese();
-   theGameModel->drawBots();
+   theGameModel->drawBots();//Ai inside this method
    t1.stop(); // graphics & Ai component rendering time.
    t2.start();
    theGameModel->runCollision(); //physics collision

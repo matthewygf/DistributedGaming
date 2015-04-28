@@ -13,7 +13,8 @@ GameModel::GameModel(Camera *newCamera, TileMap * newTileMap)
   setInstance();
   client = 0;
   setStructure(singleThreaded);
-  
+  cTime = 0;
+  mTime = 0;
 }
 
 GameModel::~GameModel()
@@ -265,7 +266,7 @@ void GameModel::initAnimals()
   //random generate some animals
   //generates cats n mouse according to ID.
   
-  for(int i = 0 ; i<(tileWidth/2); i++){
+  for(int i = 0 ; i<(10000); i++){
   int r = generateRandom(0,1);
   Animal a(r);
   a.setEntityId(i);
@@ -432,22 +433,23 @@ void GameModel::drawCats()
          }
         glPopMatrix();
       }
+   //cats should still do ai even not in the scene, cos they could be in other states.
+   //after camera moves away. would not want the mouse to just stop working
    //AI for cats
    catTimer.start();
    for (unsigned int i = 0; i<cats.size();i++)
    { 
-      Vector3 c(cats[i].getPositionX(),cats[i].getPositionY(),cats[i].getPositionZ()-10);
-      bool t = calculateFrustum(c);
-     if (t)
-     {
+     
       if(singleThreaded)
       {
        cats[i].update();
        }else{
         cats[i].goToState();
        }
-     }
+     
    }
+   
+   //stop when all cats finished update.
    catTimer.stop();
    cTime =(float) catTimer.getElapsedTimeInMilliSec();
   }else{}
@@ -469,21 +471,22 @@ void GameModel::drawMouse()
        glPopMatrix();
      }
    } 
+   //mouse should still do ai even not in the scene, cos they could be in other states.
+   //after camera moves away. would not want the mouse to just stop working
+   //start timing all mouse to do AI.
    mouseTimer.start();
    for(unsigned int i = 0; i<mice.size();i++)
    {
-     Vector3 m(mice[i].getPositionX(),mice[i].getPositionY(),cats[i].getPositionZ()-10);
-     bool t = calculateFrustum(m);
-     if (t)
-     {  
+    
        if(singleThreaded)
        {
          mice[i].update();
        }else{
         mice[i].goToState();
        }
-     }
+     
    }
+   //stop when all mice finished update
     mouseTimer.stop();
     mTime = (float) mouseTimer.getElapsedTimeInMilliSec();  
 }else{cout<<"all mouse are eaten"<<endl;}
@@ -514,10 +517,12 @@ void GameModel::drawBots()
   //check numbers!!!!
   if(cats.size() >0){ 
    drawCats();
-   }else{}
+   }else{cTime = 0;}
   if(mice.size() >0){
    drawMouse();
-  }else{}
+  }else{mTime = 0;}
+  //add up the time it takes for cats and mice to do all AI.
+  
   aiTime = cTime + mTime;
   ofstream myf("updateTime.txt" ,std::ios_base::app);
    if(myf.is_open())
