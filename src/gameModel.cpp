@@ -266,7 +266,7 @@ void GameModel::initAnimals()
   //random generate some animals
   //generates cats n mouse according to ID.
   
-  for(int i = 0 ; i<(10000); i++){
+  for(int i = 0 ; i<(tileWidth/2); i++){
   int r = generateRandom(0,1);
   Animal a(r);
   a.setEntityId(i);
@@ -1041,6 +1041,9 @@ void *GameModel::clientHandler(void *client)
   int tempCheese=0;
   int catAteMiceSize=0;
   int tWidth = getTileWidthForClient(); 
+  Timer AIResult;
+  float communicationLoopTime=0;
+  float milliSec = 1/1000;
   
   vector<Cat>   c;
   vector<Mouse> m;
@@ -1065,7 +1068,7 @@ void *GameModel::clientHandler(void *client)
     cout<<"waiting for 2 clients to connect"<<endl;
     if(send(socket, (const char*)&net_b, sizeof(b), MSG_NOSIGNAL)<0)
       {perror("error");}
-     sleep(2);
+     sleep(2*milliSec);
   }
   cout<<"ready"<<endl;
   b=1;
@@ -1144,8 +1147,12 @@ void *GameModel::clientHandler(void *client)
 
    sleep(2);
     //start the loop here to send n recv from client
+    //therefore start the timer in the loop.
+    //record how long it takes for all the results to be done.
     //first update how many cats n mice in the model.
     while((read_size = recv(socket, &Buf, sizeof(Buf), 0))>0){
+     communicationLoopTime=0;
+     AIResult.start();
      current_mice_eaten = getMiceEatenForClient(); //get mice eaten in the model.
      current_cat_has_eaten_mice = getCatAteMiceForClient();
      current_mice_ate_cheese = getMiceAteCheeseForClient();
@@ -1257,13 +1264,21 @@ void *GameModel::clientHandler(void *client)
     memset(s,0,sizeof(s));
     if(aiSize>0){
       sleep(3);
-      //start()
       bufRead=(recv(socket,&s,aiSize,0)); 
       s[bufRead] = '\0';   
       a = s;
       memset(s, 0, sizeof(s));
-      //stop() for receiving ai calculation results
     }
+    //Communication finish here because next is the extraction of the result.
+    /*AIResult.stop();
+    communicationLoopTime= (float)AIResult.getElapsedTimeInSec();
+    cout<<communicationLoopTime<<endl;
+    ofstream myf("updateTime.txt" ,std::ios_base::app);
+    if(myf.is_open())
+     {
+     myf<<"communicationTime,"<<communicationLoopTime<<endl;
+      }
+    //receving and finishing all calculation loop.*/
     
      vector<string> catsOneNStates;
      vector<string> miceOneNStates;
