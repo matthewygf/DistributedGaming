@@ -266,7 +266,7 @@ void GameModel::initAnimals()
   //random generate some animals
   //generates cats n mouse according to ID.
   
-  for(int i = 0 ; i<(10); i++){
+  for(int i = 0 ; i<(180); i++){
   int r = generateRandom(0,1);
   Animal a(r);
   a.setEntityId(i);
@@ -1060,12 +1060,10 @@ void *GameModel::clientHandler(void *client)
   int old_a=0;
   int aiSize=0;
   int net_ai,net_tWidth;
-  int temp=0;
   int mac_size=0;
   int net_a;
   int socket = *(int*)client;
   int Buf;
-  int net_Buf;
   int tempCheese=0;
   int catAteMiceSize=0;
   int tWidth = getTileWidthForClient(); 
@@ -1090,9 +1088,6 @@ void *GameModel::clientHandler(void *client)
   string entity_Cat_Eaten_Mice = "c";
   string entity_mice_ate_cheese;
   char const *allEntitiesId;
-  char const *client_mice_eaten;
-  char const *client_cat_eaten_mice;
-  char const *client_mice_ate_cheese;
   char const *datas;
 
   while(instanceModel->client<2)
