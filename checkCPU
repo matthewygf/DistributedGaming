@@ -1,0 +1,3 @@
+ps -C game -o %cpu,%mem,cmd
+
+taskset -c 3 ./game

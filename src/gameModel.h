@@ -146,6 +146,7 @@ class GameModel
    void runCollision();
    void increaseClient();
    void splitAnimals();
+   void eraseMiceInMiceOneAndMiceTwo(vector<int>& miceEaten, vector<Mouse>& miceOne, vector<Mouse>& miceTwo);
    
    bool calculateFrustum(Vector3 &p);
    

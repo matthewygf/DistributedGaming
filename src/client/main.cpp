@@ -79,68 +79,109 @@ void createMice(vector<Mouse>&mice,vector<int> id,int tWidth)
     cout<<"MICE VECTOR NOW HAVE "<<mice.size()<<endl;
 }
 
-void calculateAi(vector<Cat>&c, vector<Mouse>&m, vector<int>&CatAteMouse, vector<int>&miceAteCheese,string &backToClient)
+void aiUpdate(vector<Cat>&c, vector<Mouse>&m,string &result)
 {
   for(unsigned int i=0;i<c.size();i++)
-  {
-    if(CatAteMouse.size()!=0){
-      for(unsigned int j=0; j<CatAteMouse.size();j++){
-      int id = c[i].getEntityId();
-        if(id == CatAteMouse[j]){
-          c[i].caught();
+      {
+          c[i].update();
+          int cid = c[i].getEntityId();
+          int sid = c[i].getState();
+          //append cat first
+          stringstream s1;
+          s1 << cid;
+          string str1 = s1.str();
+          result.append(str1);
+          result.append(":");
+          stringstream s2;
+          s2 << sid;
+          string str2 = s2.str();
+          result.append(str2);
+          result.append(",");
+          //cout<<"updated status in cat "<<cid<<" and in state "<<sid<<endl;   
+       }
+       
+      if(m.size()>0)
+      { 
+          result.append("m");
+       for(unsigned int i=0;i<m.size();i++)
+       {   
+           m[i].update();
+           int mid = m[i].getEntityId();
+           int sid = m[i].getState();
+           stringstream s1;
+           s1 << mid;
+           string str1 = s1.str();
+           result.append(str1);
+           result.append(":");
+           stringstream s2;
+           s2 << sid;
+           string str2 = s2.str();
+           result.append(str2);
+           result.append(",");
+           //cout<<"updated status in mouse "<<mid<<" and in state "<<sid<<endl;
         }
-       } 
-     }
-     c[i].update();
-     int cid = c[i].getEntityId();
-     int sid = c[i].getState();
-     //append cat first
-     stringstream s1;
-      s1 << cid;
-      string str1 = s1.str();
-     backToClient.append(str1);
-     backToClient.append(":");
-     stringstream s2;
-      s2 << sid;
-      string str2 = s2.str();
-     backToClient.append(str2);
-     if(i != c.size()-1){
-      backToClient.append(",");
-     }
-     cout<<"updated status in cat "<<cid<<" and in state "<<sid<<endl;
-   }
-    ////////////////////////////////////////////////////////
-   if(m.size() != 0 ){
-    backToClient.append("m");
-    for(unsigned int i= 0; i<m.size();i++){
-    if(miceAteCheese.size()!=0){
-    for(unsigned int j=0; j<miceAteCheese.size();j++){
-      int id = m[i].getEntityId();
-        if(id == miceAteCheese[j]){
-          m[i].ateCheese();
-        }
-       } 
       }
-      m[i].update();
-     int mid = m[i].getEntityId();
-     int sid = m[i].getState();
-     stringstream s1;
-      s1 << mid;
-      string str1 = s1.str();
-     backToClient.append(str1);
-     backToClient.append(":");
-     stringstream s2;
-      s2 << sid;
-      string str2 = s2.str();
-     backToClient.append(str2);
+}
 
-     if(i != m.size()-1){
-      backToClient.append(",");
-     }
-     cout<<"updated status in mouse "<<mid<<" and in state "<<sid<<endl;
-     }
+
+void calculateAi(vector<Cat>&c, vector<Mouse>&m, vector<string>&tokens,string &backToClient)
+{
+   for(int i=0;i<tokens.size();i++)
+   {
+     string t = tokens[i];
+     string delimiter = ":";
+     size_t pos = 0;
+     string etoken;
+     
+     while ((pos = t.find(delimiter)) != string::npos) 
+      {
+        etoken = t.substr(0, pos);
+        t.erase(0, pos + delimiter.length());
+      }
+      if(etoken=="m_eaten") //mice that got eaten
+      {
+        int s     = atoi(t.c_str());
+        if(m.size()>0)
+        {
+         for(unsigned int i=0;i<m.size();i++)
+         {
+           if(s == m[i].getEntityId())
+           {
+            cout<<"m "<<m[i].getEntityId()<<" going to be deleted"<<endl;
+            m.erase(m.begin() + i);
+           }
+         }
+        } 
+      }
+      else if (etoken=="c_eat")
+      {
+        int s     = atoi(t.c_str());
+        for(unsigned int i=0;i<c.size();i++)
+        {
+          if(s == c[i].getEntityId())
+          {
+            c[i].caught();
+          }
+          
+        }
+      }
+      else
+      {
+        int s     = atoi(t.c_str());
+        if(m.size()>0)
+        {
+         for(unsigned int i = 0; i<m.size();i++)
+         {
+           if(s==m[i].getEntityId())
+           {
+             m[i].ateCheese();
+           }
+         }
+        }
+      } 
    }
-   cout<<backToClient<<endl;
+
+   aiUpdate(c,m,backToClient);
 }
 
 void deleteMiceFromVector(vector<Mouse>&m, vector<int>&id)
@@ -162,14 +203,23 @@ void deleteMiceFromVector(vector<Mouse>&m, vector<int>&id)
  cout<<"mice size is now "<<m.size()<<endl;
 }
 
+int generateRandom(int start, int end)
+{
+    int result = start + (rand() % (int)(end - start + 1));
+    return result;
+    
+}
+
 int main(int argc , char *argv[])
 {
     Client c;
     string host;
-    int a,b,temp,mac,temp_mac,tWidth;
+    int a,b,temp,mac,temp_mac,tWidth,entitiesLength;
     int catAteMiceSize;
     int old_catAteMiceSize = 0;
+    int datasize;
     string entities;
+    string update;
     string splitM = "m";
     string splitC = "c";
     string splitH = "h";
@@ -180,22 +230,24 @@ int main(int argc , char *argv[])
     string miceEaten;
     string catAte;
     string miceAteCheese;
+    float milliSec = 1/1000;
+    bool connected = false;
 
     vector<int> catsId;
     vector<int> miceId;
     vector<int> m_eatenId;//mouse that got eaten at that frame
-    
+
     vector<Cat> cats;
     vector<Mouse> mice;
 
     cout<<"Enter hostname : ";
-    cin>>host; 
+    //cin>>host; 
     //connect to host
-    c.conn(host , 3490);
+    c.conn("localhost" , 3490);
     
     c.checkIfServerReady();
     cout<<"server is ready"<<endl;
-    
+    connected = true;
     //receive and echo connection reply.
     cout<<"----------------------------\n\n";
     cout<<c.receive(1024);
@@ -209,11 +261,13 @@ int main(int argc , char *argv[])
     
     tWidth = c.receiveInt();
     cout<<"tWidth = "<<tWidth<<endl;
-    sleep(1);
-    ////////////////////////////////////////////////////////////
-    //here to receive all the require information before calculating Ai.
-    entities = c.receive(2000);
-    //sleep(1);
+    
+    entitiesLength = c.receiveInt();
+    cout<<"entities length is "<<entitiesLength<<endl;
+    
+    entities = c.receive(entitiesLength+1);
+    cout<<entities<<endl;
+    
     e_cats = entities.substr(0, entities.find(splitM));
     e_mice = entities.substr(entities.find(splitM)+1, entities.length());
     getEntitiesIdFromServer(catsId,e_cats);
@@ -223,7 +277,51 @@ int main(int argc , char *argv[])
     createCats(cats,catsId,tWidth);
     //give the mice the mice ID.
     createMice(mice,miceId,tWidth);
-    ///////////////////////////////////////////////////////////////
+    
+    while(connected)
+    {
+      c.keepConnection();
+      string stateResults = "";
+      datasize= c.receiveInt();
+      if(datasize!=0)
+      {
+        vector<string> tokens;
+        update=c.receive(datasize+1);
+        
+        istringstream ss(update);
+        string token;
+        while(getline(ss, token, ','))
+         {
+            //store in a string vector for calculation
+            tokens.push_back(token);
+         }
+        calculateAi(cats,mice,tokens,stateResults); 
+      }
+      else
+      {
+        aiUpdate(cats,mice,stateResults);
+      }
+      c.sendAiResultStringSize(stateResults); 
+      sleep(1*milliSec);
+      c.send_data(stateResults);
+      sleep(1*milliSec); 
+    }
+    
+    /*
+std::string input = "abc,def,ghi";
+std::istringstream ss(input);
+std::string token;
+
+while(std::getline(ss, token, ',')) {
+    std::cout << token << '\n';
+}
+
+           
+            cout<<etoken<<endl;
+            cout<<token<<endl;
+            
+            
+            
 
     //should be in a while loop keep updating how many animals are left.
     while(1){
@@ -231,7 +329,7 @@ int main(int argc , char *argv[])
     vector<int> catAteMouseId;//cat that ate a mouse for AI hungry state
     vector<int> mice_ate_cheese;//startover everyframe
     //just to keep connection going. and first make this to set the cats n mice to starts walkin.
-    c.keepConnection();
+    
     sleep(1);
     //keep updating mice size. or update which one has got eaten.
     b = c.receiveInt();
@@ -286,7 +384,7 @@ int main(int argc , char *argv[])
     b=0;
     a=0;
     sleep(2);
-   }
+   }*/
 
     //done
     return 0;

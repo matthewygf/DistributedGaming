@@ -42,6 +42,7 @@ public:
     bool sendAiResultStringSize(string d);
     string receive(int);
     int  receiveInt();
+    int  receiveMAC(); //needed to implement this
     void createStates();
     void checkIfServerReady();
     bool send_int(int i);

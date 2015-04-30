@@ -103,7 +103,7 @@ bool Client::send_data(string data)
         perror("Send failed : ");
         return false;
     }
-    cout<<"Data sent\n";
+    //cout<<"Data sent\n";
      
     return true;
 }
@@ -113,7 +113,7 @@ bool Client::send_data(string data)
 */
 string Client::receive(int size=1024)
 {
-    char buffer[size];
+    char buffer[size+1];
     string reply;
      
     memset(buffer, 0, sizeof(buffer));
@@ -136,7 +136,7 @@ int Client::receiveInt()
    
    //cout<<"receiving int"<<endl;
    //however we not allowed to go more than 1 second, so keep recving until connected.
-   while(recv(sock, &Buf, sizeof(Buf), MSG_NOSIGNAL)<0 && (++timeouts < 1000))
+   while(recv(sock, &Buf, sizeof(Buf), MSG_NOSIGNAL)<0 && (++timeouts < 250))
    {
      puts("recv failed");
    }
@@ -145,6 +145,29 @@ int Client::receiveInt()
    return i;
 }
 
+int Client::receiveMAC()
+{
+
+   int Buf;
+   int mac = -1;
+   int i;
+  
+   while(mac < 0)
+   {
+     recv(sock, &Buf, sizeof(Buf), 0);
+     i = ntohl(Buf);
+     mac = i;
+     send_int(0);
+   }
+   send_int(1);
+   i=0;
+   Buf = 0;
+   //cout<<"mac received in client cpp and is "<<mac<<endl;
+   return mac;
+
+
+
+}
 
 //make a return int method for AI;
 

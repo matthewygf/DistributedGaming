@@ -266,13 +266,13 @@ void Animal::increaseFatigue()
 void Animal::decreaseFatigue()
 {
   //cout<<"decrease fatigue"<<tiredLevel<<endl;
-  tiredLevel -= 1.0;
+  tiredLevel -= 0.001;
 }
 
 void Animal::increaseHunger()
 {
  if(hunger<HungerThreshold){
-  hunger += 0.01;
+  hunger += 0.001;
   }
 }
 
