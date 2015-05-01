@@ -1,5 +1,5 @@
 #include "client.h"
-
+#include <pthread.h>
 using namespace std;
 
 Client::Client()
@@ -111,36 +111,42 @@ bool Client::send_data(string data)
 /**
     Receive data from the connected host
 */
-string Client::receive(int size=1024)
+string Client::receive(int size)
 {
     char buffer[size+1];
-    string reply;
-     
-    memset(buffer, 0, sizeof(buffer));
+    int bufRead;
+    float milliSec = 1/1000;
+    sleep(1*milliSec);
+    memset(&buffer, 0, sizeof(buffer));
+
     //Receive a reply from the server
-    if( recv(sock , buffer , sizeof(buffer) , 0) < 0)
-    {
-        puts("recv failed");
-    }
+    bufRead=(recv(sock , buffer , size , MSG_NOSIGNAL));
+    sleep(1*milliSec); 
+    buffer[bufRead] = '\0';  
      
-    reply = buffer;
-    memset(buffer, 0, sizeof(buffer));
+     if (buffer[bufRead-1] == '\n')     // <<-- Nice to have.
+      buffer[bufRead-1] = '\0';      // <<-- Nice to have.
+   
+    string reply(buffer);
+    memset(&buffer, 0, sizeof(buffer));
     return reply;
 }
 
 int Client::receiveInt()
 {
-   int Buf;
-   int i;
+   int Buf=0;
+   int i=0;
    int timeouts = 0; 
-   
+   float milliSec = 1/1000;
    //cout<<"receiving int"<<endl;
    //however we not allowed to go more than 1 second, so keep recving until connected.
-   while(recv(sock, &Buf, sizeof(Buf), MSG_NOSIGNAL)<0 && (++timeouts < 250))
+   while(recv(sock, &Buf, sizeof(Buf), MSG_NOSIGNAL)<0)
    {
      puts("recv failed");
    }
+   i=0;
    i = ntohl(Buf);
+   sleep(1*milliSec);
    Buf = 0;
    return i;
 }
@@ -184,6 +190,8 @@ bool Client::sendAiResultStringSize(string d)
      perror("send");
      return false;
     }
+    a=0;
+    net_a=0;
     
     return true;
     

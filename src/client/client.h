@@ -40,7 +40,7 @@ public:
     bool keepConnection();
     bool send_data(string data);
     bool sendAiResultStringSize(string d);
-    string receive(int);
+    string receive(int size);
     int  receiveInt();
     int  receiveMAC(); //needed to implement this
     void createStates();

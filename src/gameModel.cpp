@@ -266,7 +266,7 @@ void GameModel::initAnimals()
   //random generate some animals
   //generates cats n mouse according to ID.
   
-  for(int i = 0 ; i<(180); i++){
+  for(int i = 0 ; i<(NUMANIMALS); i++){
   int r = generateRandom(0,1);
   Animal a(r);
   a.setEntityId(i);
@@ -1067,6 +1067,8 @@ void *GameModel::clientHandler(void *client)
   int tempCheese=0;
   int catAteMiceSize=0;
   int tWidth = getTileWidthForClient(); 
+  Timer communicationTimer;
+  float communicationTime=0;
   
   vector<Cat>   c;
   vector<Mouse> m;
@@ -1106,7 +1108,7 @@ void *GameModel::clientHandler(void *client)
   //since my project involve distributing two right now.
   char const *message; 
   message = "Hey there! you are now connected to the server.\n Please Enter 1 or 2. ";
-  write(socket , message , strlen(message));
+  write(socket , message , strlen(message)+1);
    
   int net_client_id;
   int read_size;
@@ -1121,12 +1123,14 @@ void *GameModel::clientHandler(void *client)
      c = getCatsOneForClient();
      m = getMiceOneForClient();
      handleId = i;
+     sleep(1*milliSec);
      break;
     case(2):
      cout<<"client pick 2"<<endl;
      c = getCatsTwoForClient();
      m = getMiceTwoForClient();
      handleId = i;
+     sleep(1*milliSec);
      break;
     default:
      break;
@@ -1173,7 +1177,7 @@ void *GameModel::clientHandler(void *client)
       {perror("error");}
    //send all the mice entity ID to client
    
-   write(socket , allEntitiesId , strlen(allEntitiesId));
+   write(socket , allEntitiesId , strlen(allEntitiesId)+1);
    cout<<"sending all entitys id"<<endl;
    
    
@@ -1185,30 +1189,32 @@ void *GameModel::clientHandler(void *client)
      current_cat_has_eaten_mice = getCatAteMiceForClient(); // get cats eaten a mouse
      current_mice_ate_cheese = getMiceAteCheeseForClient(); // get mice that ate cheese
      string data="";
-
+     //start the timer here, cos every loop to client, it sents the information then receive.
+     communicationTimer.start();
      
      
      switch(handleId)
      {
+      sleep(1*milliSec);
        case 1:
             b = getMiceOneSize();
-            net_b =  htonl(b);
+            //net_b =  htonl(b);
             a = current_mice_eaten.size();
-            net_a = htonl(a);
+            //net_a = htonl(a);
             catAteMiceSize = getCatAteMiceSize();
+            mac_size = current_mice_ate_cheese.size();
             c = getCatsOneForClient();
             m = getMiceOneForClient();
-            mac_size = current_mice_ate_cheese.size();
             break;
        case 2:
             b = getMiceTwoSize();
-            net_b =  htonl(b);
+            //net_b =  htonl(b);
             a = current_mice_eaten.size();
-            net_a = htonl(a);
+            //net_a = htonl(a);
             catAteMiceSize = getCatAteMiceSize();
+            mac_size = current_mice_ate_cheese.size();
             c = getCatsTwoForClient();
             m = getMiceTwoForClient();
-            mac_size = current_mice_ate_cheese.size();
             break;     
       } 
       //cout<<c.size()<<endl;
@@ -1220,6 +1226,8 @@ void *GameModel::clientHandler(void *client)
      //if there is a mice being eaten
       if(a != 0 && (abs(a-old_a))!=0)
       {    
+        if(m.size()>0)
+        {
           //find out if it is in the client mice
           for(unsigned int i = old_a;i<current_mice_eaten.size();i++)
           {
@@ -1241,6 +1249,7 @@ void *GameModel::clientHandler(void *client)
                 } 
              }
           }
+        }  
        
        //when a mice got eaten, there is a cat who just ate a mice.
           
@@ -1271,6 +1280,8 @@ void *GameModel::clientHandler(void *client)
      if(mac_size != 0 && 
      (fabs(mac_size - tempCheese))!=0)
      {
+      if(m.size()>0)
+      {
        //check against client's mice
        //loop from the last time the mouse who ate a cheese
        for(unsigned int i = tempCheese;i<current_mice_ate_cheese.size();i++)
@@ -1294,6 +1305,7 @@ void *GameModel::clientHandler(void *client)
          }
        }
      }
+    } 
       old_a = a;
       tempCheese=mac_size;
     
@@ -1303,8 +1315,10 @@ void *GameModel::clientHandler(void *client)
      } 
      datas = data.c_str();
      dataSize = strlen(datas);
+     if(handleId == 1){
+     cout<<dataSize<<endl;}
      net_dataSize = htonl(dataSize);
-     //cout<<"dataSize is "<<dataSize<<endl;
+     sleep(1*milliSec);
      if(send(socket, (const char*)&net_dataSize, sizeof(dataSize), MSG_NOSIGNAL)<0)
      {perror("error");}
      //now it is ready to send the size of the data to client first
@@ -1312,7 +1326,8 @@ void *GameModel::clientHandler(void *client)
       //then send the data.
      if(dataSize!=0)
      {
-      write(socket , datas , strlen(datas));
+      sleep(1*milliSec);
+      write(socket , datas , strlen(datas)+1);
       cout<<"sending all data"<<endl;
      }
      
@@ -1320,16 +1335,32 @@ void *GameModel::clientHandler(void *client)
       aiSize = ntohl(net_ai);
       //cout<<aiSize<<endl;
       char s[aiSize+1];
-      string a = "";
+      string a;
       int bufRead;
       memset(s,0,sizeof(s));
       if(aiSize>0)
       {
        bufRead=(recv(socket,&s,aiSize,0)); 
-       s[bufRead] = '\0';   
+       s[bufRead] = '\0';  
+       if (s[bufRead-1] == '\n')     // <<-- Nice to have.
+           s[bufRead-1] = '\0';      // <<-- Nice to have.
        a = s;
        memset(s, 0, sizeof(s));
       }
+    /*stop timer here, as we need to check if the time is inside the 16ms loop.
+    this is the time it takes for the communication. as below calculations are the extraction of the results.
+    but here is the time it takes for ai results to come back.
+    we want to know is if the time for receiving the result is within the game loop 
+    and between the latest time for ai result which is 1s as stated in the game engine architecture.*/
+    communicationTimer.stop();
+    communicationTime = (float)communicationTimer.getElapsedTimeInMilliSec();
+    //cout<<"communicationTimeInClient,"<<handleId<<","<<communicationTime<<endl;
+   ofstream myf("updateTime.txt" ,std::ios_base::app);
+   if(myf.is_open())
+   {
+     myf<<"communicationTimeInClient,"<<handleId<<","<<communicationTime<<endl;
+   }
+      
      cout<<a<<endl;
     
      
@@ -1352,8 +1383,8 @@ void *GameModel::clientHandler(void *client)
       case 1:
          catsOneStates = a.substr(0, a.find(split));
          miceOneStates = a.substr(a.find(split)+1, a.length());
-         cout<<"CatsOneStates : "<<catsOneStates<<endl;
-         cout<<"MiceOneStates : "<<miceOneStates<<endl;
+         //cout<<"CatsOneStates : "<<catsOneStates<<endl;
+         //cout<<"MiceOneStates : "<<miceOneStates<<endl;
          ///////////////////////////////////////store the stores to set.
          while ((pos = catsOneStates.find(delimiter)) != string::npos) {
            token = catsOneStates.substr(0, pos);
@@ -1371,16 +1402,16 @@ void *GameModel::clientHandler(void *client)
         }
          if(miceOneStates!=""){
          miceOneNStates.push_back(miceOneStates);}
-         cout<<"cats one n states size "<<catsOneNStates.size()<<endl;
-         cout<<"mice one n states size "<<miceOneNStates.size()<<endl;
+         //cout<<"cats one n states size "<<catsOneNStates.size()<<endl;
+         //cout<<"mice one n states size "<<miceOneNStates.size()<<endl;
 ///////////////////////////////////////////////////////////////////////////
          break;
 
      case 2:
          catsTwoStates = a.substr(0, a.find(split));
          miceTwoStates = a.substr(a.find(split)+1, a.length());
-         cout<<"CatsTwoStates : "<<catsTwoStates<<endl;
-         cout<<"MiceTwoStates : "<<miceTwoStates<<endl;
+         //cout<<"CatsTwoStates : "<<catsTwoStates<<endl;
+         //cout<<"MiceTwoStates : "<<miceTwoStates<<endl;
          
          while ((pos = catsTwoStates.find(delimiter)) != string::npos) {
            token = catsTwoStates.substr(0, pos);
@@ -1398,8 +1429,8 @@ void *GameModel::clientHandler(void *client)
         }
          if(miceTwoStates!=""){
          miceTwoNStates.push_back(miceTwoStates);}
-         cout<<"cats two n states size "<<catsTwoNStates.size()<<endl;
-         cout<<"mice two n states size "<<miceTwoNStates.size()<<endl;
+         //cout<<"cats two n states size "<<catsTwoNStates.size()<<endl;
+        // cout<<"mice two n states size "<<miceTwoNStates.size()<<endl;
          
          break;
     }         
@@ -1506,6 +1537,9 @@ void *GameModel::clientHandler(void *client)
          }       
       }
     }
+    
+
+
 
    }//close while
 

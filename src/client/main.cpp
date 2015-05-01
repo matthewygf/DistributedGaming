@@ -217,9 +217,9 @@ int main(int argc , char *argv[])
     int a,b,temp,mac,temp_mac,tWidth,entitiesLength;
     int catAteMiceSize;
     int old_catAteMiceSize = 0;
-    int datasize;
+    int datasize = 0;
     string entities;
-    string update;
+    string update="";
     string splitM = "m";
     string splitC = "c";
     string splitH = "h";
@@ -243,7 +243,7 @@ int main(int argc , char *argv[])
     cout<<"Enter hostname : ";
     //cin>>host; 
     //connect to host
-    c.conn("localhost" , 3490);
+    c.conn("129.11.146.62" , 3490);
     
     c.checkIfServerReady();
     cout<<"server is ready"<<endl;
@@ -265,6 +265,7 @@ int main(int argc , char *argv[])
     entitiesLength = c.receiveInt();
     cout<<"entities length is "<<entitiesLength<<endl;
     
+    
     entities = c.receive(entitiesLength+1);
     cout<<entities<<endl;
     
@@ -282,11 +283,13 @@ int main(int argc , char *argv[])
     {
       c.keepConnection();
       string stateResults = "";
-      datasize= c.receiveInt();
+      datasize = c.receiveInt();
+      cout<<datasize<<endl;
+      
       if(datasize!=0)
       {
         vector<string> tokens;
-        update=c.receive(datasize+1);
+        update=c.receive(datasize);
         
         istringstream ss(update);
         string token;
@@ -296,15 +299,19 @@ int main(int argc , char *argv[])
             tokens.push_back(token);
          }
         calculateAi(cats,mice,tokens,stateResults); 
+        c.sendAiResultStringSize(stateResults); 
       }
       else
       {
         aiUpdate(cats,mice,stateResults);
+        c.sendAiResultStringSize(stateResults); 
       }
-      c.sendAiResultStringSize(stateResults); 
+      
       sleep(1*milliSec);
       c.send_data(stateResults);
-      sleep(1*milliSec); 
+      sleep(1*milliSec);
+      datasize=0;
+      
     }
     
     /*
