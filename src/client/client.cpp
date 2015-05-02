@@ -118,17 +118,16 @@ string Client::receive(int size)
     string reply;
     int n;
     memset(buffer, 0, sizeof(buffer));
-    int total = 0;
 
-    while((n = recv(sock, buffer, sizeof(buffer), 0))>0|| reply.length()==size+1)
-         
+
+    while((n = recv(sock, buffer, sizeof(buffer), 0))>0 || reply.length()==size)   
     {
         if(n>0)
             reply.append(buffer, n);
     } 
     
     memset(buffer, 0, sizeof(buffer));
-
+    cout<<reply<<endl;
     return reply;
 }
 

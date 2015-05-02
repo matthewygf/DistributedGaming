@@ -243,7 +243,7 @@ int main(int argc , char *argv[])
     cout<<"Enter hostname : ";
     //cin>>host; 
     //connect to host
-    c.conn("129.11.146.62" , 3490);
+    c.conn("localhost" , 3490);
     
     c.checkIfServerReady();
     cout<<"server is ready"<<endl;
@@ -267,7 +267,7 @@ int main(int argc , char *argv[])
     
 
     entities = c.receive(entitiesLength);
- 
+    
     
     e_cats = entities.substr(0, entities.find(splitM));
     e_mice = entities.substr(entities.find(splitM)+1, entities.length());
