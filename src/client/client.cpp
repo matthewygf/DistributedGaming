@@ -1,5 +1,5 @@
 #include "client.h"
-
+#include <pthread.h>
 using namespace std;
 
 Client::Client()
@@ -114,6 +114,7 @@ bool Client::send_data(string data)
 string Client::receive(int size)
 {
     char buffer[size+1];
+
     string reply;
     int n;
     memset(buffer, 0, sizeof(buffer));
@@ -127,22 +128,25 @@ string Client::receive(int size)
     } 
     
     memset(buffer, 0, sizeof(buffer));
+
     return reply;
 }
 
 int Client::receiveInt()
 {
-   int Buf;
-   int i;
+   int Buf=0;
+   int i=0;
    int timeouts = 0; 
-   
+   float milliSec = 1/1000;
    //cout<<"receiving int"<<endl;
    //however we not allowed to go more than 1 second, so keep recving until connected.
-   while(recv(sock, &Buf, sizeof(Buf), MSG_NOSIGNAL)<0 && (++timeouts < 250))
+   while(recv(sock, &Buf, sizeof(Buf), MSG_NOSIGNAL)<0)
    {
      puts("recv failed");
    }
+   i=0;
    i = ntohl(Buf);
+   sleep(1*milliSec);
    Buf = 0;
    return i;
 }
@@ -186,6 +190,8 @@ bool Client::sendAiResultStringSize(string d)
      perror("send");
      return false;
     }
+    a=0;
+    net_a=0;
     
     return true;
     
