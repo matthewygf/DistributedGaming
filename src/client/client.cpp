@@ -111,19 +111,21 @@ bool Client::send_data(string data)
 /**
     Receive data from the connected host
 */
-string Client::receive(int size=1024)
+string Client::receive(int size)
 {
     char buffer[size+1];
     string reply;
-     
+    int n;
     memset(buffer, 0, sizeof(buffer));
-    //Receive a reply from the server
-    if( recv(sock , buffer , sizeof(buffer) , 0) < 0)
+    int total = 0;
+
+    while((n = recv(sock, buffer, sizeof(buffer), 0))>0|| reply.length()==size+1)
+         
     {
-        puts("recv failed");
-    }
-     
-    reply = buffer;
+        if(n>0)
+            reply.append(buffer, n);
+    } 
+    
     memset(buffer, 0, sizeof(buffer));
     return reply;
 }

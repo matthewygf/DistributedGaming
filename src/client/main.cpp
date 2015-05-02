@@ -265,8 +265,8 @@ int main(int argc , char *argv[])
     entitiesLength = c.receiveInt();
     cout<<"entities length is "<<entitiesLength<<endl;
     
-    entities = c.receive(entitiesLength+1);
-    cout<<entities<<endl;
+    entities = c.receive(entitiesLength);
+    //cout<<entities<<endl;
     
     e_cats = entities.substr(0, entities.find(splitM));
     e_mice = entities.substr(entities.find(splitM)+1, entities.length());

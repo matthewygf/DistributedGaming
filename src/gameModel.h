@@ -45,7 +45,7 @@ using namespace std;
 
 #define NUMCLIENT 2    //2 machines connect to the server.
 
-#define singleThreaded true
+#define singleThreaded false
 
 
 class GameModel

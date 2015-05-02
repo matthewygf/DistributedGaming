@@ -266,7 +266,7 @@ void GameModel::initAnimals()
   //random generate some animals
   //generates cats n mouse according to ID.
   
-  for(int i = 0 ; i<(180); i++){
+  for(int i = 0 ; i<(5000); i++){
   int r = generateRandom(0,1);
   Animal a(r);
   a.setEntityId(i);
@@ -1166,8 +1166,8 @@ void *GameModel::clientHandler(void *client)
    allEntitiesIdForClient.append(entity_ids_for_mice);
    allEntitiesId = allEntitiesIdForClient.c_str();
    allEntitiesSize = strlen(allEntitiesId);
-   net_allEntitiesSize = htonl(strlen(allEntitiesId));
-   cout<<"all entities for client "<<handleId<< " are "<<allEntitiesId<< "size is "<<strlen(allEntitiesId)<<endl;
+   net_allEntitiesSize = htonl(allEntitiesSize);
+   cout<<"all entities for client "<<handleId<< " are "<<allEntitiesId<< "size is "<<allEntitiesSize<<endl;
    
    if(send(socket, (const char*)&net_allEntitiesSize, sizeof(allEntitiesSize), MSG_NOSIGNAL)<0)
       {perror("error");}
@@ -1229,7 +1229,7 @@ void *GameModel::clientHandler(void *client)
                 //if inside client mice
                 if(id == m[j].getEntityId())
                 {    
-                  cout<<"in client "<<handleId<< "mice "<<id<<"got eaten"<<endl;
+                  //cout<<"in client "<<handleId<< "mice "<<id<<"got eaten"<<endl;
                   data.append("m_eaten:");
                   stringstream ss;
                    ss << id;
@@ -1252,7 +1252,7 @@ void *GameModel::clientHandler(void *client)
             {
               if(id == c[j].getEntityId())
               {
-                cout<<"in client "<<handleId<< "cat "<<id<<"has eaten a mouse"<<endl;
+                //cout<<"in client "<<handleId<< "cat "<<id<<"has eaten a mouse"<<endl;
                 data.append("c_eat:");   
                 stringstream ss;
                 ss<<id;
@@ -1281,7 +1281,7 @@ void *GameModel::clientHandler(void *client)
          {
            if (id == m[j].getEntityId())
            {
-             cout<<"in client "<<handleId<< "mouse "<<id<<"has eaten cheese"<<endl;
+             //cout<<"in client "<<handleId<< "mouse "<<id<<"has eaten cheese"<<endl;
              data.append("mac:");
              stringstream ss;
              ss<<id;
@@ -1299,7 +1299,7 @@ void *GameModel::clientHandler(void *client)
     
      if(data.length()!=0)
      {
-      cout<<data<<endl;
+      //cout<<data<<endl;
      } 
      datas = data.c_str();
      dataSize = strlen(datas);
@@ -1312,7 +1312,7 @@ void *GameModel::clientHandler(void *client)
       //then send the data.
      if(dataSize!=0)
      {
-      write(socket , datas , strlen(datas));
+      write(socket , datas , strlen(datas)+1);
       cout<<"sending all data"<<endl;
      }
      
@@ -1320,6 +1320,21 @@ void *GameModel::clientHandler(void *client)
       aiSize = ntohl(net_ai);
       //cout<<aiSize<<endl;
       char s[aiSize+1];
+      /*string a;
+      int n;
+      memset(s,0,sizeof(s));
+      
+       while((n = recv(socket, s, sizeof(s), 0))>0|| a.length()==aiSize+1)
+         
+    {
+        if(n>0)
+            a.append(s, n);
+    } 
+    
+    memset(s, 0, sizeof(s));*/
+
+
+
       string a = "";
       int bufRead;
       memset(s,0,sizeof(s));
