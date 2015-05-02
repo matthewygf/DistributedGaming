@@ -243,7 +243,7 @@ int main(int argc , char *argv[])
     cout<<"Enter hostname : ";
     //cin>>host; 
     //connect to host
-    c.conn("localhost" , 3490);
+    c.conn("129.11.146.18" , 3490);
     
     c.checkIfServerReady();
     cout<<"server is ready"<<endl;
@@ -307,7 +307,6 @@ int main(int argc , char *argv[])
         c.sendAiResultStringSize(stateResults); 
       }
       
-      sleep(1*milliSec);
       c.send_data(stateResults);
       sleep(1*milliSec);
       datasize=0;

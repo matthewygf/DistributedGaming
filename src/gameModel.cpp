@@ -1185,6 +1185,8 @@ void *GameModel::clientHandler(void *client)
    
    while((read_size = recv(socket, &Buf, sizeof(Buf), 0))>0)
    {
+      int k = ntohl(Buf);
+     cout<<k<<endl;
    //start the loop here to send n recv from client
    //first update how many cats n mice in the model.
      current_mice_eaten = getMiceEatenForClient(); //get mice eaten by cats in the model.
@@ -1335,35 +1337,47 @@ void *GameModel::clientHandler(void *client)
      
       recv(socket, &net_ai, sizeof(net_ai), 0);
       aiSize = ntohl(net_ai);
-      //cout<<aiSize<<endl;
+      cout<<aiSize<<endl;
       char s[aiSize+1];
-
-      /*string a;
+/*
+      string a;
       int n;
       memset(s,0,sizeof(s));
       
-       while((n = recv(socket, s, sizeof(s), 0))>0|| a.length()==aiSize+1)
+       while(a.length()<=aiSize)
          
     {
-        if(n>0)
+        n = recv(socket, s, sizeof(s), 0);
+        s[n] = '\0';  
+        cout<<"recving"<<endl;
+        if(n>0&&a.length()<=aiSize)
             a.append(s, n);
+            //cout<<a<<endl;
+            cout<<a.length()<<endl;
+        if(a.length()>aiSize)
+           break;    
     } 
+    cout<<"hi its done"<<endl;
+    memset(s, 0, sizeof(s));
     
-    memset(s, 0, sizeof(s));*/
 
 
-
-      string a = "";
+     */
+      string a;
 
       int bufRead;
       memset(s,0,sizeof(s));
+      int total=0;
       if(aiSize>0)
       {
-       bufRead=(recv(socket,&s,aiSize,0)); 
+       while(a.length()<=aiSize-1){
+       bufRead=(recv(socket,&s,aiSize-total,0)); 
        s[bufRead] = '\0';  
        if (s[bufRead-1] == '\n')     // <<-- Nice to have.
            s[bufRead-1] = '\0';      // <<-- Nice to have.
-       a = s;
+       a.append(s,bufRead);
+       total = a.length();
+       }
        memset(s, 0, sizeof(s));
       }
     /*stop timer here, as we need to check if the time is inside the 16ms loop.
@@ -1380,7 +1394,7 @@ void *GameModel::clientHandler(void *client)
      myf<<"communicationTimeInClient,"<<handleId<<","<<communicationTime<<endl;
    }
       
-     cout<<a<<endl;
+    // cout<<a<<endl;
     
      
      vector<string> catsOneNStates;
@@ -1475,7 +1489,7 @@ void *GameModel::clientHandler(void *client)
           if(value == instanceModel->cats[j].getEntityId())
           {
             instanceModel->cats[j].setState(s);
-            cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
+            //cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
           }
        }  
     }
@@ -1498,7 +1512,7 @@ void *GameModel::clientHandler(void *client)
           if(value == instanceModel->cats[j].getEntityId())
           {
             instanceModel->cats[j].setState(s);
-            cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
+            //cout<<"cat entity set"<<instanceModel->cats[j].getEntityId()<<" state : "<<instanceModel->cats[j].getState()<<endl;
           }
        }  
     }
@@ -1525,7 +1539,7 @@ void *GameModel::clientHandler(void *client)
            if(value == instanceModel->mice[j].getEntityId())
             {
               instanceModel->mice[j].setState(s);
-              cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
+              //cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
             }
          }       
       }
@@ -1551,7 +1565,7 @@ void *GameModel::clientHandler(void *client)
            if(value == instanceModel->mice[j].getEntityId())
             {
               instanceModel->mice[j].setState(s);
-              cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
+              //cout<<"mice entity set"<<instanceModel->mice[j].getEntityId()<<" state : "<<instanceModel->mice[j].getState()<<endl;
             }
          }       
       }

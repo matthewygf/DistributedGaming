@@ -97,12 +97,14 @@ bool Client::conn(string address , int port)
 */
 bool Client::send_data(string data)
 {
-    //Send some data
+
+    write(sock , data.c_str() , strlen(data.c_str()+1));
+   /* //Send some data
     if( send(sock , data.c_str() , strlen( data.c_str() ) , 0) < 0)
     {
         perror("Send failed : ");
         return false;
-    }
+    }*/
     //cout<<"Data sent\n";
      
     return true;
@@ -215,7 +217,7 @@ bool Client::keepConnection()
     //int a = getAnimalSize();
     int a = 0;
     int net_a =  htonl(a);
-    
+    cout<<"keeping connection"<<endl;
     if( send(sock, (const char*)&net_a, sizeof(a), 0)<0){
      perror("send");
      return false;
