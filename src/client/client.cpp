@@ -116,13 +116,13 @@ bool Client::send_data(string data)
 string Client::receive(int size)
 {
     char buffer[size+1];
-
+    unsigned int ssize = size;
     string reply;
     int n;
     memset(buffer, 0, sizeof(buffer));
 
 
-    while((n = recv(sock, buffer, sizeof(buffer), 0))>0 || reply.length()==size)   
+    while((n = recv(sock, buffer, sizeof(buffer), 0))>0 || reply.length()==ssize)   
     {
         if(n>0)
             reply.append(buffer, n);
@@ -136,11 +136,9 @@ string Client::receive(int size)
 int Client::receiveInt()
 {
    int Buf=0;
-   int i=0;
-   int timeouts = 0; 
+   int i=0; 
    float milliSec = 1/1000;
-   //cout<<"receiving int"<<endl;
-   //however we not allowed to go more than 1 second, so keep recving until connected.
+
    while(recv(sock, &Buf, sizeof(Buf), MSG_NOSIGNAL)<0)
    {
      puts("recv failed");
@@ -217,7 +215,7 @@ bool Client::keepConnection()
     //int a = getAnimalSize();
     int a = 0;
     int net_a =  htonl(a);
-    cout<<"keeping connection"<<endl;
+
     if( send(sock, (const char*)&net_a, sizeof(a), 0)<0){
      perror("send");
      return false;
@@ -229,9 +227,10 @@ bool Client::keepConnection()
 
 void Client::checkIfServerReady()
 {
-   int read_size;
+
    int a=0;
-   while(a!=1){
+   bool ready = true;
+   while(a!=ready){
      a = receiveInt();
    }
    

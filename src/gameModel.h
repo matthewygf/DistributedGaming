@@ -46,7 +46,7 @@ using namespace std;
 #define NUMCLIENT 2    //2 machines connect to the server.
 
 
-#define NUMANIMALS  15000
+#define NUMANIMALS  30
 
 #define singleThreaded false
 

@@ -18,8 +18,8 @@
 #include <GL/glut.h>
 #endif
 
-#define MAP_SIZEX 20
-#define MAP_SIZEY 20
+#define MAP_SIZEX 80
+#define MAP_SIZEY 80
 //also need to set in gameModel.h and animalStates.cpp
 //#define singleThreaded true
 

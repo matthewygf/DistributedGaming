@@ -1063,7 +1063,6 @@ void *GameModel::clientHandler(void *client)
   int aiSize=0;
   int net_ai,net_tWidth;
   int mac_size=0;
-  int net_a;
   int socket = *(int*)client;
   int Buf;
   int tempCheese=0;
@@ -1313,14 +1312,10 @@ void *GameModel::clientHandler(void *client)
       old_a = a;
       tempCheese=mac_size;
     
-     if(data.length()!=0)
-     {
-      //cout<<data<<endl;
-     } 
+     
      datas = data.c_str();
      dataSize = strlen(datas);
-     if(handleId == 1){
-     cout<<dataSize<<endl;}
+
      net_dataSize = htonl(dataSize);
      sleep(1*milliSec);
      if(send(socket, (const char*)&net_dataSize, sizeof(dataSize), MSG_NOSIGNAL)<0)
@@ -1337,34 +1332,9 @@ void *GameModel::clientHandler(void *client)
      
       recv(socket, &net_ai, sizeof(net_ai), 0);
       aiSize = ntohl(net_ai);
-      cout<<aiSize<<endl;
+      //cout<<aiSize<<endl;
       char s[aiSize+1];
-/*
       string a;
-      int n;
-      memset(s,0,sizeof(s));
-      
-       while(a.length()<=aiSize)
-         
-    {
-        n = recv(socket, s, sizeof(s), 0);
-        s[n] = '\0';  
-        cout<<"recving"<<endl;
-        if(n>0&&a.length()<=aiSize)
-            a.append(s, n);
-            //cout<<a<<endl;
-            cout<<a.length()<<endl;
-        if(a.length()>aiSize)
-           break;    
-    } 
-    cout<<"hi its done"<<endl;
-    memset(s, 0, sizeof(s));
-    
-
-
-     */
-      string a;
-
       int bufRead;
       memset(s,0,sizeof(s));
       int total=0;
@@ -1373,9 +1343,9 @@ void *GameModel::clientHandler(void *client)
        while(a.length()<=aiSize-1){
        bufRead=(recv(socket,&s,aiSize-total,0)); 
        s[bufRead] = '\0';  
-       if (s[bufRead-1] == '\n')     // <<-- Nice to have.
-           s[bufRead-1] = '\0';      // <<-- Nice to have.
-       a.append(s,bufRead);
+       if (s[bufRead-1] == '\n')     
+           s[bufRead-1] = '\0';     
+       a.append(s,bufRead);         //append the char to strings for strings extraction
        total = a.length();
        }
        memset(s, 0, sizeof(s));
@@ -1394,7 +1364,7 @@ void *GameModel::clientHandler(void *client)
      myf<<"communicationTimeInClient,"<<handleId<<","<<communicationTime<<endl;
    }
       
-    // cout<<a<<endl;
+    cout<<a<<endl;
     
      
      vector<string> catsOneNStates;

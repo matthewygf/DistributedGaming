@@ -126,7 +126,7 @@ void aiUpdate(vector<Cat>&c, vector<Mouse>&m,string &result)
 
 void calculateAi(vector<Cat>&c, vector<Mouse>&m, vector<string>&tokens,string &backToClient)
 {
-   for(int i=0;i<tokens.size();i++)
+   for(unsigned int i=0;i<tokens.size();i++)
    {
      string t = tokens[i];
      string delimiter = ":";
@@ -214,9 +214,7 @@ int main(int argc , char *argv[])
 {
     Client c;
     string host;
-    int a,b,temp,mac,temp_mac,tWidth,entitiesLength;
-    int catAteMiceSize;
-    int old_catAteMiceSize = 0;
+    int tWidth,entitiesLength;
     int datasize = 0;
     string entities;
     string update="";
@@ -241,9 +239,9 @@ int main(int argc , char *argv[])
     vector<Mouse> mice;
 
     cout<<"Enter hostname : ";
-    //cin>>host; 
+    cin>>host; 
     //connect to host
-    c.conn("129.11.146.18" , 3490);
+    c.conn(host , 3490);
     
     c.checkIfServerReady();
     cout<<"server is ready"<<endl;
@@ -284,7 +282,6 @@ int main(int argc , char *argv[])
       c.keepConnection();
       string stateResults = "";
       datasize = c.receiveInt();
-      cout<<datasize<<endl;
       
       if(datasize!=0)
       {
